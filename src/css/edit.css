@@ -1,0 +1,29 @@
+.easy-edit-inline-wrapper {
+  min-width: 100%;
+}
+.easy-edit-component-wrapper {
+  display: block;
+}
+
+.easy-edit-textarea {
+  width: 100%;
+  padding: 10px;
+  resize: none;
+}
+
+.easy-edit-button {
+  margin: 2px;
+  padding: 3px;
+  border-radius: 50px;
+  background-color: white;
+  width: 23px;
+}
+
+.text-editor {
+  width: 100%;
+  margin: 0 auto;
+}
+.ql-editor {
+  /* min-height: 100px; */
+  width: 100%;
+}
