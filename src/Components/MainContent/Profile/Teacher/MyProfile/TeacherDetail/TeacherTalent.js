@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
-import firebase from "../../../../../utils/config/firebase-config";
+import firebase from "../../../../../../utils/config/firebase-config";
 
 const StyleTeacherTalent = styled.div`
   width: 100%;

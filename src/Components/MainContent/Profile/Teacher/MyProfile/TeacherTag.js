@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Select from "react-select";
-import firebase from "../../../../utils/config/firebase-config";
+import firebase from "../../../../../utils/config/firebase-config";
 
 const StyleTeacherTag = styled.div`
   width: 100%;

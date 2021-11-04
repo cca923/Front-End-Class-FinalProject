@@ -4,9 +4,9 @@ import ReactQuill from "react-quill"; // ES6
 import "react-quill/dist/quill.snow.css";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
-import editIcon from "../../../../images/edit.png";
-import saveIcon from "../../../../images/save.png";
-import firebase from "../../../../utils/config/firebase-config";
+import editIcon from "../../../../../../images/edit.png";
+import saveIcon from "../../../../../../images/save.png";
+import firebase from "../../../../../../utils/config/firebase-config";
 
 const StyleEditorArea = styled.div`
   display: flex;

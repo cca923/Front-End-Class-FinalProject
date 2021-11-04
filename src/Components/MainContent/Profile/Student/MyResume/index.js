@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import EditArea from "../Editor/EditArea";
-import Editor from "../Editor/Editor";
-import firebase from "../../../../utils/config/firebase-config";
+import EditArea from "./Editor/EditArea";
+import Editor from "./Editor/Editor";
+import firebase from "../../../../../utils/config/firebase-config";
 
 const StyleMyResume = styled.div`
   width: 100%;

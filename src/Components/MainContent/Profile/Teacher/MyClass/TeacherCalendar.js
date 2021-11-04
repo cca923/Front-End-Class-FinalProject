@@ -4,8 +4,8 @@ import styled from "styled-components";
 import DatePicker from "react-datepicker";
 import { setHours, setMinutes, compareAsc, format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
-import "../../../../css/calendar.css";
-import firebase from "../../../../utils/config/firebase-config";
+import "../../../../../css/calendar.css";
+import firebase from "../../../../../utils/config/firebase-config";
 
 const StyleCalender = styled.div`
   max-width: 100%;

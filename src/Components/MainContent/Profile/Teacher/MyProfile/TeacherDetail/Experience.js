@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
 import Select from "react-select";
-import firebase from "../../../../../utils/config/firebase-config";
+import firebase from "../../../../../../utils/config/firebase-config";
 
 const StyleTeacherExperience = styled.div`
   width: 100%;

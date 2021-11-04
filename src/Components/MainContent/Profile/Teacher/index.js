@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { Switch, Route } from "react-router-dom";
-import TeacherMyClass from "./TeacherMyClass";
-import TeacherMyProfile from "./TeacherMyProfile";
+import TeacherMyClass from "./MyClass/index";
+import TeacherMyProfile from "./MyProfile/index";
 
 const StyleTeacherMainArea = styled.div`
   width: 100%;

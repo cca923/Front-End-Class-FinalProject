@@ -1,12 +1,11 @@
-import React, { useRef, useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { getIdentity } from "../../../../Redux/Action";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import EasyEdit, { Types } from "react-easy-edit";
-import "../../../../css/edit.css";
+import "../../../../../../css/edit.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-import firebase from "../../../../utils/config/firebase-config";
+import firebase from "../../../../../../utils/config/firebase-config";
 
 const StyleCustomDisplay = styled.div`
   display: inline-block;
