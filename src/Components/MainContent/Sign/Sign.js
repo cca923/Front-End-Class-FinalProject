@@ -1,6 +1,15 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { changeSignPage, getIdentity } from "../../../Redux/Action";
+import {
+  changeSignPage,
+  getIdentity,
+  checkSignStatus,
+  getStudentData,
+  getTeacherData,
+} from "../../../Redux/Action";
+import firebase from "../../../utils/config/firebase-config";
+
 import styled from "styled-components";
 import Signin from "./Signin";
 import Signup from "./Signup";
@@ -86,9 +95,157 @@ const StyleSignupButton = styled.div`
 
 const Sign = (props) => {
   const identity = useSelector((state) => state.identity);
+  const dispatch = useDispatch();
+  const history = useHistory();
   const [signin, setSignin] = useState(true);
   const [signup, setSignup] = useState(false);
-  const dispatch = useDispatch();
+  const [thirdPartyErrorMessage, setThirdPartyErrorMessage] = useState("");
+
+  const db = firebase.firestore();
+  const studentsCollection = db.collection("students");
+  const teachersCollection = db.collection("teachers");
+
+  const handleThirdPartySign = async (provider) => {
+    firebase
+      .auth()
+      .signInWithPopup(provider)
+      .then((res) => {
+        if (identity === "student") {
+          teachersCollection
+            .doc(res.user.email)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                window.alert("此 Email 註冊為老師，請選擇以老師身份登入！");
+                firebase.auth().signOut();
+              } else {
+                // 確認是否已有學生帳號
+                studentsCollection
+                  .doc(res.user.email)
+                  .get()
+                  .then((doc) => {
+                    if (doc.exists) {
+                      // 有就導向會員頁面
+
+                      // 監聽 firestore 來更新 Redux
+                      studentsCollection
+                        .doc(res.user.email)
+                        .onSnapshot((doc) => {
+                          dispatch(getStudentData(doc.data()));
+                          console.log("新的學生Data", doc.data());
+                        });
+
+                      dispatch(changeSignPage(false)); // 關掉 sign 視窗
+                      history.push("/profile/myresume"); // 導向會員頁面
+                      dispatch(checkSignStatus(true)); // 改變 Nav
+                    } else {
+                      // 沒有就建立新帳號！
+                      const student = studentsCollection.doc(res.user.email);
+                      const data = {
+                        name: res.user.displayName,
+                        email: res.user.email,
+                      };
+                      student.set(data).then(() => {
+                        dispatch(changeSignPage(false));
+                        history.push("/profile/myresume");
+                        dispatch(checkSignStatus(true));
+                      });
+
+                      // 監聽 firestore 來更新 Redux
+                      student.onSnapshot((doc) => {
+                        dispatch(getStudentData(doc.data()));
+                        console.log("新的學生Data", doc.data());
+                      });
+                    }
+                  })
+                  .catch((error) => {
+                    console.log("帳號讀取有問題", error);
+                  });
+              }
+            })
+            .catch((error) => {
+              console.log("帳號讀取有問題", error);
+            });
+        } else if (identity === "teacher") {
+          studentsCollection
+            .doc(res.user.email)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                window.alert("此 Email 註冊為學生，請選擇以學生身份登入！");
+                firebase.auth().signOut();
+              } else {
+                // 確認是否已有老師帳號
+                teachersCollection
+                  .doc(res.user.email)
+                  .get()
+                  .then((doc) => {
+                    if (doc.exists) {
+                      // 有就導向會員頁面
+
+                      // 監聽 firestore 來更新 Redux
+                      teachersCollection
+                        .doc(res.user.email)
+                        .onSnapshot((doc) => {
+                          dispatch(getTeacherData(doc.data()));
+                          console.log("新的Data", doc.data());
+                        });
+
+                      dispatch(changeSignPage(false)); // 關掉 sign 視窗
+                      history.push("/profile/myprofile"); // 導向會員頁面
+                      dispatch(checkSignStatus(true)); // 改變 Nav
+                    } else {
+                      // 沒有就建立新帳號！
+                      const teacher = teachersCollection.doc(res.user.email);
+                      const data = {
+                        name: res.user.displayName,
+                        email: res.user.email,
+                      };
+                      teacher.set(data).then(() => {
+                        dispatch(changeSignPage(false));
+                        history.push("/profile/myprofile");
+                        dispatch(checkSignStatus(true));
+                      });
+
+                      // 監聽 firestore 來更新 Redux
+                      teacher.onSnapshot((doc) => {
+                        dispatch(getTeacherData(doc.data()));
+                        console.log("新的Data", doc.data());
+                      });
+                    }
+                  })
+                  .catch((error) => {
+                    console.log("帳號讀取有問題", error);
+                  });
+              }
+            })
+            .catch((error) => {
+              console.log("帳號讀取有問題", error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.log("帳號讀取有問題", error);
+        switch (error.code) {
+          case "auth/email-already-in-use":
+            setThirdPartyErrorMessage("信箱已存在");
+            break;
+          case "auth/invalid-email":
+            setThirdPartyErrorMessage("信箱格式不正確");
+            break;
+          case "auth/weak-password":
+            setThirdPartyErrorMessage("密碼強度不足");
+            break;
+          case "auth/user-not-found":
+            setThirdPartyErrorMessage("信箱不存在");
+            break;
+          case "auth/wrong-password":
+            setThirdPartyErrorMessage("密碼錯誤");
+            break;
+          default:
+        }
+      });
+  };
 
   return (
     <>
@@ -120,7 +277,17 @@ const Sign = (props) => {
               Signup
             </StyleSignupButton>
           </StyleButtonContainer>
-          {signin ? <Signin /> : <Signup />}
+          {signin ? (
+            <Signin
+              errorMessage={thirdPartyErrorMessage}
+              handleThirdPartySign={handleThirdPartySign}
+            />
+          ) : (
+            <Signup
+              errorMessage={thirdPartyErrorMessage}
+              handleThirdPartySign={handleThirdPartySign}
+            />
+          )}
         </StyleSignContainer>
       )}
     </>

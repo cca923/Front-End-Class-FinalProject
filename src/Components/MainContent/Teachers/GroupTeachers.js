@@ -1,13 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
+import firebase from "../../../utils/config/firebase-config";
+import { nanoid } from "nanoid";
 
 const StyleGroupTeachers = styled.div`
   width: 100%;
+  height: 100%;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30px 30px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px 40px;
   margin: 0 auto;
   padding: 50px 40px;
+
+  @media only screen and (max-width: 1800px) {
+    /* width: 100%; */
+    /* height: 100%; */
+    /* display: grid; */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px 30px;
+  }
 
   @media only screen and (max-width: 1300px) {
     grid-template-columns: repeat(1, 1fr);
@@ -18,7 +30,9 @@ const StyleGroupTeachers = styled.div`
 
 const StyleEachTeacher = styled.a`
   width: 100%;
-  height: fit-content;
+  /* height: fit-content; */
+  height: 100%;
+
   background-color: #fff;
   border-radius: 8px;
   padding: 20px;
@@ -56,8 +70,8 @@ const StyleDetail = styled.div`
   padding: 15px 0;
 
   @media only screen and (max-width: 1020px) {
-    width: fit-content;
-    padding: 10px 0 0 30px;
+    /* width: fit-content; */
+    /* padding: 10px 0 0 30px; */
   }
 
   @media only screen and (max-width: 780px) {
@@ -100,7 +114,7 @@ const StyleTagDisplayArea = styled.div`
 
   @media only screen and (max-width: 1020px) {
     width: 100%;
-    margin-top: 15px;
+    /* margin-top: 15px; */
   }
 
   @media only screen and (max-width: 780px) {
@@ -128,36 +142,86 @@ const StyleValue = styled.div`
 `;
 
 const GroupTeachers = (props) => {
+  const db = firebase.firestore();
+  const teachersCollection = db.collection("teachers");
+  const [teachersData, setTeachersData] = useState([]);
+  console.log(teachersData);
+  const teachersFilterData = [];
+
+  useEffect(() => {
+    teachersCollection
+      .get()
+      .then((collectionSnapShot) => {
+        const arrTeachers = [];
+
+        collectionSnapShot.forEach((doc) => {
+          console.log(doc.id, " => ", doc.data());
+          arrTeachers.push(doc.data());
+        });
+
+        setTeachersData(arrTeachers);
+      })
+      .catch((error) => {
+        console.log("無法讀取數據：", error);
+      });
+  }, []);
+
+  if (
+    props.selectIndustry === "" &&
+    props.selectTitle === "" &&
+    props.selectLanguage === ""
+  ) {
+    // 如果沒有 tag 就顯示 firebase 全部的資料
+    teachersFilterData.push(...teachersData);
+  } else {
+    // 如果有 tag 就篩選出符合條件的資料
+    const matchData = teachersData.filter((teacher) => {
+      return (
+        props.selectIndustry.value === teacher.tag.industry ||
+        props.selectTitle.value === teacher.tag.title ||
+        props.selectLanguage.value === teacher.tag.language
+      );
+    });
+    teachersFilterData.push(...matchData);
+  }
+
   return (
     <StyleGroupTeachers>
-      <StyleEachTeacher>
-        <StyleAbout>
-          <StyleImage alt={"name"} />
-          <StyleAboutDetail>
-            <StyleName>Anna</StyleName>
-            <StyleCompany>AppWorks School</StyleCompany>
-            <StyleCompany>Front-End Teacher</StyleCompany>
-          </StyleAboutDetail>
-        </StyleAbout>
+      {teachersFilterData.map((teacher) => {
+        return (
+          <StyleEachTeacher
+            key={nanoid()}
+            as={Link}
+            to={`/teachers/${teacher.uid}`}>
+            <StyleAbout>
+              <StyleImage alt={teacher.name} src={teacher.photo} />
+              <StyleAboutDetail>
+                <StyleName>{teacher.name}</StyleName>
+                <StyleCompany>{teacher.about.presentCompany}</StyleCompany>
+                <StyleCompany>{teacher.about.presentTitle}</StyleCompany>
+              </StyleAboutDetail>
+            </StyleAbout>
 
-        <StyleDetail>
-          <StyleData>擁有平面、UI、產品，至 UX 設計多元跨域經驗</StyleData>
-          <StyleData>現職東京跨國企業，兼設計內容媒體 AAPD 創辦人</StyleData>
-          <StyleData>現職東京跨國企業，兼設計內容媒體 AAPD 創辦人</StyleData>
-        </StyleDetail>
+            <StyleDetail>
+              {teacher.talents.map((talent) => {
+                return <StyleData>{talent.description}</StyleData>;
+              })}
+            </StyleDetail>
 
-        <StyleTagDisplayArea>
-          <StyleTag>
-            <StyleValue>Fuck</StyleValue>
-          </StyleTag>
-          <StyleTag>
-            <StyleValue>Fuck</StyleValue>
-          </StyleTag>
-          <StyleTag>
-            <StyleValue>Fuck</StyleValue>
-          </StyleTag>
-        </StyleTagDisplayArea>
-      </StyleEachTeacher>
+            <StyleTagDisplayArea>
+              <StyleTag>
+                <StyleValue>{teacher.tag.industry}</StyleValue>
+              </StyleTag>
+              <StyleTag>
+                <StyleValue>{teacher.tag.title}</StyleValue>
+              </StyleTag>
+              <StyleTag>
+                <StyleValue>{teacher.tag.language}</StyleValue>
+              </StyleTag>
+            </StyleTagDisplayArea>
+          </StyleEachTeacher>
+        );
+      })}
     </StyleGroupTeachers>
   );
 };

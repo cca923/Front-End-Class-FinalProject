@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { changeSignPage, getIdentity } from "../../../Redux/Action";
-
+import {
+  changeSignPage,
+  checkSignStatus,
+  getStudentData,
+  getTeacherData,
+} from "../../../Redux/Action";
 import styled from "styled-components";
 import firebase from "../../../utils/config/firebase-config";
 import {
@@ -11,7 +15,6 @@ import {
 } from "../../../utils/service/authMethod";
 import facebook from "../../../images/facebook.png";
 import google from "../../../images/google.png";
-import Identity from "./Identity";
 
 const StyleSignin = styled.div`
   font-size: 1.5rem;
@@ -182,7 +185,7 @@ const StyleErrorMessage = styled.div`
   }
 `;
 
-const Signin = () => {
+const Signin = (props) => {
   const identity = useSelector((state) => state.identity);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -190,57 +193,61 @@ const Signin = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  console.log(identity);
-
   const db = firebase.firestore();
-  const teachersRef = db.collection("teachers");
-  const studentsRef = db.collection("students");
-
-  const handleThirdPartySignin = async (provider) => {
-    firebase
-      .auth()
-      .signInWithPopup(provider)
-      .then((res) => {
-        if (
-          !teachersRef.doc(res.user.email) &&
-          !studentsRef.doc(res.user.email)
-        ) {
-          history.push("/profile");
-          dispatch(changeSignPage(false));
-          dispatch(getIdentity(null));
-        } else {
-          history.push("/profile");
-          dispatch(changeSignPage(false));
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-
-        // switch (error.code) {
-        //   case "auth/email-already-in-use":
-        //     setErrorMessage("信箱已存在");
-        //     break;
-        //   case "auth/invalid-email":
-        //     setErrorMessage("");
-        //     setErrorMessage("信箱格式不正確");
-        //     break;
-        //   case "auth/weak-password":
-        //     setErrorMessage("");
-        //     setErrorMessage("密碼強度不足");
-        //     break;
-        //   default:
-        // }
-      });
-  };
+  const studentsCollection = db.collection("students");
+  const teachersCollection = db.collection("teachers");
 
   const handleNativeSignin = () => {
-    const res = firebase
+    firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then((res) => {
-        history.push("/profile");
-        dispatch(changeSignPage(false));
-        return res.user;
+        if (identity === "student") {
+          // 確認是否已是老師，提醒使用者選擇老師帳號登入
+          teachersCollection
+            .doc(email)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                window.alert("此 Email 註冊為老師，請選擇以老師身份登入！");
+                firebase.auth().signOut();
+              } else {
+                // 監聽 firestore 來更新 Redux
+                studentsCollection.doc(email).onSnapshot((doc) => {
+                  dispatch(getStudentData(doc.data()));
+                  console.log("新的學生Data", doc.data());
+                });
+                dispatch(changeSignPage(false));
+                history.push("/profile/myresume");
+                dispatch(checkSignStatus(true));
+              }
+            })
+            .catch((error) => {
+              console.log("帳號讀取有問題", error);
+            });
+        } else if (identity === "teacher") {
+          studentsCollection
+            .doc(email)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                window.alert("此 Email 註冊為學生，請選擇以學生身份登入！");
+                firebase.auth().signOut();
+              } else {
+                // 監聽 firestore 來更新 Redux
+                teachersCollection.doc(email).onSnapshot((doc) => {
+                  dispatch(getTeacherData(doc.data()));
+                  console.log("新的老師Data", doc.data());
+                });
+                dispatch(changeSignPage(false));
+                history.push("/profile/myprofile");
+                dispatch(checkSignStatus(true));
+              }
+            })
+            .catch((error) => {
+              console.log("帳號讀取有問題", error);
+            });
+        }
       })
       .catch((error) => {
         switch (error.code) {
@@ -256,7 +263,6 @@ const Signin = () => {
           default:
         }
       });
-    console.log(res);
   };
 
   return (
@@ -277,6 +283,7 @@ const Signin = () => {
           placeholder="密碼"
           required
         />
+        {<StyleErrorMessage>{props.thirdPartyErrorMessage}</StyleErrorMessage>}
         {<StyleErrorMessage>{errorMessage}</StyleErrorMessage>}
 
         <StyleButton onClick={handleNativeSignin} type="button">
@@ -287,14 +294,15 @@ const Signin = () => {
       <StyleSeperator>或</StyleSeperator>
 
       <StyleFacebookLogin
-        onClick={() => handleThirdPartySignin(facebookProvider)}>
+        onClick={() => props.handleThirdPartySign(facebookProvider)}>
         <StyleIconContainer>
           <StyleFacebookIcon src={facebook} alt="facebook" />
         </StyleIconContainer>
         <StyleType>使用 Facebook 登入</StyleType>
       </StyleFacebookLogin>
 
-      <StyleGoogleLogin onClick={() => handleThirdPartySignin(googleProvider)}>
+      <StyleGoogleLogin
+        onClick={() => props.handleThirdPartySign(googleProvider)}>
         <StyleIconContainer>
           <StyleFacebookIcon src={google} alt="google" />
         </StyleIconContainer>

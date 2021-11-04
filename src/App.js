@@ -2,15 +2,25 @@ import React, { useState, useEffect, useRef } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import firebase from "./utils/config/firebase-config";
 import { useSelector, useDispatch } from "react-redux";
+import { checkSignStatus } from "./Redux/Action";
 import Sign from "./Components/MainContent/Sign/Sign";
 import Home from "./Components/MainContent/Home";
 import Live from "./Components/MainContent/Live";
 import Header from "./Components/Header/Header";
 import Profile from "./Components/MainContent/Profile";
 import Teachers from "./Components/MainContent/Teachers";
+import EachTeacher from "./Components/MainContent/Teachers/EachTeacher/index";
 
 function App() {
+  const dispatch = useDispatch();
   const db = firebase.firestore();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+    });
+  }, []);
 
   const servers = {
     iceServers: [
@@ -165,23 +175,30 @@ function App() {
         <Route path="/" exact>
           <Home />
         </Route>
-        <Route path="/teachers">
-          <Teachers />
-        </Route>
-        <Route path="/live">
-          <Live
-            openWebCam={openWebCam}
-            createOffer={createOffer}
-            answerCall={answerCall}
-            hangupCall={hangupCall}
-            localVideo={localVideo}
-            remoteVideo={remoteVideo}
-            callInput={callInput}
-          />
-        </Route>
-        <Route path="/profile">
-          <Profile />
-        </Route>
+        {user ? (
+          <>
+            <Route path="/teachers" exact>
+              <Teachers />
+            </Route>
+            <Route path="/teachers/:teacherUid" exact>
+              <EachTeacher />
+            </Route>
+            <Route path="/live">
+              <Live
+                openWebCam={openWebCam}
+                createOffer={createOffer}
+                answerCall={answerCall}
+                hangupCall={hangupCall}
+                localVideo={localVideo}
+                remoteVideo={remoteVideo}
+                callInput={callInput}
+              />
+            </Route>
+            <Route path="/profile">
+              <Profile />
+            </Route>
+          </>
+        ) : null}
       </Switch>
     </>
   );

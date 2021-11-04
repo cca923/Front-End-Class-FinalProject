@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
+import Select from "react-select";
+import firebase from "../../../../../utils/config/firebase-config";
 
 const StyleTeacherExperience = styled.div`
   width: 100%;
@@ -107,6 +110,13 @@ const StyleTagSubmitButton = styled.div`
   }
 `;
 
+const StyleSelect = styled(Select)`
+  width: 150px;
+
+  @media only screen and (max-width: 1020px) {
+  }
+`;
+
 const StyleJob = styled.div`
   background-color: #fff;
   margin: 20px;
@@ -145,51 +155,101 @@ const StyleDeleteButton = styled.div`
   align-content: center;
   background-size: cover;
   background-position: center;
-  background-image: url("./images/trash.png");
+  background-image: url("/images/trash.png");
 
   &:hover {
-    background-image: url("./images/trash-hover.gif");
+    background-image: url("/images/trash-hover.gif");
   }
 `;
 
 const TeacherExperience = (props) => {
+  const identityData = useSelector((state) => state.identityData);
+  const experienceData = identityData.experience;
+  const db = firebase.firestore();
+  const user = firebase.auth().currentUser;
+  const teachersRef = db.collection("teachers").doc(user.email);
+
   const [company, setCompany] = useState("");
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [displayExperience, setDisplayExperience] = useState(false);
-  const [experience, setExperience] = useState([]);
+  // teachersRef.update({ experience });
 
   const handleExperienceDisplay = () => {
-    setDisplayExperience(true);
     const newExperience = {
       company,
       title,
       startDate,
       endDate,
     };
-    setExperience((existData) => [...existData, newExperience]);
-    setCompany("");
-    setTitle("");
-    setStartDate("");
-    setEndDate("");
+    // setExperience((existData) => [...existData, newExperience]);
+
+    teachersRef
+      .update({
+        experience: firebase.firestore.FieldValue.arrayUnion(newExperience),
+      })
+      .then(() => {
+        setDisplayExperience(true);
+        setCompany("");
+        setTitle("");
+        setStartDate("");
+        setEndDate("");
+      });
   };
 
   const handleExperienceDelete = (e) => {
     const removeTarget = e.target.previousSibling.childNodes[1].textContent;
-    const restExperience = experience.filter((existDate) => {
-      if (existDate.endDate !== removeTarget) {
-        return true;
+    const removeExperience = experienceData.filter((existDate) => {
+      if (existDate.endDate === removeTarget) {
+        return true; // filter 出來是 Array
       } else {
         return false;
       }
     });
-    setExperience([...restExperience]);
+
+    teachersRef.update({
+      experience: firebase.firestore.FieldValue.arrayRemove(
+        ...removeExperience
+      ),
+    });
   };
 
-  //   useEffect(() => {
-  //     if (experience === []) setDisplayExperience(false);
-  //   }, [experience]);
+  // Global: 讓 Data 按時間大到小排序
+  // const newToOld = () => {
+  //   experienceData.sort((a, b) => {
+  //     return a.endDate < b.endDate ? 1 : -1;
+  //   });
+  // };
+  // newToOld();
+  // const [selectTimeRange, setSelectTimeRange] = useState("");
+  // const timeRange = [
+  //   { value: "新到舊", label: "新到舊" },
+  //   { value: "舊到新", label: "舊到新" },
+  // ];
+  // const handleTimeRange = (tag) => {
+  //   setSelectTimeRange(tag);
+
+  //   if (selectTimeRange.value === "新到舊") {
+  //     newToOld();
+  //   } else if (selectTimeRange.value === "舊到新") {
+  //     experienceData.sort((a, b) => {
+  //       return a.endDate > b.endDate ? 1 : -1;
+  //     });
+  //   }
+  // };
+
+  useEffect(() => {
+    // 初始狀態
+    if (experienceData) {
+      setDisplayExperience(true);
+
+      // Global: 讓 Data 按時間大到小排序
+      experienceData.sort((a, b) => {
+        return a.endDate < b.endDate ? 1 : -1;
+      });
+    }
+  }, [experienceData]);
 
   return (
     <StyleTeacherExperience>
@@ -237,9 +297,16 @@ const TeacherExperience = (props) => {
           <StyleTagSubmitButton onClick={handleExperienceDisplay}>
             送出
           </StyleTagSubmitButton>
+
           {displayExperience ? (
             <StyleDisplay>
-              {experience.map((job) => {
+              {/* <StyleSelect
+                value={selectTimeRange}
+                onChange={handleTimeRange}
+                options={timeRange}
+                placeholder={"時間排序"}
+              /> */}
+              {experienceData.map((job) => {
                 return (
                   <StyleJob key={nanoid()}>
                     <StyleJobData>

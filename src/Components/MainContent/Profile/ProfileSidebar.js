@@ -1,8 +1,12 @@
-// const identity = useSelector((state) => state.identity);
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { getIdentity } from "../../../Redux/Action";
+import {
+  getIdentity,
+  checkSignStatus,
+  getStudentData,
+  getTeacherData,
+} from "../../../Redux/Action";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
 import firebase from "../../../utils/config/firebase-config";
@@ -108,15 +112,10 @@ const StyleLinkContainer = styled.div`
   } */
 `;
 
-// const StyleLink = styled(NavLink)``;
-const StyleLink = styled.a`
+const StyleLink = styled(NavLink)`
   padding: 10px;
   font-size: 1.5rem;
   margin: 0 auto;
-
-  &:hover {
-    color: #bbadff;
-  }
 
   @media only screen and (max-width: 1300px) {
     margin: auto 20px;
@@ -126,7 +125,6 @@ const StyleLink = styled.a`
 const StyleLogoutButton = styled.div`
   padding: 10px;
   width: 120px;
-  /* font-size: 1rem; */
   color: white;
   background-color: #757bc8;
   border: 2px solid #bbadff;
@@ -148,22 +146,23 @@ const StyleLogoutButton = styled.div`
 
 const ProfileSidebar = (props) => {
   const identity = useSelector((state) => state.identity);
+  const identityData = useSelector((state) => state.identityData);
   const dispatch = useDispatch();
   const history = useHistory();
 
-  console.log(identity);
+  const user = firebase.auth().currentUser;
 
   return (
     <StyleProfileSidebar>
-      <StyleImage alt={"name"} />
+      <StyleImage src={identityData.photo} alt={identityData.name} />
       <StyleDetail>
         <StyleEachDetail>
           <StyleLabel>姓名</StyleLabel>
-          <StyleData>Anna</StyleData>
+          <StyleData>{identityData.name}</StyleData>
         </StyleEachDetail>
         <StyleEachDetail>
           <StyleLabel>Email</StyleLabel>
-          <StyleData>anna85923@gmail.com</StyleData>
+          <StyleData>{identityData.email}</StyleData>
         </StyleEachDetail>
       </StyleDetail>
       <StyleLogoutButton
@@ -172,8 +171,11 @@ const ProfileSidebar = (props) => {
             .auth()
             .signOut()
             .then(() => {
-              dispatch(getIdentity(null));
+              dispatch(checkSignStatus(false));
               history.push("/");
+              dispatch(getIdentity(null));
+              dispatch(getStudentData({}));
+              dispatch(getTeacherData({}));
             });
         }}>
         登出
@@ -182,31 +184,40 @@ const ProfileSidebar = (props) => {
       <StyleLinkContainer>
         {identity === "student" ? (
           <>
-            <StyleLink>My Resume</StyleLink>
-            <StyleLink>My Reservation</StyleLink>
+            <StyleLink
+              exact
+              to="/profile/myresume"
+              activeClassName="selected"
+              activeStyle={{ backgroundColor: "#bbadff" }}>
+              My Resume
+            </StyleLink>
+            <StyleLink
+              exact
+              to="/profile/myclass"
+              activeClassName="selected"
+              activeStyle={{ backgroundColor: "#bbadff" }}>
+              My Class
+            </StyleLink>
           </>
         ) : (
           <>
-            <StyleLink>My Profile</StyleLink>
-            <StyleLink>My Reservation</StyleLink>
+            <StyleLink
+              exact
+              to="/profile/myprofile"
+              activeClassName="selected"
+              activeStyle={{ backgroundColor: "#bbadff" }}>
+              My Profile
+            </StyleLink>
+            <StyleLink
+              exact
+              to="/profile/myclass"
+              activeClassName="selected"
+              activeStyle={{ backgroundColor: "#bbadff" }}>
+              My Class
+            </StyleLink>
           </>
         )}
       </StyleLinkContainer>
-
-      {/* <StyleLink
-        exact
-        to="/"
-        activeClassName="selected"
-        activeStyle={{ backgroundColor: "#bbadff" }}>
-        My Profile
-      </StyleLink>
-      <StyleLink
-        exact
-        to="/"
-        activeClassName="selected"
-        activeStyle={{ backgroundColor: "#bbadff" }}>
-        My Class
-      </StyleLink> */}
     </StyleProfileSidebar>
   );
 };

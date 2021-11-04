@@ -1,10 +1,9 @@
-// const identity = useSelector((state) => state.identity);
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getIdentity } from "../../../../Redux/Action";
 import styled from "styled-components";
 import EditArea from "../Editor/EditArea";
 import Editor from "../Editor/Editor";
+import firebase from "../../../../utils/config/firebase-config";
 
 const StyleMyResume = styled.div`
   width: 100%;
@@ -22,7 +21,7 @@ const StyleOthers = styled.div`
   display: flex;
 `;
 
-const StyleImage = styled.div`
+const StyleImage = styled.img`
   width: 150px;
   height: 150px;
   background-color: gray;
@@ -56,24 +55,22 @@ const StyleAreaTitle = styled.h1`
 `;
 
 const StudentMyResume = (props) => {
-  const identity = useSelector((state) => state.identity);
-  const dispatch = useDispatch();
+  const identityData = useSelector((state) => state.identityData);
+  const user = firebase.auth().currentUser;
+
   const sendEdit = useRef();
   const [hover, setHover] = useState(false);
-
-  console.log(identity);
 
   return (
     <StyleMyResume>
       <StyleAbout>
-        <StyleImage />
+        <StyleImage src={user.photoURL} alt={identityData.name} />
         <StyleDetail>
           <StyleIdentityArea>
-            <StyleName>Sunny</StyleName>
-            <StyleEmail>sunny@gmail.com</StyleEmail>
+            <StyleName>{identityData.name}</StyleName>
+            <StyleEmail>{identityData.email}</StyleEmail>
           </StyleIdentityArea>
           <StyleAreaTitle>About</StyleAreaTitle>
-          <EditArea sendEdit={sendEdit} />
           <EditArea sendEdit={sendEdit} />
         </StyleDetail>
       </StyleAbout>

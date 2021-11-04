@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Sidebar from "./Sidebar";
 import GroupTeachers from "./GroupTeachers";
@@ -7,31 +7,15 @@ const StyleTeachers = styled.div`
   opacity: 0.8;
 `;
 
-const StyleImageTeacherArea = styled.div`
-  width: 50%;
-  height: 400px;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: contain;
-  /* background-position: 130%; */
-  display: inline-block;
-  vertical-align: bottom;
-  background-image: url("./images/home-teacher.png");
-
-  @media only screen and (max-width: 1020px) {
-    height: 200px;
-  }
-`;
-
 const StyleImageStudentArea = styled.div`
-  width: 50%;
+  width: 100%;
   height: 400px;
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: contain;
   display: inline-block;
   vertical-align: bottom;
-  background-image: url("./images/home-student.png");
+  background-image: url("/images/home-student.png");
 
   @media only screen and (max-width: 1020px) {
     height: 200px;
@@ -49,13 +33,35 @@ const StyleTeachersContainer = styled.div`
 `;
 
 const Teachers = (props) => {
+  const [selectIndustry, setSelectIndustry] = useState("");
+  const [selectTitle, setSelectTitle] = useState("");
+  const [selectLanguage, setSelectLanguage] = useState("");
+  const [displayTag, setDisplayTag] = useState(false);
+
   return (
     <StyleTeachers>
-      <StyleImageTeacherArea />
       <StyleImageStudentArea />
       <StyleTeachersContainer>
-        <Sidebar />
-        <GroupTeachers />
+        <Sidebar
+          selectIndustry={selectIndustry}
+          setSelectIndustry={setSelectIndustry}
+          selectTitle={selectTitle}
+          setSelectTitle={setSelectTitle}
+          selectLanguage={selectLanguage}
+          setSelectLanguage={setSelectLanguage}
+          displayTag={displayTag}
+          setDisplayTag={setDisplayTag}
+        />
+        <GroupTeachers
+          selectIndustry={selectIndustry}
+          setSelectIndustry={setSelectIndustry}
+          selectTitle={selectTitle}
+          setSelectTitle={setSelectTitle}
+          selectLanguage={selectLanguage}
+          setSelectLanguage={setSelectLanguage}
+          displayTag={displayTag}
+          setDisplayTag={setDisplayTag}
+        />
       </StyleTeachersContainer>
     </StyleTeachers>
   );

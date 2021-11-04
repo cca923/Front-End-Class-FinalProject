@@ -11,7 +11,7 @@ const StyleHeader = styled.header`
   width: 100vw;
   background-color: ${(props) =>
     props.headerColor ? "rgb(255,255,255,0.8)" : "none"};
-  z-index: 200;
+  z-index: 10000;
 `;
 
 const StyleLink = styled(Link)`

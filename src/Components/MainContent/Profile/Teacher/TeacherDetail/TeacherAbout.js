@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
+import firebase from "../../../../../utils/config/firebase-config";
 
 const StyleTeacherAbout = styled.div`
   width: 100%;
@@ -127,30 +129,41 @@ const StyleTagSubmitButton = styled.div`
 `;
 
 const TeacherAbout = (props) => {
+  const identityData = useSelector((state) => state.identityData);
+  const aboutData = identityData.about;
+  const db = firebase.firestore();
+  const user = firebase.auth().currentUser;
+  const teachersRef = db.collection("teachers").doc(user.email);
+
   const [presentCompany, setPresentCompany] = useState("");
   const [presentTitle, setPresentTitle] = useState("");
-  const [aboutMe, setAboutMe] = useState("");
+  const [introduction, setIntroduction] = useState("");
   const [displayAbout, setDisplayAbout] = useState(false);
-  const [about, setAbout] = useState(null);
 
   const handleAboutDisplay = () => {
-    if (presentCompany === "" && presentTitle === "" && aboutMe === "") {
+    if (presentCompany === "" && presentTitle === "" && introduction === "") {
       window.alert("請輸入個人資料與介紹！");
     } else {
-      setDisplayAbout(true);
-      const newAbout = [
-        {
-          presentCompany,
-          presentTitle,
-          aboutMe,
-        },
-      ];
-      setAbout(newAbout);
-      setPresentCompany("");
-      setPresentTitle("");
-      setAboutMe("");
+      const about = {
+        presentCompany: presentCompany,
+        presentTitle: presentTitle,
+        introduction: introduction,
+      };
+      teachersRef.update({ about }).then(() => {
+        setDisplayAbout(true);
+        setPresentCompany("");
+        setPresentTitle("");
+        setIntroduction("");
+      });
     }
   };
+
+  useEffect(() => {
+    // 初始狀態
+    if (aboutData) {
+      setDisplayAbout(true);
+    }
+  }, [aboutData]);
 
   return (
     <StyleTeacherAbout>
@@ -182,39 +195,33 @@ const TeacherAbout = (props) => {
           <StyleAboutContainer>
             <StyleExperienceLabel>個人介紹｜Introduction</StyleExperienceLabel>
             <StyleAboutMeIntroduction
-              value={aboutMe}
-              onChange={(e) => setAboutMe(e.target.value)}
+              value={introduction}
+              onChange={(e) => setIntroduction(e.target.value)}
               type="textarea"
               maxLength="200"
-              placeholder="請輸入個人介紹"
+              placeholder="請輸入個人介紹(限200字)"
               required
             />
           </StyleAboutContainer>
           <StyleTagSubmitButton onClick={handleAboutDisplay}>
-            送出
+            {displayAbout ? "更新" : "送出"}簡介
           </StyleTagSubmitButton>
           {displayAbout ? (
             <StyleDisplay>
-              {about.map((about) => {
-                return (
-                  <StyleAboutDisplay>
-                    <StyleAboutJobData>
-                      <StyleAboutLabel>
-                        現職公司｜Present Company
-                      </StyleAboutLabel>
-                      <StyleAboutValue>{about.presentCompany}</StyleAboutValue>
-                    </StyleAboutJobData>
-                    <StyleAboutJobData>
-                      <StyleAboutLabel>現職稱謂｜Present Title</StyleAboutLabel>
-                      <StyleAboutValue>{about.presentTitle}</StyleAboutValue>
-                    </StyleAboutJobData>
-                    <StyleAboutData>
-                      <StyleAboutLabel>個人介紹｜Introduction</StyleAboutLabel>
-                      <StyleAboutMeData>{about.aboutMe}</StyleAboutMeData>
-                    </StyleAboutData>
-                  </StyleAboutDisplay>
-                );
-              })}
+              <StyleAboutDisplay>
+                <StyleAboutJobData>
+                  <StyleAboutLabel>現職公司｜Present Company</StyleAboutLabel>
+                  <StyleAboutValue>{aboutData.presentCompany}</StyleAboutValue>
+                </StyleAboutJobData>
+                <StyleAboutJobData>
+                  <StyleAboutLabel>現職稱謂｜Present Title</StyleAboutLabel>
+                  <StyleAboutValue>{aboutData.presentTitle}</StyleAboutValue>
+                </StyleAboutJobData>
+                <StyleAboutData>
+                  <StyleAboutLabel>個人介紹｜Introduction</StyleAboutLabel>
+                  <StyleAboutMeData>{aboutData.introduction}</StyleAboutMeData>
+                </StyleAboutData>
+              </StyleAboutDisplay>
             </StyleDisplay>
           ) : null}
         </StyleContainer>

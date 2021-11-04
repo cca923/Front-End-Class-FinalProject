@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getIdentity } from "../../../../Redux/Action";
 import styled from "styled-components";
@@ -6,6 +6,7 @@ import EasyEdit, { Types } from "react-easy-edit";
 import "../../../../css/edit.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import firebase from "../../../../utils/config/firebase-config";
 
 const StyleCustomDisplay = styled.div`
   display: inline-block;
@@ -16,25 +17,71 @@ const StyleCustomDisplay = styled.div`
 `;
 
 const EditArea = (props) => {
-  const identity = useSelector((state) => state.identity);
-  console.log(identity);
+  const identityData = useSelector((state) => state.identityData);
+  const resumeData = identityData.resume;
+  const user = firebase.auth().currentUser;
+  const db = firebase.firestore();
+  const studentsRef = db.collection("students").doc(user.email);
+
+  const [displayAbout, setDisplayAbout] = useState(false);
 
   const CustomDisplay = (props) => {
-    const val = props.value || "點擊以修改文字！";
-    return <StyleCustomDisplay ref={props.sendEdit}>{val}</StyleCustomDisplay>;
+    if (displayAbout) {
+      // 有資料呈現出來
+      return (
+        <StyleCustomDisplay ref={props.sendEdit}>
+          {resumeData.about}
+        </StyleCustomDisplay>
+      );
+    } else {
+      // 沒有資料讓使用者輸入！
+      const val = props.value || "點擊以編輯文字！";
+      return (
+        <StyleCustomDisplay ref={props.sendEdit}>{val}</StyleCustomDisplay>
+      );
+    }
   };
 
-  return (
+  useEffect(() => {
+    // 初始狀態
+    if (resumeData) {
+      // 有 resume 且有 about 才呈現 true
+      if (resumeData.about) {
+        setDisplayAbout(true);
+      }
+    }
+  }, [resumeData]);
+
+  return displayAbout ? (
     <EasyEdit
       type={Types.TEXTAREA}
-      value=""
+      value={resumeData.about} // initial state
       placeholder="請輸入文字"
       saveButtonLabel={<FontAwesomeIcon icon={faCheck} color="green" />}
       cancelButtonLabel={<FontAwesomeIcon icon={faTimes} color="red" />}
       displayComponent={<CustomDisplay sendEdit={props.sendEdit} />}
       onSave={(value) => {
-        console.log(props.sendEdit.current);
-      }}></EasyEdit>
+        const resume = {
+          about: value,
+        };
+        studentsRef.set({ resume }, { merge: true }); // 已有 about
+      }}
+    />
+  ) : (
+    <EasyEdit
+      type={Types.TEXTAREA}
+      value={""} // initial state
+      placeholder="請輸入文字"
+      saveButtonLabel={<FontAwesomeIcon icon={faCheck} color="green" />}
+      cancelButtonLabel={<FontAwesomeIcon icon={faTimes} color="red" />}
+      displayComponent={<CustomDisplay sendEdit={props.sendEdit} />}
+      onSave={(value) => {
+        const resume = {
+          about: value,
+        };
+        studentsRef.set({ resume }, { merge: true }); // 沒有 about
+      }}
+    />
   );
 };
 

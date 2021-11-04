@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Select from "react-select";
+import firebase from "../../../../utils/config/firebase-config";
 
 const StyleTeacherTag = styled.div`
   width: 100%;
@@ -16,7 +18,6 @@ const StyleTitle = styled.div`
 
 const StyleForm = styled.form`
   width: 100%;
-  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -101,7 +102,7 @@ const StyleTagIcon = styled.div`
   align-content: center;
   background-size: cover;
   background-position: center;
-  background-image: url("./images/tag.png");
+  background-image: url("/images/tag.png");
 `;
 
 const StyleValue = styled.div`
@@ -109,9 +110,15 @@ const StyleValue = styled.div`
 `;
 
 const TeacherTag = (props) => {
-  const [selectIndustry, setSelectIndustry] = useState(null);
-  const [selectTitle, setSelectTitle] = useState(null);
-  const [selectLanguage, setSelectLanguage] = useState(null);
+  const identityData = useSelector((state) => state.identityData);
+  const tag = identityData.tag;
+  const db = firebase.firestore();
+  const user = firebase.auth().currentUser;
+  const teachersRef = db.collection("teachers").doc(user.email);
+
+  const [selectIndustry, setSelectIndustry] = useState("");
+  const [selectTitle, setSelectTitle] = useState("");
+  const [selectLanguage, setSelectLanguage] = useState("");
   const [displayTag, setDisplayTag] = useState(false);
 
   const industryOptions = [
@@ -164,16 +171,26 @@ const TeacherTag = (props) => {
   };
 
   const handleDisplay = () => {
-    if (
-      selectIndustry !== null &&
-      selectTitle !== null &&
-      selectLanguage !== null
-    ) {
-      setDisplayTag(true);
+    if (selectIndustry !== "" && selectTitle !== "" && selectLanguage !== "") {
+      const tag = {
+        industry: selectIndustry.value,
+        title: selectTitle.value,
+        language: selectLanguage.value,
+      };
+      teachersRef.update({ tag }).then(() => {
+        setDisplayTag(true);
+      });
     } else {
       window.alert("請選擇分類標籤！");
     }
   };
+
+  useEffect(() => {
+    // 初始狀態
+    if (tag) {
+      setDisplayTag(true);
+    }
+  }, [tag]);
 
   return (
     <StyleTeacherTag>
@@ -182,15 +199,15 @@ const TeacherTag = (props) => {
         <StyleTagDisplayArea>
           <StyleTag>
             {/* <StyleTagIcon /> */}
-            <StyleValue>{selectIndustry.value}</StyleValue>
+            <StyleValue>{tag.industry}</StyleValue>
           </StyleTag>
           <StyleTag>
             {/* <StyleTagIcon /> */}
-            <StyleValue>{selectTitle.value}</StyleValue>
+            <StyleValue>{tag.title}</StyleValue>
           </StyleTag>
           <StyleTag>
             {/* <StyleTagIcon /> */}
-            <StyleValue>{selectLanguage.value}</StyleValue>
+            <StyleValue>{tag.language}</StyleValue>
           </StyleTag>
         </StyleTagDisplayArea>
       ) : null}
@@ -226,11 +243,9 @@ const TeacherTag = (props) => {
             />
           </StyleTagContainer>
         </StyleData>
-        {displayTag ? null : (
-          <StyleTagSubmitButton onClick={handleDisplay}>
-            送出標籤
-          </StyleTagSubmitButton>
-        )}
+        <StyleTagSubmitButton onClick={handleDisplay}>
+          {displayTag ? "更新" : "送出"}標籤
+        </StyleTagSubmitButton>
       </StyleForm>
     </StyleTeacherTag>
   );

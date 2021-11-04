@@ -1,13 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getIdentity } from "../../../Redux/Action";
-import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 
 const StyleIdentity = styled.div`
-  /* width: 100%;
-  height: fit-content;
-  display: flex; */
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -34,7 +30,7 @@ const StyleStudentSelect = styled.div`
   width: 70%;
   height: 30%;
   border-radius: 15px;
-  background-image: url(./images/home-student.png);
+  background-image: url(/images/home-student.png);
   background-repeat: no-repeat;
   background-size: cover;
   text-align: center;
@@ -59,7 +55,7 @@ const StyleTeacherSelect = styled.div`
   width: 70%;
   height: 30%;
   border-radius: 15px;
-  background-image: url(./images/home-teacher.png);
+  background-image: url(/images/home-teacher.png);
   background-repeat: no-repeat;
   background-size: cover;
   text-align: center;
@@ -79,7 +75,7 @@ const StyleTeacherSelect = styled.div`
   }
 `;
 
-const Identity = (props) => {
+const Identity = () => {
   const identity = useSelector((state) => state.identity);
   const dispatch = useDispatch();
 

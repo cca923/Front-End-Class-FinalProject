@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { changeSignPage } from "../../../Redux/Action";
+import {
+  changeSignPage,
+  checkSignStatus,
+  getStudentData,
+  getTeacherData,
+} from "../../../Redux/Action";
 import styled from "styled-components";
 import firebase from "../../../utils/config/firebase-config";
-import Identity from "./Identity";
 import {
   facebookProvider,
   googleProvider,
@@ -184,7 +188,7 @@ const StyleErrorMessage = styled.div`
   }
 `;
 
-const Signup = () => {
+const Signup = (props) => {
   const identity = useSelector((state) => state.identity);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -196,83 +200,48 @@ const Signup = () => {
   console.log(identity);
 
   const db = firebase.firestore();
-  const teachersRef = db.collection("teachers");
-  const studentsRef = db.collection("students");
-  // const queryTeacher = teachersRef.where("state", "==", "CA");
-  // const queryStudent = studentsRef.where("state", "==", "CA");
+  const studentsCollection = db.collection("students");
+  const teachersCollection = db.collection("teachers");
 
-  //TODO:加入查看是否 email 已存在的邏輯！
-  const handleThirdPartySignup = async (provider) => {
-    firebase
-      .auth()
-      .signInWithPopup(provider)
-      .then((res) => {
-        console.log(res.user);
-        if (identity === "student") {
-          const student = studentsRef.doc(res.user.email);
-          const data = {
-            name: res.user.displayName,
-            email: res.user.email,
-          };
-          student.set(data);
-          history.push("/profile");
-          dispatch(changeSignPage(false));
-        } else if (identity === "teacher") {
-          const teacher = teachersRef.doc(res.user.email);
-          const data = {
-            name: res.user.displayName,
-            email: res.user.email,
-          };
-          teacher.set(data);
-          history.push("/profile");
-          dispatch(changeSignPage(false));
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-
-        // switch (error.code) {
-        //   case "auth/email-already-in-use":
-        //     setErrorMessage("信箱已存在");
-        //     break;
-        //   case "auth/invalid-email":
-        //     setErrorMessage("");
-        //     setErrorMessage("信箱格式不正確");
-        //     break;
-        //   case "auth/weak-password":
-        //     setErrorMessage("");
-        //     setErrorMessage("密碼強度不足");
-        //     break;
-        //   default:
-        // }
-      });
-  };
-
-  //TODO:加入查看是否 email 已存在的邏輯！
   const handleNativeSignup = async () => {
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(() => {
-        // 串 firestore
         if (identity === "student") {
-          const student = db.collection("students").doc(email);
+          const student = studentsCollection.doc(email);
           const data = {
             name,
             email,
           };
-          student.set(data);
-          history.push("/profile");
-          dispatch(changeSignPage(false));
+          student.set(data).then(() => {
+            dispatch(changeSignPage(false));
+            history.push("/profile/myresume");
+            dispatch(checkSignStatus(true));
+          });
+
+          // 監聽 firestore 來更新 Redux
+          student.onSnapshot((doc) => {
+            dispatch(getStudentData(doc.data()));
+            console.log("新的學生Data", doc.data());
+          });
         } else if (identity === "teacher") {
           const teacher = db.collection("teachers").doc(email);
           const data = {
             name,
             email,
           };
-          teacher.set(data);
-          history.push("/profile");
-          dispatch(changeSignPage(false));
+          teacher.set(data).then(() => {
+            dispatch(changeSignPage(false));
+            history.push("/profile/myprofile");
+            dispatch(checkSignStatus(true));
+          });
+
+          // 監聽 firestore 來更新 Redux
+          teacher.onSnapshot((doc) => {
+            dispatch(getTeacherData(doc.data()));
+            console.log("新的老師Data", doc.data());
+          });
         }
       })
       .catch((error) => {
@@ -318,7 +287,9 @@ const Signup = () => {
           placeholder="密碼"
           required
         />
+        {<StyleErrorMessage>{props.thirdPartyErrorMessage}</StyleErrorMessage>}
         {<StyleErrorMessage>{errorMessage}</StyleErrorMessage>}
+
         <StyleButton onClick={handleNativeSignup} type="button">
           註冊
         </StyleButton>
@@ -326,7 +297,7 @@ const Signup = () => {
         <StyleSeperator>或</StyleSeperator>
 
         <StyleFacebookLogin
-          onClick={() => handleThirdPartySignup(facebookProvider)}>
+          onClick={() => props.handleThirdPartySign(facebookProvider)}>
           <StyleIconContainer>
             <StyleFacebookIcon src={facebook} alt="facebook" />
           </StyleIconContainer>
@@ -334,7 +305,7 @@ const Signup = () => {
         </StyleFacebookLogin>
 
         <StyleGoogleLogin
-          onClick={() => handleThirdPartySignup(googleProvider)}>
+          onClick={() => props.handleThirdPartySign(googleProvider)}>
           <StyleIconContainer>
             <StyleFacebookIcon src={google} alt="google" />
           </StyleIconContainer>

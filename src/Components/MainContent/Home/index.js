@@ -17,7 +17,7 @@ const StyleImageTeacherArea = styled.div`
   background-size: cover;
   display: inline-block;
   vertical-align: bottom;
-  background-image: url("./images/home-teacher.png");
+  background-image: url("/images/home-teacher.png");
 `;
 
 const StyleImageStudentArea = styled.div`
@@ -28,7 +28,7 @@ const StyleImageStudentArea = styled.div`
   background-size: cover;
   display: inline-block;
   vertical-align: bottom;
-  background-image: url("./images/home-student.png");
+  background-image: url("/images/home-student.png");
 `;
 
 const StyleVideoArea = styled.video`
@@ -77,7 +77,7 @@ const StyleScrollIcon = styled.div`
   transform: translateX(-50%);
 
   :after {
-    background-image: url("./images/down.png");
+    background-image: url("/images/down.png");
     content: "";
     background-repeat: no-repeat;
     background-size: cover;

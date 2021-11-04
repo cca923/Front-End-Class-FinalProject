@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
+import firebase from "../../../../../utils/config/firebase-config";
 
 const StyleTeacherTalent = styled.div`
   width: 100%;
@@ -175,6 +177,12 @@ const StyleTagSubmitButton = styled.div`
 `;
 
 const TeacherTalent = (props) => {
+  const identityData = useSelector((state) => state.identityData);
+  const talentsData = identityData.talents;
+  const db = firebase.firestore();
+  const user = firebase.auth().currentUser;
+  const teachersRef = db.collection("teachers").doc(user.email);
+
   const [talent1Title, setTalent1Title] = useState("");
   const [talent1Description, setTalent1Description] = useState("");
   const [talent2Title, setTalent2Title] = useState("");
@@ -182,27 +190,34 @@ const TeacherTalent = (props) => {
   const [talent3Title, setTalent3Title] = useState("");
   const [talent3Description, setTalent3Description] = useState("");
   const [displayTalent, setDisplayTalent] = useState(false);
-  const [talents, setTalents] = useState(null);
 
   const handleTalentDisplay = () => {
     if (talent1Title === "" && talent1Description === "") {
       window.alert("請輸入技能！");
     } else {
-      setDisplayTalent(true);
-      const newTalent = [
+      const talents = [
         { title: talent1Title, description: talent1Description },
         { title: talent2Title, description: talent2Description },
         { title: talent3Title, description: talent3Description },
       ];
-      setTalents(newTalent);
-      setTalent1Title("");
-      setTalent1Description("");
-      setTalent2Title("");
-      setTalent2Description("");
-      setTalent3Title("");
-      setTalent3Description("");
+      teachersRef.update({ talents }).then(() => {
+        setDisplayTalent(true);
+        setTalent1Title("");
+        setTalent1Description("");
+        setTalent2Title("");
+        setTalent2Description("");
+        setTalent3Title("");
+        setTalent3Description("");
+      });
     }
   };
+
+  useEffect(() => {
+    // 初始狀態
+    if (talentsData) {
+      setDisplayTalent(true);
+    }
+  }, [talentsData]);
 
   return (
     <StyleTeacherTalent>
@@ -281,11 +296,11 @@ const TeacherTalent = (props) => {
             </StyleTalentContainer>
           </StyleTalentArea>
           <StyleTagSubmitButton onClick={handleTalentDisplay}>
-            {talents === null ? "送出" : "更改"}
+            {displayTalent ? "更新" : "送出"}技能
           </StyleTagSubmitButton>
           {displayTalent ? (
             <StyleTalentDisplayContainer>
-              {talents.map((talent, index) => {
+              {talentsData.map((talent, index) => {
                 return (
                   <StyleTalentDisplay key={nanoid()}>
                     <StyleLabel>

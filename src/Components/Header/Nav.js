@@ -31,7 +31,9 @@ const StyleSignLink = styled.a`
 
 const Nav = (props) => {
   const identity = useSelector((state) => state.identity);
+  const signStatus = useSelector((state) => state.signStatus);
   const dispatch = useDispatch();
+
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -40,7 +42,9 @@ const Nav = (props) => {
     });
   }, []);
 
-  return user === null ? (
+  // 用 signStatus 不用 onAuthStateChanged 因為要過濾身份！用是否導到會員頁面判斷！
+  // BUG 但是 Nav 會因為沒有[導到會員頁面]這件事，而呈現沒有登入過的狀態ＱＱ
+  return signStatus === false ? (
     <StyleNav>
       <StyleLink
         headerColor={props.headerColor}
@@ -84,13 +88,24 @@ const Nav = (props) => {
         activeStyle={{ backgroundColor: "#bbadff" }}>
         Live
       </StyleLink>
-      <StyleLink
-        headerColor={props.headerColor}
-        to="/profile"
-        activeClassName="selected"
-        activeStyle={{ backgroundColor: "#bbadff" }}>
-        Profile
-      </StyleLink>
+
+      {identity === "student" ? (
+        <StyleLink
+          headerColor={props.headerColor}
+          to="/profile/myresume"
+          activeClassName="selected"
+          activeStyle={{ backgroundColor: "#bbadff" }}>
+          Profile
+        </StyleLink>
+      ) : (
+        <StyleLink
+          headerColor={props.headerColor}
+          to="/profile/myprofile"
+          activeClassName="selected"
+          activeStyle={{ backgroundColor: "#bbadff" }}>
+          Profile
+        </StyleLink>
+      )}
     </StyleNav>
   );
 };

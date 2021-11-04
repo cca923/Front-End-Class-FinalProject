@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Select from "react-select";
 
 const StyleSidebar = styled.div`
   width: 300px;
-  height: 100vh;
-  position: sticky;
   display: inline-block;
   background-color: #e9e9e9;
 
@@ -14,6 +12,11 @@ const StyleSidebar = styled.div`
     /* height: 300px; */
     height: fit-content;
   }
+`;
+
+const StyleSticky = styled.div`
+  position: sticky;
+  top: 100px;
 `;
 
 const StyleForm = styled.form`
@@ -108,14 +111,25 @@ const StyleTag = styled.div`
 
 const StyleValue = styled.div`
   line-height: 20px;
+  margin-right: auto;
+`;
+
+const StyleRemove = styled.div`
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  align-content: center;
+  background-size: cover;
+  background-position: center;
+  background-image: url("/images/remove.png");
+  cursor: pointer;
+
+  &:hover {
+    background-image: url("/images/remove-hover.png");
+  }
 `;
 
 const Sidebar = (props) => {
-  const [selectIndustry, setSelectIndustry] = useState(null);
-  const [selectTitle, setSelectTitle] = useState(null);
-  const [selectLanguage, setSelectLanguage] = useState(null);
-  const [displayTag, setDisplayTag] = useState(false);
-
   const industryOptions = [
     { value: "農、林、漁、牧業", label: "農、林、漁、牧業" },
     { value: "礦業及土石採取業", label: "礦業及土石採取業" },
@@ -156,77 +170,102 @@ const Sidebar = (props) => {
   ];
 
   const handleIndustryChange = (tag) => {
-    setSelectIndustry(tag);
-    setDisplayTag(true);
+    props.setSelectIndustry(tag);
+    props.setDisplayTag(true);
   };
   const handleTitleChange = (tag) => {
-    setSelectTitle(tag);
-    setDisplayTag(true);
+    props.setSelectTitle(tag);
+    props.setDisplayTag(true);
   };
   const handleLanguageChange = (tag) => {
-    setSelectLanguage(tag);
-    setDisplayTag(true);
+    props.setSelectLanguage(tag);
+    props.setDisplayTag(true);
   };
+
+  if (
+    props.selectIndustry === "" &&
+    props.selectTitle === "" &&
+    props.selectLanguage === ""
+  ) {
+    props.setDisplayTag(false);
+  }
 
   return (
     <StyleSidebar>
-      {displayTag ? (
-        <StyleTagDisplayArea>
-          {selectIndustry !== null ? (
-            <StyleTag>
-              <StyleValue>{selectIndustry.value}</StyleValue>
-            </StyleTag>
-          ) : null}
-          {selectTitle !== null ? (
-            <StyleTag>
-              <StyleValue>{selectTitle.value}</StyleValue>
-            </StyleTag>
-          ) : null}
-          {selectLanguage !== null ? (
-            <StyleTag>
-              <StyleValue>{selectLanguage.value}</StyleValue>
-            </StyleTag>
-          ) : null}
-        </StyleTagDisplayArea>
-      ) : null}
-      <StyleForm>
-        <StyleData>
-          <StyleTagContainer>
-            <StyleLabel>產業｜Industry</StyleLabel>
-            <StyleSelect
-              value={selectIndustry}
-              onChange={handleIndustryChange}
-              options={industryOptions}
-              placeholder={"請選擇產業別"}
-            />
-          </StyleTagContainer>
+      <StyleSticky>
+        {props.displayTag ? (
+          <StyleTagDisplayArea>
+            {props.selectIndustry !== "" ? (
+              <StyleTag>
+                <StyleValue>{props.selectIndustry.value}</StyleValue>
+                <StyleRemove
+                  onClick={() => {
+                    props.setSelectIndustry("");
+                  }}
+                />
+              </StyleTag>
+            ) : null}
+            {props.selectTitle !== "" ? (
+              <StyleTag>
+                <StyleValue>{props.selectTitle.value}</StyleValue>
+                <StyleRemove
+                  onClick={() => {
+                    props.setSelectTitle("");
+                  }}
+                />
+              </StyleTag>
+            ) : null}
+            {props.selectLanguage !== "" ? (
+              <StyleTag>
+                <StyleValue>{props.selectLanguage.value}</StyleValue>
+                <StyleRemove
+                  onClick={() => {
+                    props.setSelectLanguage("");
+                  }}
+                />
+              </StyleTag>
+            ) : null}
+          </StyleTagDisplayArea>
+        ) : null}
+        <StyleForm>
+          <StyleData>
+            <StyleTagContainer>
+              <StyleLabel>產業｜Industry</StyleLabel>
+              <StyleSelect
+                value={props.selectIndustry}
+                onChange={handleIndustryChange}
+                options={industryOptions}
+                placeholder={"請選擇產業別"}
+              />
+            </StyleTagContainer>
 
-          <StyleTagContainer>
-            <StyleLabel>職業稱謂｜Title</StyleLabel>
-            <StyleSelect
-              value={selectTitle}
-              onChange={handleTitleChange}
-              options={titleOptions}
-              placeholder={"請選擇職業稱謂"}
-            />
-          </StyleTagContainer>
+            <StyleTagContainer>
+              <StyleLabel>職業稱謂｜Title</StyleLabel>
+              <StyleSelect
+                value={props.selectTitle}
+                onChange={handleTitleChange}
+                options={titleOptions}
+                placeholder={"請選擇職業稱謂"}
+              />
+            </StyleTagContainer>
 
-          <StyleTagContainer>
-            <StyleLabel>履歷批改語言｜Language</StyleLabel>
-            <StyleSelect
-              value={selectLanguage}
-              onChange={handleLanguageChange}
-              options={languageOptions}
-              placeholder={"請選擇履歷批改語言"}
-            />
-          </StyleTagContainer>
-        </StyleData>
-        {/* {displayTag ? null : (
+            <StyleTagContainer>
+              <StyleLabel>履歷批改語言｜Language</StyleLabel>
+              <StyleSelect
+                value={props.selectLanguage}
+                onChange={handleLanguageChange}
+                options={languageOptions}
+                placeholder={"請選擇履歷批改語言"}
+              />
+            </StyleTagContainer>
+          </StyleData>
+          {/* {displayTag ? null : (
           <StyleTagSubmitButton onClick={handleDisplay}>
             送出標籤
           </StyleTagSubmitButton>
         )} */}
-      </StyleForm>
+        </StyleForm>
+      </StyleSticky>
     </StyleSidebar>
   );
 };

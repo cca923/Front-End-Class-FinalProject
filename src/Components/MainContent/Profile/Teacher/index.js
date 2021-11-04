@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { Switch, Route } from "react-router-dom";
 import TeacherMyClass from "./TeacherMyClass";
 import TeacherMyProfile from "./TeacherMyProfile";
 
@@ -13,8 +14,14 @@ const StyleTeacherMainArea = styled.div`
 const TeacherMainArea = (props) => {
   return (
     <StyleTeacherMainArea>
-      <TeacherMyClass />
-      <TeacherMyProfile />
+      <Switch>
+        <Route path="/profile/myclass" exact>
+          <TeacherMyClass />
+        </Route>
+        <Route path="/profile/myprofile" exact>
+          <TeacherMyProfile />
+        </Route>
+      </Switch>
     </StyleTeacherMainArea>
   );
 };

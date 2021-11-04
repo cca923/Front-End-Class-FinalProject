@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import DatePicker from "react-datepicker";
 import { setHours, setMinutes, compareAsc, format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../css/calendar.css";
+import firebase from "../../../../utils/config/firebase-config";
 
 const StyleCalender = styled.div`
   max-width: 100%;
@@ -89,157 +90,173 @@ const StyleDeleteButton = styled.div`
   align-content: center;
   background-size: cover;
   background-position: center;
-  background-image: url("./images/trash.png");
+  background-image: url("/images/trash.png");
 
   &:hover {
-    background-image: url("./images/trash-hover.gif");
+    background-image: url("/images/trash-hover.gif");
   }
 `;
 
 const TeacherCalendar = (props) => {
-  const identity = useSelector((state) => state.identity);
-  const dispatch = useDispatch();
-  console.log(identity);
+  const identityData = useSelector((state) => state.identityData);
+  const timeData = identityData.time;
+  const timeDataConvert = [];
+  if (timeData) {
+    timeData.map((data) => {
+      return timeDataConvert.push(new Date(data * 1000));
+    });
+  }
+  console.log("全部的時間", timeDataConvert);
+
+  const db = firebase.firestore();
+  const user = firebase.auth().currentUser;
+  const teachersRef = db.collection("teachers").doc(user.email);
+  const [displaySchedule, setDisplaySchedule] = useState(false);
 
   const [startDate, setStartDate] = useState(
     setHours(setMinutes(new Date(), 0), 9)
   );
-  const [schedule, setSchedule] = useState([]);
+  const [excludeTimes, setExcludeTimes] = useState([]);
+
   const timeList = document.querySelectorAll(
     ".react-datepicker__time-list-item"
   );
+  const getAllTimes = (date) => {
+    // for (let i = 0; i < timeDataConvert.length; i++) {
+    //   if (timeDataConvert[i].getDate() === date.getDate()) {
+    //     if (
+    //       format(timeDataConvert[i], "HH:mm") === format(date, "HH:mm")
+    //       // .map((existDate) => format(existDate, "HH:mm"))
+    //       // .includes(format(date, "HH:mm"))
+    //     ) {
+    //       break;
+    //     } else {
+    //       console.log(date);
+    //     }
+    //   }
+    // }
 
-  // 初始狀態
-  const getAllTimes = (daytime) => {
-    schedule.forEach((existDate) => {
-      if (existDate.getDate() === daytime.getDate()) {
-        timeList.forEach((time) => {
-          if (time.textContent === format(existDate, "HH:mm")) {
-            // 同天
-            time.classList.add("react-datepicker__time-list-item--disabled");
-          }
-        });
-      } else {
-        timeList.forEach((time) => {
-          if (time.textContent === format(existDate, "HH:mm")) {
-            // 不同天但時間相同
-            // time.classList.remove("react-datepicker__time-list-item--disabled");
-          }
-        });
+    // if (
+    //   timeDataConvert
+    //     .map((existDate) => existDate.getDate())
+    //     .includes(date.getDate()) &&
+    //   !timeDataConvert
+    //     .map((existDate) => format(existDate, "HH:mm"))
+    //     .includes(format(date, "HH:mm"))
+    // ) {
+    //   console.log(date);
+    // }
+
+    timeDataConvert.forEach((existDate) => {
+      if (existDate.getDate() === date.getDate()) {
+        if (
+          !timeDataConvert
+            .map((existDate) => format(existDate, "HH:mm"))
+            .includes(format(date, "HH:mm"))
+        ) {
+          // console.log(date);
+        }
       }
     });
   };
+
+  // const getFirstSelectableTime = () => {
+  //   timeList.forEach((time) => {
+  //     time.classList.remove("react-datepicker__time-list-item--selected");
+  //   });
+
+  //   const selectableTime = Array.from(timeList).filter(
+  //     (time) =>
+  //       !time.classList.contains("react-datepicker__time-list-item--disabled")
+  //   );
+  //   selectableTime[0].classList.add(
+  //     "react-datepicker__time-list-item--selected"
+  //   );
+  // };
 
   const addDateToSchedule = (e) => {
     if (startDate !== null) {
-      const existDate = schedule.filter((existDate) => {
-        if (existDate !== startDate) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-      setSchedule([...existDate, startDate]);
-
-      const target = Array.from(timeList).filter((time) => {
-        if (time.textContent === format(startDate, "HH:mm")) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-      target[0].classList.add("react-datepicker__time-list-item--disabled");
-      target[0].classList.remove("react-datepicker__time-list-item--selected");
-      window.alert("已成功加入可預約日曆中！");
-
-      const selectableTime = Array.from(timeList).filter((time) => {
-        if (
-          time.classList.contains("react-datepicker__time-list-item--disabled")
-        ) {
-          return false;
-        } else {
-          return true;
-        }
-      });
-      selectableTime[0].classList.add(
-        "react-datepicker__time-list-item--selected"
-      );
+      teachersRef
+        .update({
+          time: firebase.firestore.FieldValue.arrayUnion(
+            startDate.getTime() / 1000
+          ),
+        })
+        .then(() => {
+          // const timeList = document.querySelectorAll(
+          //   ".react-datepicker__time-list-item"
+          // );
+          // const target = Array.from(timeList).filter(
+          //   (time) => time.textContent === format(startDate, "HH:mm")
+          // );
+          // target[0].classList.add("react-datepicker__time-list-item--disabled");
+          // target[0].classList.remove(
+          //   "react-datepicker__time-list-item--selected"
+          // );
+          // const selectableTime = Array.from(timeList).filter(
+          //   (time) =>
+          //     !time.classList.contains(
+          //       "react-datepicker__time-list-item--disabled"
+          //     )
+          // );
+          // selectableTime[0].classList.add(
+          //   "react-datepicker__time-list-item--selected"
+          // );
+        })
+        .then(() => {
+          window.alert("已成功加入可預約日曆中！");
+        });
     }
   };
 
+  // 依照 firebase 日期篩選選擇到的日期中要排除的時間
   const getExcludedTimes = (daytime) => {
-    timeList.forEach((time) => {
-      // 把 FirstSelectableTime 去掉
-      time.classList.remove("react-datepicker__time-list-item--selected");
+    const arrExcludeTimes = [];
 
-      schedule.forEach((existDate) => {
-        if (existDate.getDate() === daytime.getDate()) {
-          timeList.forEach((time) => {
-            if (time.textContent === format(existDate, "HH:mm")) {
-              // 同天
-              time.classList.add("react-datepicker__time-list-item--disabled");
-            }
-          });
-        } else {
-          timeList.forEach((time) => {
-            if (time.textContent === format(existDate, "HH:mm")) {
-              // 不同天但時間相同
-              time.classList.remove(
-                "react-datepicker__time-list-item--disabled"
-              );
-            }
-          });
-        }
-      });
-    });
-  };
-
-  const getFirstSelectableTime = () => {
-    timeList.forEach((time) => {
-      time.classList.remove("react-datepicker__time-list-item--selected");
-    });
-
-    const selectableTime = Array.from(timeList).filter((time) => {
-      if (
-        time.classList.contains("react-datepicker__time-list-item--disabled")
-      ) {
-        return false;
-      } else {
-        return true;
+    timeDataConvert.forEach((existDate) => {
+      if (existDate.getDate() === daytime.getDate()) {
+        arrExcludeTimes.push(existDate);
+        console.log("依照現有日期篩選要排除的日期", arrExcludeTimes);
       }
-    });
-    selectableTime[0].classList.add(
-      "react-datepicker__time-list-item--selected"
-    );
-  };
 
-  const returnSelectable = (date) => {
-    timeList.forEach((time) => {
-      if (time.textContent === format(date, "HH:mm")) {
-        time.classList.remove("react-datepicker__time-list-item--disabled");
-      }
+      setExcludeTimes(arrExcludeTimes);
     });
-
-    getFirstSelectableTime();
   };
 
   const deleteDateFromSchedule = (e) => {
     const confirmDelete = window.confirm("確定要從日曆中移除嗎？");
     if (confirmDelete) {
       const deleteTargetDate = e.target.previousSibling.id;
-      const existDate = schedule.filter((existDate) => {
-        if (String(existDate) !== deleteTargetDate) {
-          return true;
-        } else {
-          return false;
-        }
+      const existDate = timeDataConvert.filter((existDate) => {
+        return String(existDate) === deleteTargetDate;
       });
-      // 從 state 中刪除
-      setSchedule([...existDate]);
-      // 再重新 fetch 一次
-      returnSelectable(new Date(deleteTargetDate));
+
+      // 從 firestore 中刪除，會自動恢復成可以被選取的狀態
+      teachersRef.update({
+        time: firebase.firestore.FieldValue.arrayRemove(
+          existDate[0].getTime() / 1000
+        ),
+      });
     }
   };
+
+  useEffect(() => {
+    // 初始狀態
+    if (timeData) {
+      setDisplaySchedule(true);
+
+      const arrExcludeTimes = [];
+      // const selectableTime = [];
+
+      timeDataConvert.forEach((existDate) => {
+        if (existDate.getDate() === startDate.getDate()) {
+          arrExcludeTimes.push(existDate);
+        }
+      });
+
+      setExcludeTimes(arrExcludeTimes);
+    }
+  }, [timeData]);
 
   return (
     <StyleCalender>
@@ -248,9 +265,8 @@ const TeacherCalendar = (props) => {
           selected={startDate}
           onChange={(date) => {
             setStartDate(date);
-            getExcludedTimes(date);
           }}
-          onSelect={(date) => getFirstSelectableTime(date)}
+          onSelect={(date) => getExcludedTimes(date)}
           monthsShown
           inline
           showTimeSelect={true}
@@ -261,7 +277,8 @@ const TeacherCalendar = (props) => {
           timeCaption="請選擇時段"
           dateFormat="yyyy/MM/dd"
           timeFormat="HH:mm"
-          timeClassName={(date) => getAllTimes(date)} // initial state
+          excludeTimes={excludeTimes}
+          timeClassName={(date) => getAllTimes(date)}
         />
         <StyleDatePickerButton onClick={addDateToSchedule}>
           確認
@@ -269,8 +286,8 @@ const TeacherCalendar = (props) => {
       </StyleDatePickerContainer>
       <StyleAvailableTimeContainer>
         <StyleAvailableTimeTitle>我的可預約時段</StyleAvailableTimeTitle>
-        {schedule !== null
-          ? schedule.sort(compareAsc).map((date) => {
+        {displaySchedule
+          ? timeDataConvert.sort(compareAsc).map((date) => {
               return (
                 <StyleEachAvailableTime key={date}>
                   <StyleAvailableTime id={date}>
