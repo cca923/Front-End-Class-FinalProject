@@ -174,7 +174,6 @@ const TeacherExperience = (props) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [displayExperience, setDisplayExperience] = useState(false);
-  // teachersRef.update({ experience });
 
   const handleExperienceDisplay = () => {
     const newExperience = {

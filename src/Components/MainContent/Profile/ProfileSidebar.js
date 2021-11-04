@@ -13,7 +13,7 @@ import firebase from "../../../utils/config/firebase-config";
 
 const StyleProfileSidebar = styled.div`
   width: 250px;
-  height: calc(100vh - 45%);
+  height: fit-content;
   background-color: #fff;
   position: absolute;
   top: 45%;
@@ -40,7 +40,7 @@ const StyleImage = styled.img`
   @media only screen and (max-width: 1300px) {
     width: 100px;
     height: 100px;
-    margin: auto 20px auto 10px;
+    margin: auto 10px auto 10px;
   }
 `;
 
@@ -67,6 +67,7 @@ const StyleEachDetail = styled.div`
 `;
 
 const StyleLabel = styled.div`
+  font-size: 1.2rem;
   width: 80px;
   text-align: center;
   /* margin: 0 auto 10px auto;
@@ -85,6 +86,7 @@ const StyleLabel = styled.div`
 `;
 
 const StyleData = styled.span`
+  font-size: 1.2rem;
   text-align: center;
   font-weight: 600;
   padding: 10px;
@@ -147,6 +149,7 @@ const StyleLogoutButton = styled.div`
 const ProfileSidebar = (props) => {
   const identity = useSelector((state) => state.identity);
   const identityData = useSelector((state) => state.identityData);
+  console.log(identityData);
   const dispatch = useDispatch();
   const history = useHistory();
 
