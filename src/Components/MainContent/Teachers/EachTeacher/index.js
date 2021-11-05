@@ -10,7 +10,7 @@ const StyleEachTeacher = styled.div`
   width: 100%;
 `;
 
-const StyleImageTeacherArea = styled.div`
+const StyleHeaderArea = styled.div`
   /* opacity: 0.8; */
   width: 100%;
   height: 100px;
@@ -36,12 +36,9 @@ const StyleEachTeacherArea = styled.div`
 `;
 
 const EachTeacher = (props) => {
-  const identityData = useSelector((state) => state.identityData);
-  const user = firebase.auth().currentUser;
-
   return (
     <StyleEachTeacher>
-      <StyleImageTeacherArea />
+      <StyleHeaderArea />
       <StyleEachTeacherArea>
         <Introduction />
       </StyleEachTeacherArea>

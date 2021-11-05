@@ -1,4 +1,4 @@
-const identityReducer = (state = null, action) => {
+const identityReducer = (state = "", action) => {
   switch (action.type) {
     case "IDENTITY":
       return (state = action.payload);

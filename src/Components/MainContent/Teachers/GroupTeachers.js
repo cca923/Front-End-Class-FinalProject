@@ -145,7 +145,7 @@ const GroupTeachers = (props) => {
   const db = firebase.firestore();
   const teachersCollection = db.collection("teachers");
   const [teachersData, setTeachersData] = useState([]);
-  console.log(teachersData);
+  console.log("所有老師", teachersData);
   const teachersFilterData = [];
 
   useEffect(() => {
@@ -155,7 +155,6 @@ const GroupTeachers = (props) => {
         const arrTeachers = [];
 
         collectionSnapShot.forEach((doc) => {
-          console.log(doc.id, " => ", doc.data());
           arrTeachers.push(doc.data());
         });
 
@@ -176,12 +175,17 @@ const GroupTeachers = (props) => {
   } else {
     // 如果有 tag 就篩選出符合條件的資料
     const matchData = teachersData.filter((teacher) => {
-      return (
-        props.selectIndustry.value === teacher.tag.industry ||
-        props.selectTitle.value === teacher.tag.title ||
-        props.selectLanguage.value === teacher.tag.language
-      );
+      if (props.selectIndustry.value === teacher.tag.industry) {
+        return true;
+      } else if (props.selectTitle.value === teacher.tag.title) {
+        return true;
+      } else if (props.selectLanguage.value === teacher.tag.language) {
+        return true;
+      } else {
+        return false;
+      }
     });
+
     teachersFilterData.push(...matchData);
   }
 

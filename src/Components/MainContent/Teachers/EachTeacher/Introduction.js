@@ -24,14 +24,14 @@ const StyleTeacher = styled.div`
 `;
 
 const StyleImage = styled.img`
-  width: 150px;
+  min-width: 150px;
   height: 150px;
   background-color: grey;
   border-radius: 50%;
   margin: auto 20px auto 10px;
 
   @media only screen and (max-width: 1300px) {
-    width: 100px;
+    min-width: 100px;
     height: 100px;
     margin: auto 20px auto 10px;
   }
@@ -104,10 +104,6 @@ const StyleContainer = styled.div`
 
 const StyleDisplay = styled.div`
   width: 100%;
-`;
-
-const StyleAboutDisplay = styled.div`
-  padding: 20px 0;
 `;
 
 const StyleAboutLabel = styled.div`

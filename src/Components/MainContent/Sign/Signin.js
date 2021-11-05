@@ -187,6 +187,7 @@ const StyleErrorMessage = styled.div`
 
 const Signin = (props) => {
   const identity = useSelector((state) => state.identity);
+  console.log(identity);
   const dispatch = useDispatch();
   const history = useHistory();
   const [email, setEmail] = useState("");
@@ -203,6 +204,8 @@ const Signin = (props) => {
       .signInWithEmailAndPassword(email, password)
       .then((res) => {
         if (identity === "student") {
+          console.log("學生跳轉！");
+
           // 確認是否已是老師，提醒使用者選擇老師帳號登入
           teachersCollection
             .doc(email)
@@ -226,6 +229,8 @@ const Signin = (props) => {
               console.log("帳號讀取有問題", error);
             });
         } else if (identity === "teacher") {
+          console.log("老師跳轉！");
+
           studentsCollection
             .doc(email)
             .get()

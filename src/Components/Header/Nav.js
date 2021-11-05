@@ -8,6 +8,7 @@ import firebase from "../../utils/config/firebase-config";
 const StyleNav = styled.nav`
   margin-left: auto;
   line-height: 100px;
+  position: relative;
 `;
 
 const StyleLink = styled(NavLink)`
@@ -27,6 +28,30 @@ const StyleSignLink = styled.a`
   width: 150px;
   padding: 0px 20px;
   cursor: pointer;
+`;
+
+const StyleNotification = styled.div`
+  position: absolute;
+  left: -50px;
+  top: 35px;
+  width: 30px;
+  height: 30px;
+  line-height: 100px;
+  display: inline-block;
+  align-content: center;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  background-image: ${(props) =>
+    props.headerColor
+      ? "url('/images/bell-scroll.png')"
+      : "url('/images/bell-static.png')"};
+
+  &:hover {
+    background-image: url("/images/bell.gif");
+    border-radius: 50%;
+    padding: 5px;
+  }
 `;
 
 const Nav = (props) => {
@@ -64,6 +89,7 @@ const Nav = (props) => {
     <StyleNav>
       {identity === "student" ? (
         <>
+          <StyleNotification headerColor={props.headerColor} />
           <StyleLink
             headerColor={props.headerColor}
             exact
