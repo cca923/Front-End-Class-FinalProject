@@ -1,23 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { getLiveData } from "../../../../../../Redux/Action";
 import styled from "styled-components";
 import firebase from "../../../../../../utils/config/firebase-config";
 import { nanoid } from "nanoid";
 import Resume from "./Resume";
-
-const StyleEachReservation = styled.div`
-  background-color: #aca5b6;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px 30px;
-  margin: 0 auto;
-  padding: 50px 30px;
-
-  @media only screen and (max-width: 1020px) {
-    grid-template-columns: repeat(1, 1fr);
-    gap: 20px 20px;
-  }
-`;
 
 const StyleEachStudent = styled.div`
   width: 100%;
@@ -34,7 +22,7 @@ const StyleEachStudent = styled.div`
     flex-direction: row;
   }
 
-  @media only screen and (max-width: 650px) {
+  @media only screen and (max-width: 720px) {
     height: 270px;
     flex-direction: column;
   }
@@ -85,10 +73,33 @@ const StyleData = styled.span``;
 
 const StyleResume = styled.div`
   position: absolute;
+  right: 130px;
+  bottom: 0px;
+  padding: 10px;
+  width: 100px;
+  font-size: 1rem;
+  color: white;
+  background-color: #757bc8;
+  border: 2px solid #bbadff;
+  border-radius: 18px;
+  margin: 0 auto 20px auto;
+  cursor: pointer;
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #bbadff;
+    border: 2px solid #757bc8;
+    color: black;
+  }
+`;
+
+const StyleLive = styled.div`
+  position: absolute;
   right: 20px;
   bottom: 0px;
   padding: 10px;
-  width: 120px;
+  width: 100px;
   font-size: 1rem;
   color: white;
   background-color: #757bc8;
@@ -107,6 +118,8 @@ const StyleResume = styled.div`
 `;
 
 const EachReservation = (props) => {
+  const dispatch = useDispatch();
+  const history = useHistory();
   const db = firebase.firestore();
   const studentsCollection = db.collection("students");
   const [studentData, setStudentData] = useState([]);
@@ -171,6 +184,14 @@ const EachReservation = (props) => {
             studentData={studentData}
           />
         ) : null}
+
+        <StyleLive
+          onClick={() => {
+            dispatch(getLiveData(studentData));
+            history.push("/live");
+          }}>
+          前往視訊
+        </StyleLive>
       </StyleDetail>
     </StyleEachStudent>
   );

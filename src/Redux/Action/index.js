@@ -12,13 +12,6 @@ export const changeSignPage = (signState) => {
   };
 };
 
-export const checkSignStatus = (signState) => {
-  return {
-    type: "CHECK_SIGN_STATUS",
-    payload: signState,
-  };
-};
-
 export const getStudentData = (data) => {
   return {
     type: "STUDENT_DATA",
@@ -29,6 +22,13 @@ export const getStudentData = (data) => {
 export const getTeacherData = (data) => {
   return {
     type: "TEACHER_DATA",
+    payload: data,
+  };
+};
+
+export const getLiveData = (data) => {
+  return {
+    type: "LIVE_DATA",
     payload: data,
   };
 };

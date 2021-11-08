@@ -2,8 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { changeSignPage } from "../../Redux/Action";
+import {
+  changeSignPage,
+  getIdentity,
+  getStudentData,
+  getTeacherData,
+} from "../../Redux/Action";
 import firebase from "../../utils/config/firebase-config";
+import Invitation from "./Invitation";
 
 const StyleNav = styled.nav`
   margin-left: auto;
@@ -30,10 +36,19 @@ const StyleSignLink = styled.a`
   cursor: pointer;
 `;
 
+const StyleInvitationArea = styled.div`
+  display: inline;
+  font-size: 1.5rem;
+  font-weight: 400;
+  border-left: 2px solid ${(props) => (props.headerColor ? "#666" : "#fff")};
+  padding: 0px 40px;
+  position: relative;
+`;
+
 const StyleNotification = styled.div`
   position: absolute;
-  left: -50px;
-  top: 35px;
+  right: 25px;
+  top: -1px;
   width: 30px;
   height: 30px;
   line-height: 100px;
@@ -51,25 +66,77 @@ const StyleNotification = styled.div`
     background-image: url("/images/bell.gif");
     border-radius: 50%;
     padding: 5px;
+    opacity: 0.8;
   }
 `;
 
+const StyleInvitation = styled.div`
+  position: absolute;
+  right: 25px;
+  top: -12px;
+  width: 30px;
+  height: 30px;
+  color: red;
+  font-size: 1rem;
+`;
+
 const Nav = (props) => {
+  const identityData = useSelector((state) => state.identityData);
+  const invitationData = identityData.invitation;
+  // console.log(invitationData);
+
   const identity = useSelector((state) => state.identity);
-  const signStatus = useSelector((state) => state.signStatus);
   const dispatch = useDispatch();
 
-  const [user, setUser] = useState(null);
+  const [displayNotification, setDisplayNotification] = useState(false);
+  const [displayInvitation, setDisplayInvitation] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const db = firebase.firestore();
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
+      setCurrentUser(currentUser);
+
+      const teachersRef = db.collection("teachers").doc(currentUser.email);
+      const studentsRef = db.collection("students").doc(currentUser.email);
+
+      teachersRef
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            dispatch(getIdentity("teacher"));
+            dispatch(getTeacherData(doc.data()));
+            console.log("老師重整頁面", doc.data());
+          }
+        })
+        .catch((error) => {
+          console.log("資料讀取有誤：", error);
+        });
+
+      studentsRef
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            dispatch(getIdentity("student"));
+            dispatch(getStudentData(doc.data()));
+            console.log("學生重整頁面", doc.data());
+          }
+        })
+        .catch((error) => {
+          console.log("資料讀取有誤：", error);
+        });
     });
   }, []);
 
-  // 用 signStatus 不用 onAuthStateChanged 因為要過濾身份！用是否導到會員頁面判斷！
-  // BUG 但是 Nav 會因為沒有[導到會員頁面]這件事，而呈現沒有登入過的狀態ＱＱ
-  return signStatus === false ? (
+  useEffect(() => {
+    if (invitationData) {
+      setDisplayNotification(true);
+    }
+  }, [invitationData]);
+
+  // 不用 signStatus Redux 判斷，用 onAuthStateChanged，拆開成兩個 useEffect
+  return currentUser === null ? (
     <StyleNav>
       <StyleLink
         headerColor={props.headerColor}
@@ -89,7 +156,6 @@ const Nav = (props) => {
     <StyleNav>
       {identity === "student" ? (
         <>
-          <StyleNotification headerColor={props.headerColor} />
           <StyleLink
             headerColor={props.headerColor}
             exact
@@ -116,13 +182,34 @@ const Nav = (props) => {
       </StyleLink>
 
       {identity === "student" ? (
-        <StyleLink
-          headerColor={props.headerColor}
-          to="/profile/myresume"
-          activeClassName="selected"
-          activeStyle={{ backgroundColor: "#bbadff" }}>
-          Profile
-        </StyleLink>
+        <>
+          <StyleLink
+            headerColor={props.headerColor}
+            to="/profile/myresume"
+            activeClassName="selected"
+            activeStyle={{ backgroundColor: "#bbadff" }}>
+            Profile
+          </StyleLink>
+          <StyleInvitationArea>
+            <StyleNotification
+              headerColor={props.headerColor}
+              onClick={() => {
+                if (displayNotification) {
+                  setDisplayInvitation(true);
+                }
+              }}
+            />
+            {displayNotification ? (
+              <StyleInvitation>New!</StyleInvitation>
+            ) : null}
+            {displayInvitation ? (
+              <Invitation
+                setDisplayInvitation={setDisplayInvitation}
+                invitationData={invitationData}
+              />
+            ) : null}
+          </StyleInvitationArea>
+        </>
       ) : (
         <StyleLink
           headerColor={props.headerColor}

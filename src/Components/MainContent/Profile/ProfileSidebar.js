@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import {
   getIdentity,
-  checkSignStatus,
   getStudentData,
   getTeacherData,
 } from "../../../Redux/Action";
@@ -149,11 +148,8 @@ const StyleLogoutButton = styled.div`
 const ProfileSidebar = (props) => {
   const identity = useSelector((state) => state.identity);
   const identityData = useSelector((state) => state.identityData);
-  console.log(identityData);
   const dispatch = useDispatch();
   const history = useHistory();
-
-  const user = firebase.auth().currentUser;
 
   return (
     <StyleProfileSidebar>
@@ -174,9 +170,9 @@ const ProfileSidebar = (props) => {
             .auth()
             .signOut()
             .then(() => {
-              dispatch(checkSignStatus(false));
+              // 設回原樣！
+              dispatch(getIdentity(""));
               history.push("/");
-              dispatch(getIdentity(null));
               dispatch(getStudentData({}));
               dispatch(getTeacherData({}));
             });

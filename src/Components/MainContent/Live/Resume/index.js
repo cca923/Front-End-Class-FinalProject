@@ -1,49 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
+import Editor from "./Editor";
 import ReactHtmlParser from "react-html-parser";
-import firebase from "../../../../../../utils/config/firebase-config";
-import { nanoid } from "nanoid";
 
-const StyleResumeLayer = styled.div`
-  width: 100vw;
-  height: 100%;
-  background-color: #979797;
-  opacity: 0.5;
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  z-index: 20000;
-`;
-
-const StyleResumeContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 96vmin;
-  height: 80vmin;
-  margin-left: -48vmin;
-  margin-top: -40vmin;
+const StyleResume = styled.div`
+  width: 100%;
+  margin: 20px;
   background-color: #fff;
-  z-index: 20000;
-  overflow-y: scroll;
-
-  @media only screen and (max-width: 1100px) {
-    /* width: 350px;
-    height: 440px;
-    margin-left: -175px;
-    margin-top: -220px; */
-  }
-
-  @media only screen and (max-width: 600) {
-    /* width: 250px;
-    height: 440px;
-    margin-left: -125px;
-    margin-top: -220px; */
-  }
 `;
 
 const StyleMyResume = styled.div`
@@ -60,16 +24,14 @@ const StyleAbout = styled.div`
 const StyleOthers = styled.div`
   padding: 20px;
   display: flex;
+  height: calc(100vh - 380px);
+  overflow-y: scroll;
 `;
 
 const StyleImage = styled.img`
   width: 150px;
   height: 150px;
   background-color: gray;
-
-  @media only screen and (max-width: 1100px) {
-    display: none;
-  }
 `;
 
 const StyleDetail = styled.div`
@@ -78,10 +40,6 @@ const StyleDetail = styled.div`
   flex-direction: column;
   width: calc(100% - 150px);
   /* max-height: calc(100% - 150px); */
-  @media only screen and (max-width: 1100px) {
-    width: 100%;
-    padding: 30px 30px 0px 30px;
-  }
 `;
 const StyleIdentityArea = styled.div`
   display: flex;
@@ -117,7 +75,7 @@ const StyleReactQuillDisplay = styled.div`
   height: fit-content;
   z-index: 1000;
   line-height: 1.6rem;
-  padding: 30px;
+  padding: 10px;
 
   a {
     text-decoration: underline;
@@ -130,39 +88,61 @@ const StyleReactQuillDisplay = styled.div`
 `;
 
 const Resume = (props) => {
+  const identity = useSelector((state) => state.identity);
+  const identityData = useSelector((state) => state.identityData);
+  const liveData = useSelector((state) => state.liveData);
+  const [hover, setHover] = useState(false);
+
+  useEffect(() => {});
+
   return (
-    <>
-      <StyleResumeLayer
-        onClick={() => {
-          props.setDisplayResume(false);
-        }}
-      />
-      <StyleResumeContainer>
+    <StyleResume>
+      {identity === "teacher" ? (
         <StyleMyResume>
           <StyleAbout>
-            <StyleImage
-              src={props.studentData.photo}
-              alt={props.studentData.name}
-            />
+            <StyleImage src={liveData.photoURL} alt={liveData.name} />
             <StyleDetail>
               <StyleIdentityArea>
-                <StyleName>{props.studentData.name}</StyleName>
-                <StyleEmail>{props.studentData.email}</StyleEmail>
+                <StyleName>{liveData.name}</StyleName>
+                <StyleEmail>{liveData.email}</StyleEmail>
               </StyleIdentityArea>
               <StyleAreaTitle>About</StyleAreaTitle>
               <StyleCustomDisplay>
-                {props.studentData.resume.about}
+                {liveData.resume.about || ""}
               </StyleCustomDisplay>
             </StyleDetail>
           </StyleAbout>
+
+          <StyleOthers
+            onMouseOver={() => setHover(true)}
+            onMouseOut={() => setHover(false)}>
+            <Editor hover={hover} />
+          </StyleOthers>
+        </StyleMyResume>
+      ) : (
+        <StyleMyResume>
+          <StyleAbout>
+            <StyleImage src={identityData.photoURL} alt={identityData.name} />
+            <StyleDetail>
+              <StyleIdentityArea>
+                <StyleName>{identityData.name}</StyleName>
+                <StyleEmail>{identityData.email}</StyleEmail>
+              </StyleIdentityArea>
+              <StyleAreaTitle>About</StyleAreaTitle>
+              <StyleCustomDisplay>
+                {identityData.resume.about || ""}
+              </StyleCustomDisplay>
+            </StyleDetail>
+          </StyleAbout>
+
           <StyleOthers>
             <StyleReactQuillDisplay>
-              {ReactHtmlParser(props.studentData.resume.detail)}
+              {ReactHtmlParser(identityData.resume.detail)}
             </StyleReactQuillDisplay>
           </StyleOthers>
         </StyleMyResume>
-      </StyleResumeContainer>
-    </>
+      )}
+    </StyleResume>
   );
 };
 

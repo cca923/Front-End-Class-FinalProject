@@ -1,34 +1,27 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useRef } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
-import firebase from "../../utils/config/firebase-config";
-import videoOn from "../../images/video-on.png";
-import videoOff from "../../images/video-off.png";
-import exit from "../../images/exit.png";
-import phoneOn from "../../images/microphone-on.png";
-import phoneOff from "../../images/microphone-off.png";
-
-const Style = styled.div`
-  width: 100%;
-  height: 100px;
-`;
+import firebase from "../../../utils/config/firebase-config";
+import videoOn from "../../../images/video-on.png";
+import videoOff from "../../../images/video-off.png";
+import exit from "../../../images/exit.png";
+import phoneOn from "../../../images/microphone-on.png";
+import phoneOff from "../../../images/microphone-off.png";
 
 const StyleHeaderArea = styled.div`
-  /* opacity: 0.8; */
   width: 100%;
   height: 100px;
   background-color: #c4bccf;
-  /* background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: -130% 0;
-  display: inline-block;
-  vertical-align: bottom;
-  background-image: url("/images/home-teacher.png");
+`;
 
-  @media only screen and (max-width: 1020px) {
-    height: 200px;
-  } */
+const StyleMainArea = styled.div`
+  display: flex;
+`;
+
+const StyleVideo = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 100px);
 `;
 
 const StyleVideoContainer = styled.div`
@@ -44,9 +37,7 @@ const StyleVideoSize = styled.div`
 `;
 
 const StyleVideoArea = styled.video`
-  /* width: 353px; */
   height: 300px;
-  /* height: fit-content; */
   background-color: black;
   border-radius: 0 0 20px 20px;
 `;
@@ -58,7 +49,7 @@ const StyleLocalArea = styled.div`
 
 const StyleRemoteArea = styled.div`
   width: 330px;
-  margin: 20px;
+  margin: auto 20px 20px 20px;
 `;
 
 const StyleName = styled.div`
@@ -161,12 +152,12 @@ const StyleCreateRoomIdArea = styled.div`
   display: flex;
 `;
 
-const StyleRoomIdButton = styled.div`
+const StyleButton = styled.div`
   width: 120px;
   font-size: 1rem;
   color: white;
   background-color: #757bc8;
-  border-radius: 10px 0 0 10px;
+  border-radius: 0 10px 10px 0;
   border: 2px solid #bbadff;
   padding: 10px;
   cursor: pointer;
@@ -182,9 +173,9 @@ const StyleRoomIdButton = styled.div`
 const StyleRoomId = styled.div`
   width: 210px;
   font-size: 1rem;
-  border-radius: 0 10px 10px 0;
   border: 2px solid #c5c5c5;
-  border-left: none;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
   padding: 10px;
   text-align: center;
 `;
@@ -203,37 +194,23 @@ const StyleInput = styled.input`
   padding-left: 10px;
 `;
 
-const StyleInvitationButton = styled.div`
-  width: 120px;
+const StyleEmail = styled.div`
+  width: 210px;
   font-size: 1rem;
-  color: white;
-  background-color: #757bc8;
-  border-radius: 0 10px 10px 0;
-  border: 2px solid #bbadff;
+  border: 2px solid #c5c5c5;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
   padding: 10px;
-  cursor: pointer;
   text-align: center;
-
-  &:hover {
-    background-color: #bbadff;
-    border: 2px solid #757bc8;
-    color: black;
-  }
 `;
 
-const Live = (props) => {
-  const identityData = useSelector((state) => state.identityData);
-  const identity = useSelector((state) => state.identity);
+const Video = (props) => {
+  const identityData = useSelector((state) => state.identityData); // 目前的使用者
+  const identity = useSelector((state) => state.identity); // 目前的使用者身份
+  const liveData = useSelector((state) => state.liveData); // 要視訊的對象
 
   const db = firebase.firestore();
   const studentsCollection = db.collection("students");
-  const [webCam, setWebCam] = useState(false);
-  const [microphone, setMicroPhone] = useState(false);
-  const [createRoomId, setcreateRoomId] = useState("");
-  const [joinRoomId, setJoinRoomId] = useState("");
-  const [studentName, setStudentName] = useState("");
-
-  // const [roomId, setRoomId] = useState("");
 
   const servers = {
     iceServers: [
@@ -257,7 +234,6 @@ const Live = (props) => {
   const remoteVideo = useRef();
   const createId = useRef();
   const joinRoom = useRef();
-  const studentEmail = useRef();
 
   const openWebCam = async () => {
     localStream = await navigator.mediaDevices.getUserMedia({
@@ -381,21 +357,17 @@ const Live = (props) => {
   };
 
   const handleInvitation = () => {
-    const email = studentEmail.current.value;
-    console.log(email);
     const invitation = {
       email: identityData.email,
       name: identityData.name,
       roomId: createId.current.textContent,
     };
     // 加入 firebase 學生邀請
-    studentsCollection.doc(email).update({ invitation });
+    studentsCollection.doc(liveData.email).update({ invitation });
   };
 
   return (
-    <div>
-      <StyleHeaderArea />
-
+    <StyleVideo>
       <StyleLocalArea>
         <StyleName>{identityData.name}</StyleName>
         <StyleVideoContainer>
@@ -424,60 +396,37 @@ const Live = (props) => {
         {identity === "teacher" ? (
           <StyleCalloutArea>
             <StyleCreateRoomIdArea>
-              <StyleRoomIdButton onClick={createOffer}>
-                產生房間代碼
-              </StyleRoomIdButton>
-              <StyleRoomId ref={createId}></StyleRoomId>
+              <StyleRoomId ref={createId} />
+              <StyleButton onClick={createOffer}>產生房間代碼</StyleButton>
             </StyleCreateRoomIdArea>
             <StyleInvitationArea>
-              <StyleInput
-                ref={studentEmail}
-                type="text"
-                placeholder="請輸入對方的 Email"
-              />
-              <StyleInvitationButton
+              <StyleEmail>{liveData.email}</StyleEmail>
+              <StyleButton
                 onClick={() => {
                   handleInvitation();
                 }}>
                 寄送通知
-              </StyleInvitationButton>
+              </StyleButton>
             </StyleInvitationArea>
           </StyleCalloutArea>
         ) : (
           <StyleInvitationArea>
             <StyleInput ref={joinRoom} placeholder="請輸入房間代碼" />
-            <StyleInvitationButton onClick={answerCall}>
-              加入房間
-            </StyleInvitationButton>
+            <StyleButton onClick={answerCall}>加入房間</StyleButton>
           </StyleInvitationArea>
         )}
       </StyleLocalArea>
 
       <StyleRemoteArea>
-        <StyleName>{studentName}</StyleName>
+        <StyleName>
+          {liveData.name || identityData.invitation.name || ""}
+        </StyleName>
         <StyleVideoSize>
           <StyleVideoArea autoPlay playsInline ref={remoteVideo} />
         </StyleVideoSize>
       </StyleRemoteArea>
-
-      {/* <button onClick={openWebCam}>Start webcam</button>
-
-      <h2>Create a new Call</h2>
-      <button onClick={createOffer}>Call</button>
-
-      <h2>Join a Call</h2>
-      <input
-        ref={createId}
-        // type="text"
-        // onChange={(evt) => {
-        //   console.log(evt.target.value);
-        // }}
-      />
-      <button onClick={answerCall}>Answer</button>
-
-      <button onClick={hangupCall}>Hangup</button> */}
-    </div>
+    </StyleVideo>
   );
 };
 
-export default Live;
+export default Video;

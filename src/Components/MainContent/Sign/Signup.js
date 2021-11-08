@@ -3,7 +3,6 @@ import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   changeSignPage,
-  checkSignStatus,
   getStudentData,
   getTeacherData,
 } from "../../../Redux/Action";
@@ -217,7 +216,6 @@ const Signup = (props) => {
           student.set(data).then(() => {
             dispatch(changeSignPage(false));
             history.push("/profile/myresume");
-            dispatch(checkSignStatus(true));
           });
 
           // 監聽 firestore 來更新 Redux
@@ -234,7 +232,6 @@ const Signup = (props) => {
           teacher.set(data).then(() => {
             dispatch(changeSignPage(false));
             history.push("/profile/myprofile");
-            dispatch(checkSignStatus(true));
           });
 
           // 監聽 firestore 來更新 Redux

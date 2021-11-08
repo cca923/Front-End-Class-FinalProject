@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   changeSignPage,
   getIdentity,
-  checkSignStatus,
   getStudentData,
   getTeacherData,
 } from "../../../Redux/Action";
@@ -137,7 +136,6 @@ const Sign = (props) => {
 
                       dispatch(changeSignPage(false)); // 關掉 sign 視窗
                       history.push("/profile/myresume"); // 導向會員頁面
-                      dispatch(checkSignStatus(true)); // 改變 Nav
                     } else {
                       // 沒有就建立新帳號！
                       const student = studentsCollection.doc(res.user.email);
@@ -148,7 +146,6 @@ const Sign = (props) => {
                       student.set(data).then(() => {
                         dispatch(changeSignPage(false));
                         history.push("/profile/myresume");
-                        dispatch(checkSignStatus(true));
                       });
 
                       // 監聽 firestore 來更新 Redux
@@ -193,7 +190,6 @@ const Sign = (props) => {
 
                       dispatch(changeSignPage(false)); // 關掉 sign 視窗
                       history.push("/profile/myprofile"); // 導向會員頁面
-                      dispatch(checkSignStatus(true)); // 改變 Nav
                     } else {
                       // 沒有就建立新帳號！
                       const teacher = teachersCollection.doc(res.user.email);
@@ -204,7 +200,6 @@ const Sign = (props) => {
                       teacher.set(data).then(() => {
                         dispatch(changeSignPage(false));
                         history.push("/profile/myprofile");
-                        dispatch(checkSignStatus(true));
                       });
 
                       // 監聽 firestore 來更新 Redux
@@ -252,10 +247,10 @@ const Sign = (props) => {
       <StyleSignLayer
         onClick={() => {
           dispatch(changeSignPage(false));
-          dispatch(getIdentity(null));
+          dispatch(getIdentity(""));
         }}></StyleSignLayer>
 
-      {identity === null ? (
+      {identity.length === 0 ? (
         <Identity />
       ) : (
         <StyleSignContainer>

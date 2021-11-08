@@ -3,7 +3,6 @@ import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   changeSignPage,
-  checkSignStatus,
   getStudentData,
   getTeacherData,
 } from "../../../Redux/Action";
@@ -204,8 +203,6 @@ const Signin = (props) => {
       .signInWithEmailAndPassword(email, password)
       .then((res) => {
         if (identity === "student") {
-          console.log("學生跳轉！");
-
           // 確認是否已是老師，提醒使用者選擇老師帳號登入
           teachersCollection
             .doc(email)
@@ -222,15 +219,12 @@ const Signin = (props) => {
                 });
                 dispatch(changeSignPage(false));
                 history.push("/profile/myresume");
-                dispatch(checkSignStatus(true));
               }
             })
             .catch((error) => {
               console.log("帳號讀取有問題", error);
             });
         } else if (identity === "teacher") {
-          console.log("老師跳轉！");
-
           studentsCollection
             .doc(email)
             .get()
@@ -246,7 +240,6 @@ const Signin = (props) => {
                 });
                 dispatch(changeSignPage(false));
                 history.push("/profile/myprofile");
-                dispatch(checkSignStatus(true));
               }
             })
             .catch((error) => {

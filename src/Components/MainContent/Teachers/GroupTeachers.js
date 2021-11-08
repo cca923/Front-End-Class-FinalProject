@@ -155,7 +155,17 @@ const GroupTeachers = (props) => {
         const arrTeachers = [];
 
         collectionSnapShot.forEach((doc) => {
-          arrTeachers.push(doc.data());
+          if (
+            // 資料都有的老師再呈現在頁面上
+            doc.data().tag &&
+            doc.data().about &&
+            doc.data().talents &&
+            doc.data().experience &&
+            doc.data().time && // 有填寫可預約時間的
+            doc.data().time.length !== 0 // 沒有被全部預約完讓 time = [ ] 的
+          ) {
+            arrTeachers.push(doc.data());
+          }
         });
 
         setTeachersData(arrTeachers);

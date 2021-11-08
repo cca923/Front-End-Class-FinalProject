@@ -4,7 +4,7 @@ import firebase from "./utils/config/firebase-config";
 import { useSelector } from "react-redux";
 import Sign from "./Components/MainContent/Sign/Sign";
 import Home from "./Components/MainContent/Home";
-import Live from "./Components/MainContent/Live";
+import Live from "./Components/MainContent/Live/index";
 import Header from "./Components/Header/Header";
 import Profile from "./Components/MainContent/Profile";
 import Teachers from "./Components/MainContent/Teachers";

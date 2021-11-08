@@ -70,7 +70,6 @@ const Profile = (props) => {
             uid: user.uid, // 加入作為巢狀路由 URL
             photo: user.photoURL, // 加入照片 URL
           });
-          console.log("💗 老師", identityData);
         }
       })
       .catch((error) => {
@@ -86,7 +85,6 @@ const Profile = (props) => {
             uid: user.uid,
             photo: user.photoURL, // 加入照片 URL
           });
-          console.log("💗 學生", identityData);
         }
       })
       .catch((error) => {

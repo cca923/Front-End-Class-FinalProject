@@ -34,10 +34,13 @@ const StyleStudentReservation = styled.div`
   }
 `;
 
+const StyleNoReservation = styled.div`
+  display: block;
+`;
+
 const StudentMyClass = (props) => {
   const identityData = useSelector((state) => state.identityData);
   const reservation = identityData.reservation;
-  console.log(reservation);
 
   const [displayReservation, setDisplayReservation] = useState(false);
 

@@ -1,14 +1,14 @@
 import { combineReducers } from "redux";
 import identityReducer from "./identityReducer";
 import signPageReducer from "./signPageReducer";
-import signStatusReducer from "./signStatusReducer";
 import identityDataReducer from "./identityDataReducer";
+import liveDataReducer from "./liveDataReducer";
 
 const allReducers = combineReducers({
   identity: identityReducer,
   signPage: signPageReducer,
-  signStatus: signStatusReducer,
   identityData: identityDataReducer,
+  liveData: liveDataReducer,
 });
 
 export default allReducers;
