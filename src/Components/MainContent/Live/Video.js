@@ -363,7 +363,12 @@ const Video = (props) => {
       roomId: createId.current.textContent,
     };
     // 加入 firebase 學生邀請
-    studentsCollection.doc(liveData.email).update({ invitation });
+    studentsCollection
+      .doc(liveData.email)
+      .update({ invitation })
+      .then(() => {
+        window.alert("已發送邀請通知！");
+      });
   };
 
   return (

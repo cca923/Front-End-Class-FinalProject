@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router";
+import { useParams, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { compareAsc } from "date-fns";
 import firebase from "../../../../utils/config/firebase-config";
@@ -58,6 +58,7 @@ const Calender = () => {
   console.log("該老師的可預約時間資料！", teacherTimeData);
   console.log("該老師的 Email", teacherEmail);
   const { teacherUid } = useParams();
+  const history = useHistory();
 
   useEffect(() => {
     teachersCollection
@@ -99,22 +100,27 @@ const Calender = () => {
           firebase.firestore.FieldValue.arrayUnion(teacherReservation),
       });
 
-      // 學生加上 reservation [ { 老師 email, 預約time } ]
-      const studentReservation = {
-        email: teacherEmail,
-        time: targetDate[0].getTime() / 1000,
-      };
-      studentsCollection.doc(identityData.email).update({
-        reservation:
-          firebase.firestore.FieldValue.arrayUnion(studentReservation),
-      });
-
       // 老師移除 time []
       teachersCollection.doc(teacherEmail).update({
         time: firebase.firestore.FieldValue.arrayRemove(
           targetDate[0].getTime() / 1000
         ),
       });
+
+      // 學生加上 reservation [ { 老師 email, 預約time } ]
+      const studentReservation = {
+        email: teacherEmail,
+        time: targetDate[0].getTime() / 1000,
+      };
+      studentsCollection
+        .doc(identityData.email)
+        .update({
+          reservation:
+            firebase.firestore.FieldValue.arrayUnion(studentReservation),
+        })
+        .then(() => {
+          history.push("/profile/myclass");
+        });
     }
   };
 

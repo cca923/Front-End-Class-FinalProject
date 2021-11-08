@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Editor from "./Editor";
 import ReactHtmlParser from "react-html-parser";
@@ -92,8 +92,6 @@ const Resume = (props) => {
   const identityData = useSelector((state) => state.identityData);
   const liveData = useSelector((state) => state.liveData);
   const [hover, setHover] = useState(false);
-
-  useEffect(() => {});
 
   return (
     <StyleResume>

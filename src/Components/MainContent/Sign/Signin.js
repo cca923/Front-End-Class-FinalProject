@@ -213,10 +213,10 @@ const Signin = (props) => {
                 firebase.auth().signOut();
               } else {
                 // 監聽 firestore 來更新 Redux
-                studentsCollection.doc(email).onSnapshot((doc) => {
-                  dispatch(getStudentData(doc.data()));
-                  console.log("新的學生Data", doc.data());
-                });
+                // studentsCollection.doc(email).onSnapshot((doc) => {
+                //   dispatch(getStudentData(doc.data()));
+                //   console.log("新的學生Data", doc.data());
+                // });
                 dispatch(changeSignPage(false));
                 history.push("/profile/myresume");
               }
@@ -234,10 +234,10 @@ const Signin = (props) => {
                 firebase.auth().signOut();
               } else {
                 // 監聽 firestore 來更新 Redux
-                teachersCollection.doc(email).onSnapshot((doc) => {
-                  dispatch(getTeacherData(doc.data()));
-                  console.log("新的老師Data", doc.data());
-                });
+                // teachersCollection.doc(email).onSnapshot((doc) => {
+                //   dispatch(getTeacherData(doc.data()));
+                //   console.log("新的老師Data", doc.data());
+                // });
                 dispatch(changeSignPage(false));
                 history.push("/profile/myprofile");
               }

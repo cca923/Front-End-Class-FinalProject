@@ -8,14 +8,28 @@ const StyleTeachers = styled.div`
 `;
 
 const StyleImageStudentArea = styled.div`
-  width: 100%;
-  height: 400px;
+  width: 50vw;
+  height: 300px;
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: contain;
+  background-position: 20vw -5vw;
   display: inline-block;
   vertical-align: bottom;
   background-image: url("/images/home-student.png");
+
+  @media only screen and (max-width: 1020px) {
+    height: 200px;
+  }
+`;
+
+const StyleBanner = styled.div`
+  display: inline-block;
+  width: 50vw;
+  height: 300px;
+  background-color: #898292;
+  vertical-align: bottom;
+  position: relative;
 
   @media only screen and (max-width: 1020px) {
     height: 200px;
@@ -40,6 +54,7 @@ const Teachers = (props) => {
 
   return (
     <StyleTeachers>
+      <StyleBanner />
       <StyleImageStudentArea />
       <StyleTeachersContainer>
         <Sidebar

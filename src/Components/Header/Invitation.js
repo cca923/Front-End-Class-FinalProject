@@ -9,6 +9,7 @@ const StyleInvitation = styled.div`
   height: fit-content;
   background-color: #fff;
   border-radius: 5px;
+  opacity: 0.9;
 `;
 
 const StyleRemove = styled.div`

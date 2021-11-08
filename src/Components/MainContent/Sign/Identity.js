@@ -25,6 +25,21 @@ const StyleIdentity = styled.div`
   }
 `;
 
+const StyleTitle = styled.div`
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-bottom: 2px solid #7678ed;
+  margin: 20px auto 0 auto;
+  padding-bottom: 10px;
+  width: 70%;
+  text-align: center;
+  line-height: 1.5rem;
+
+  @media only screen and (max-width: 1000px) {
+    font-size: 1rem;
+  }
+`;
+
 const StyleStudentSelect = styled.div`
   margin: auto;
   width: 70%;
@@ -51,7 +66,7 @@ const StyleStudentSelect = styled.div`
 `;
 
 const StyleTeacherSelect = styled.div`
-  margin: auto;
+  margin: 0 auto auto auto;
   width: 70%;
   height: 30%;
   border-radius: 15px;
@@ -81,6 +96,7 @@ const Identity = () => {
 
   return (
     <StyleIdentity>
+      <StyleTitle>請選擇您的身份</StyleTitle>
       <StyleStudentSelect
         identity={identity}
         onClick={() => {

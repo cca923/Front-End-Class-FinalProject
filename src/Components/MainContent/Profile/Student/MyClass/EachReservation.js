@@ -4,7 +4,7 @@ import firebase from "../../../../../utils/config/firebase-config";
 
 const StyleEachStudent = styled.div`
   width: 100%;
-  height: 290px;
+  height: fit-content;
   background-color: #fff;
   border-radius: 8px;
   padding: 10px;
@@ -20,6 +20,7 @@ const StyleEachStudent = styled.div`
   @media only screen and (max-width: 650px) {
     height: 270px;
     flex-direction: column;
+    height: fit-content;
   }
 `;
 
@@ -140,7 +141,7 @@ const EachReservation = (props) => {
           </StyleData>
         </StyleEachDetail>
 
-        <StyleChat>和他聊聊</StyleChat>
+        {/* <StyleChat>和他聊聊</StyleChat> */}
       </StyleDetail>
     </StyleEachStudent>
   );

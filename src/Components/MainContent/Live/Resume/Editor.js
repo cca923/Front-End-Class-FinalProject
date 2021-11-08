@@ -72,9 +72,9 @@ const Editor = (props) => {
   const db = firebase.firestore();
   const studentsRef = db.collection("students").doc(liveData.email);
 
-  const [value, setValue] = useState(); // 設定初始值，是 detail 還是 firebase 資料
+  const [value, setValue] = useState();
   const [edit, setEdit] = useState(false);
-  console.log(value);
+  // console.log(value);
 
   const formats = [
     "bold",

@@ -1,13 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  changeSignPage,
-  getIdentity,
-  getStudentData,
-  getTeacherData,
-} from "../../Redux/Action";
+import { changeSignPage } from "../../Redux/Action";
 import firebase from "../../utils/config/firebase-config";
 import Invitation from "./Invitation";
 
@@ -92,40 +87,9 @@ const Nav = (props) => {
   const [displayInvitation, setDisplayInvitation] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  const db = firebase.firestore();
-
   useEffect(() => {
     firebase.auth().onAuthStateChanged((currentUser) => {
       setCurrentUser(currentUser);
-
-      const teachersRef = db.collection("teachers").doc(currentUser.email);
-      const studentsRef = db.collection("students").doc(currentUser.email);
-
-      teachersRef
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            dispatch(getIdentity("teacher"));
-            dispatch(getTeacherData(doc.data()));
-            console.log("老師重整頁面", doc.data());
-          }
-        })
-        .catch((error) => {
-          console.log("資料讀取有誤：", error);
-        });
-
-      studentsRef
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            dispatch(getIdentity("student"));
-            dispatch(getStudentData(doc.data()));
-            console.log("學生重整頁面", doc.data());
-          }
-        })
-        .catch((error) => {
-          console.log("資料讀取有誤：", error);
-        });
     });
   }, []);
 
@@ -190,7 +154,7 @@ const Nav = (props) => {
             activeStyle={{ backgroundColor: "#bbadff" }}>
             Profile
           </StyleLink>
-          <StyleInvitationArea>
+          <StyleInvitationArea headerColor={props.headerColor}>
             <StyleNotification
               headerColor={props.headerColor}
               onClick={() => {

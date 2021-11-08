@@ -6,7 +6,7 @@ import TeacherMyProfile from "./MyProfile/index";
 
 const StyleTeacherMainArea = styled.div`
   width: 100%;
-  background-color: white;
+  /* background-color: white; */
   display: flex;
   flex-direction: column;
 `;

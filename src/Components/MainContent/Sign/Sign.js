@@ -127,12 +127,12 @@ const Sign = (props) => {
                       // 有就導向會員頁面
 
                       // 監聽 firestore 來更新 Redux
-                      studentsCollection
-                        .doc(res.user.email)
-                        .onSnapshot((doc) => {
-                          dispatch(getStudentData(doc.data()));
-                          console.log("新的學生Data", doc.data());
-                        });
+                      // studentsCollection
+                      //   .doc(res.user.email)
+                      //   .onSnapshot((doc) => {
+                      //     dispatch(getStudentData(doc.data()));
+                      //     console.log("新的學生Data", doc.data());
+                      //   });
 
                       dispatch(changeSignPage(false)); // 關掉 sign 視窗
                       history.push("/profile/myresume"); // 導向會員頁面
@@ -149,10 +149,10 @@ const Sign = (props) => {
                       });
 
                       // 監聽 firestore 來更新 Redux
-                      student.onSnapshot((doc) => {
-                        dispatch(getStudentData(doc.data()));
-                        console.log("新的學生Data", doc.data());
-                      });
+                      // student.onSnapshot((doc) => {
+                      //   dispatch(getStudentData(doc.data()));
+                      //   console.log("新的學生Data", doc.data());
+                      // });
                     }
                   })
                   .catch((error) => {
@@ -181,12 +181,12 @@ const Sign = (props) => {
                       // 有就導向會員頁面
 
                       // 監聽 firestore 來更新 Redux
-                      teachersCollection
-                        .doc(res.user.email)
-                        .onSnapshot((doc) => {
-                          dispatch(getTeacherData(doc.data()));
-                          console.log("新的Data", doc.data());
-                        });
+                      // teachersCollection
+                      //   .doc(res.user.email)
+                      //   .onSnapshot((doc) => {
+                      //     dispatch(getTeacherData(doc.data()));
+                      //     console.log("新的Data", doc.data());
+                      //   });
 
                       dispatch(changeSignPage(false)); // 關掉 sign 視窗
                       history.push("/profile/myprofile"); // 導向會員頁面
@@ -203,10 +203,10 @@ const Sign = (props) => {
                       });
 
                       // 監聽 firestore 來更新 Redux
-                      teacher.onSnapshot((doc) => {
-                        dispatch(getTeacherData(doc.data()));
-                        console.log("新的Data", doc.data());
-                      });
+                      // teacher.onSnapshot((doc) => {
+                      //   dispatch(getTeacherData(doc.data()));
+                      //   console.log("新的Data", doc.data());
+                      // });
                     }
                   })
                   .catch((error) => {

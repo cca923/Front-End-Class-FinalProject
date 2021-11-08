@@ -192,7 +192,14 @@ const TeacherTalent = (props) => {
   const [displayTalent, setDisplayTalent] = useState(false);
 
   const handleTalentDisplay = () => {
-    if (talent1Title === "" && talent1Description === "") {
+    if (
+      talent1Title === "" &&
+      talent1Description === "" &&
+      talent2Title === "" &&
+      talent2Description === "" &&
+      talent3Title === "" &&
+      talent3Description === ""
+    ) {
       window.alert("請輸入技能！");
     } else {
       const talents = [

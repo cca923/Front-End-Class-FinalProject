@@ -7,7 +7,7 @@ import TeacherMainArea from "./Teacher";
 const StyleProfileMainArea = styled.div`
   width: 70%;
   min-height: 100%;
-  background-color: #fff;
+  /* background-color: #fff; */
   position: absolute;
   top: 45%;
   left: 61%;

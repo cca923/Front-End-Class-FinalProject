@@ -14,9 +14,6 @@ const StyleGroupTeachers = styled.div`
   padding: 50px 40px;
 
   @media only screen and (max-width: 1800px) {
-    /* width: 100%; */
-    /* height: 100%; */
-    /* display: grid; */
     grid-template-columns: repeat(2, 1fr);
     gap: 30px 30px;
   }
@@ -30,7 +27,6 @@ const StyleGroupTeachers = styled.div`
 
 const StyleEachTeacher = styled.a`
   width: 100%;
-  /* height: fit-content; */
   height: 100%;
 
   background-color: #fff;

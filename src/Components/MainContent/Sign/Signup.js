@@ -219,10 +219,10 @@ const Signup = (props) => {
           });
 
           // 監聽 firestore 來更新 Redux
-          student.onSnapshot((doc) => {
-            dispatch(getStudentData(doc.data()));
-            console.log("新的學生Data", doc.data());
-          });
+          // student.onSnapshot((doc) => {
+          //   dispatch(getStudentData(doc.data()));
+          //   console.log("新的學生Data", doc.data());
+          // });
         } else if (identity === "teacher") {
           const teacher = db.collection("teachers").doc(email);
           const data = {
@@ -235,10 +235,10 @@ const Signup = (props) => {
           });
 
           // 監聽 firestore 來更新 Redux
-          teacher.onSnapshot((doc) => {
-            dispatch(getTeacherData(doc.data()));
-            console.log("新的老師Data", doc.data());
-          });
+          // teacher.onSnapshot((doc) => {
+          //   dispatch(getTeacherData(doc.data()));
+          //   console.log("新的老師Data", doc.data());
+          // });
         }
       })
       .catch((error) => {
