@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
+  changeSignLoading,
   changeSignPage,
-  getStudentData,
-  getTeacherData,
+  getIdentity,
 } from "../../../Redux/Action";
 import styled from "styled-components";
 import firebase from "../../../utils/config/firebase-config";
@@ -14,6 +14,7 @@ import {
 } from "../../../utils/service/authMethod";
 import facebook from "../../../images/facebook.png";
 import google from "../../../images/google.png";
+import Swal from "sweetalert2";
 
 const StyleSignin = styled.div`
   font-size: 1.5rem;
@@ -22,7 +23,6 @@ const StyleSignin = styled.div`
   border-radius: 0px 15px 15px 15px;
   background-color: white;
   padding: 25px;
-  z-index: 99;
   margin: 0;
 
   @media only screen and (max-width: 1000px) {
@@ -40,6 +40,7 @@ const StyleInput = styled.input`
   padding: 15px;
   border-radius: 30px;
   border: 2px solid rgb(128, 128, 128);
+  margin: 2px 0;
 
   @media only screen and (max-width: 1000px) {
     font-size: 1rem;
@@ -49,17 +50,23 @@ const StyleInput = styled.input`
 `;
 
 const StyleButton = styled.button`
-  font-size: 1.5rem;
   margin-top: 15px;
-  background-color: #757bc8;
-  border: 2px solid #bbadff;
   padding: 10px;
-  border-radius: 30px;
+  outline: 0;
+  border: 0;
   cursor: pointer;
+  font-size: 1.5rem;
+  color: #fff;
+  text-align: center;
+  border-radius: 50px;
+  background-image: linear-gradient(180deg, #7c8aff, #3c4fe0);
+  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
+    0 1px 3px 0 rgb(93 100 148 / 20%);
+  transition: all 0.2s ease-out;
 
-  &:hover {
-    background-color: #bbadff;
-    border: 2px solid #757bc8;
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
   }
 
   @media only screen and (max-width: 1000px) {
@@ -115,14 +122,20 @@ const StyleSeperator = styled.div`
 
 const StyleFacebookLogin = styled.div`
   background-color: #4267b2;
+  background-image: linear-gradient(180deg, #7192d5, #345087);
   display: flex;
   align-items: center;
   padding: 10px;
-  border-radius: 30px;
+  border-radius: 50px;
   color: white;
-  border: 2px solid #34579c;
   cursor: pointer;
   margin-bottom: 10px;
+  transition: all 0.2s ease-out;
+
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
+  }
 
   @media only screen and (max-width: 1000px) {
     border-radius: 20px;
@@ -150,13 +163,19 @@ const StyleType = styled.div`
 
 const StyleGoogleLogin = styled.div`
   background-color: #e65f5c;
+  background-image: linear-gradient(180deg, #e65f5c, #a94340);
   display: flex;
   align-items: center;
   padding: 10px;
-  border-radius: 30px;
+  border-radius: 50px;
   color: white;
-  border: 2px solid #c90202;
   cursor: pointer;
+  transition: all 0.2s ease-out;
+
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
+  }
 
   @media only screen and (max-width: 1000px) {
     border-radius: 20px;
@@ -165,6 +184,7 @@ const StyleGoogleLogin = styled.div`
 `;
 
 const StyleSubtitle = styled.div`
+  font-weight: 600;
   text-align: center;
   color: #03071e;
   border-bottom: 2px solid #757bc8;
@@ -187,6 +207,7 @@ const StyleErrorMessage = styled.div`
 const Signin = (props) => {
   const identity = useSelector((state) => state.identity);
   console.log(identity);
+
   const dispatch = useDispatch();
   const history = useHistory();
   const [email, setEmail] = useState("");
@@ -198,6 +219,8 @@ const Signin = (props) => {
   const teachersCollection = db.collection("teachers");
 
   const handleNativeSignin = () => {
+    dispatch(changeSignLoading(true));
+
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
@@ -209,14 +232,24 @@ const Signin = (props) => {
             .get()
             .then((doc) => {
               if (doc.exists) {
-                window.alert("此 Email 註冊為老師，請選擇以老師身份登入！");
-                firebase.auth().signOut();
+                firebase
+                  .auth()
+                  .signOut()
+                  .then(() => {
+                    dispatch(changeSignLoading(false));
+                    dispatch(changeSignPage(false));
+                    dispatch(getIdentity(""));
+                    Swal.fire({
+                      title: "此 Email 註冊為老師",
+                      html: `<h3>請選擇以老師身份登入！</h3>`,
+                      icon: "warning",
+                      customClass: {
+                        confirmButton: "confirm__button",
+                      },
+                    });
+                  });
               } else {
-                // 監聽 firestore 來更新 Redux
-                // studentsCollection.doc(email).onSnapshot((doc) => {
-                //   dispatch(getStudentData(doc.data()));
-                //   console.log("新的學生Data", doc.data());
-                // });
+                dispatch(changeSignLoading(false));
                 dispatch(changeSignPage(false));
                 history.push("/profile/myresume");
               }
@@ -230,14 +263,24 @@ const Signin = (props) => {
             .get()
             .then((doc) => {
               if (doc.exists) {
-                window.alert("此 Email 註冊為學生，請選擇以學生身份登入！");
-                firebase.auth().signOut();
+                firebase
+                  .auth()
+                  .signOut()
+                  .then(() => {
+                    dispatch(changeSignLoading(false));
+                    dispatch(changeSignPage(false));
+                    dispatch(getIdentity(""));
+                    Swal.fire({
+                      title: "此 Email 註冊為學生",
+                      html: `<h3>請選擇以學生身份登入！</h3>`,
+                      icon: "warning",
+                      customClass: {
+                        confirmButton: "confirm__button",
+                      },
+                    });
+                  });
               } else {
-                // 監聽 firestore 來更新 Redux
-                // teachersCollection.doc(email).onSnapshot((doc) => {
-                //   dispatch(getTeacherData(doc.data()));
-                //   console.log("新的老師Data", doc.data());
-                // });
+                dispatch(changeSignLoading(false));
                 dispatch(changeSignPage(false));
                 history.push("/profile/myprofile");
               }

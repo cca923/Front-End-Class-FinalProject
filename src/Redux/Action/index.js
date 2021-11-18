@@ -12,6 +12,13 @@ export const changeSignPage = (signState) => {
   };
 };
 
+export const changeSignLoading = (signState) => {
+  return {
+    type: "SING_LOADING",
+    payload: signState,
+  };
+};
+
 export const getStudentData = (data) => {
   return {
     type: "STUDENT_DATA",
@@ -30,5 +37,12 @@ export const getLiveData = (data) => {
   return {
     type: "LIVE_DATA",
     payload: data,
+  };
+};
+
+export const getLiveStatus = (liveState) => {
+  return {
+    type: "LIVE_STATUS",
+    payload: liveState,
   };
 };

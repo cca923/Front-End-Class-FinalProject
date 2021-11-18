@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import TeacherAbout from "./TeacherAbout";
-import TeacherTalent from "./TeacherTalent";
+import TeacherAbout from "./About";
+import TeacherTalent from "./Talent";
 import TeacherExperience from "./Experience";
 
 const StyleTeacherDetail = styled.div`
   width: 100%;
   padding: 0 20px;
+  margin-top: 30px;
 `;
 
 const StyleTitle = styled.div`

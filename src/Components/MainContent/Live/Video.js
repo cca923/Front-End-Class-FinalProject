@@ -1,6 +1,9 @@
-import React, { useRef } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useRef } from "react";
+import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { getLiveData, getLiveStatus } from "../../../Redux/Action";
 import styled from "styled-components";
+import Swal from "sweetalert2";
 import firebase from "../../../utils/config/firebase-config";
 import videoOn from "../../../images/video-on.png";
 import videoOff from "../../../images/video-off.png";
@@ -8,20 +11,19 @@ import exit from "../../../images/exit.png";
 import phoneOn from "../../../images/microphone-on.png";
 import phoneOff from "../../../images/microphone-off.png";
 
-const StyleHeaderArea = styled.div`
-  width: 100%;
-  height: 100px;
-  background-color: #c4bccf;
-`;
-
-const StyleMainArea = styled.div`
-  display: flex;
-`;
-
 const StyleVideo = styled.div`
   display: flex;
   flex-direction: column;
   height: calc(100vh - 100px);
+
+  @media only screen and (max-width: 950px) {
+    flex-direction: row;
+    height: fit-content;
+  }
+
+  @media only screen and (max-width: 730px) {
+    flex-direction: column;
+  }
 `;
 
 const StyleVideoContainer = styled.div`
@@ -45,11 +47,23 @@ const StyleVideoArea = styled.video`
 const StyleLocalArea = styled.div`
   width: 330px;
   margin: 20px;
+
+  @media only screen and (max-width: 730px) {
+    margin: 20px auto;
+  }
 `;
 
 const StyleRemoteArea = styled.div`
   width: 330px;
   margin: auto 20px 20px 20px;
+
+  @media only screen and (max-width: 950px) {
+    margin: 20px 20px 20px auto;
+  }
+
+  @media only screen and (max-width: 730px) {
+    margin: 20px auto;
+  }
 `;
 
 const StyleName = styled.div`
@@ -59,7 +73,6 @@ const StyleName = styled.div`
   font-size: 1.5rem;
   font-weight: 800;
   vertical-align: middle;
-  /* line-height: 24px; */
   height: 40px;
   border-radius: 20px 20px 0 0;
 `;
@@ -155,18 +168,46 @@ const StyleCreateRoomIdArea = styled.div`
 const StyleButton = styled.div`
   width: 120px;
   font-size: 1rem;
-  color: white;
-  background-color: #757bc8;
-  border-radius: 0 10px 10px 0;
-  border: 2px solid #bbadff;
-  padding: 10px;
+  outline: 0;
+  border: 0;
   cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #fff;
   text-align: center;
+  line-height: 38px;
+  border-radius: 0 50px 50px 0;
+  background-image: linear-gradient(180deg, #7c8aff, #3c4fe0);
+  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
+    0 1px 3px 0 rgb(93 100 148 / 20%);
+  transition: all 0.2s ease-out;
 
-  &:hover {
-    background-color: #bbadff;
-    border: 2px solid #757bc8;
-    color: black;
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
+  }
+`;
+
+const StyleSendButton = styled.div`
+  width: 120px;
+  font-size: 1rem;
+  margin: 10px auto 0;
+  outline: 0;
+  border: 0;
+  cursor: pointer;
+  color: rgb(72, 76, 122);
+  font-weight: 600;
+  text-align: center;
+  line-height: 38px;
+  border-radius: 50px;
+  background-image: linear-gradient(180deg, #fff, #f5f5fa);
+  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
+    0 1px 3px 0 rgb(93 100 148 / 20%);
+  transition: all 0.2s ease-out;
+
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
   }
 `;
 
@@ -175,7 +216,7 @@ const StyleRoomId = styled.div`
   font-size: 1rem;
   border: 2px solid #c5c5c5;
   border-right: none;
-  border-radius: 10px 0 0 10px;
+  border-radius: 50px 0 0 50px;
   padding: 10px;
   text-align: center;
 `;
@@ -184,23 +225,14 @@ const StyleInvitationArea = styled.div`
   display: flex;
 `;
 
-const StyleInput = styled.input`
+const StyleId = styled.div`
   width: 210px;
   font-size: 1rem;
   background-color: #fff;
-  border-radius: 10px 0 0 10px;
+  border-radius: 50px 0 0 50px;
   border: 2px solid #c5c5c5;
   border-right: none;
-  padding-left: 10px;
-`;
-
-const StyleEmail = styled.div`
-  width: 210px;
-  font-size: 1rem;
-  border: 2px solid #c5c5c5;
-  border-right: none;
-  border-radius: 10px 0 0 10px;
-  padding: 10px;
+  line-height: 34px;
   text-align: center;
 `;
 
@@ -208,9 +240,12 @@ const Video = (props) => {
   const identityData = useSelector((state) => state.identityData); // 目前的使用者
   const identity = useSelector((state) => state.identity); // 目前的使用者身份
   const liveData = useSelector((state) => state.liveData); // 要視訊的對象
+  const history = useHistory();
+  const dispatch = useDispatch();
 
   const db = firebase.firestore();
   const studentsCollection = db.collection("students");
+  const teachersCollection = db.collection("teachers");
 
   const servers = {
     iceServers: [
@@ -308,7 +343,7 @@ const Video = (props) => {
   const answerCall = async () => {
     // 學生收到通知複製貼上的房間代碼，依照 id 進入房間
     // const callDoc = db.collection("calls").doc(joinRoomId); //BUG
-    const callId = joinRoom.current.value;
+    const callId = joinRoom.current.textContent;
     const callDoc = db.collection("calls").doc(callId);
     const offerCandidates = callDoc.collection("offerCandidates");
     const answerCandidates = callDoc.collection("answerCandidates");
@@ -342,18 +377,104 @@ const Video = (props) => {
     });
   };
 
-  const hangupCall = () => {
-    // const stream = videoElem.srcObject;
-    // const tracks = stream.getTracks();
-    // localVideo.current.srcObject.getTracks().forEach(function (track) {
-    //   track.stop();
-    // });
-    // pc.close();
-    // remoteVideo.current.srcObject.getTracks().forEach(function (track) {
-    //   track.stop();
-    // });
-    // localVideo.current.srcObject = null;
-    // remoteVideo.current.srcObject = null;
+  const hangupCall = async () => {
+    const closeStream = () => {
+      localVideo.current.srcObject.getTracks().forEach(function (track) {
+        track.stop();
+      });
+      remoteVideo.current.srcObject.getTracks().forEach(function (track) {
+        track.stop();
+      });
+
+      localVideo.current.srcObject = null;
+      remoteVideo.current.srcObject = null;
+
+      pc.ontrack = null;
+      pc.onicecandidate = null;
+      pc.close();
+      pc = null;
+    };
+
+    if (identity === "teacher") {
+      closeStream();
+      history.push("/profile/myclass"); // 導回 profile
+      dispatch(getLiveData(null));
+      dispatch(getLiveStatus(false)); // 視訊室狀態
+
+      // BUG:老師離開會如果從學生 firebase 中移除 invitation，會立刻顯示 Error!(因為資料被移除了)
+      // TODO:如果老師邀請了，卻想離開要怎麼把通知收回呢！？
+      // studentsCollection.doc(liveData.email).update({
+      //   invitation: firebase.firestore.FieldValue.delete(),
+      // });
+    } else if (identity === "student") {
+      Swal.fire({
+        title: "歡迎留下評論！",
+        input: "textarea",
+        inputLabel: `覺得 ${identityData.invitation.name} 如何？`,
+        inputPlaceholder: `分享您對與 ${identityData.invitation.name} 視訊的想法吧！(限 200 字)`,
+        inputAttributes: {
+          maxlength: "200",
+        },
+        showLoaderOnConfirm: true,
+        confirmButtonText: "Submit｜發送",
+        showDenyButton: true,
+        denyButtonText: "Dismiss｜略過",
+        customClass: {
+          confirmButton: "confirm__button",
+          denyButton: "deny__button",
+        },
+        allowOutsideClick: false,
+        inputValidator: (value) => {
+          if (!value) {
+            return "沒有輸入任何評論喔！";
+          }
+        },
+      }).then((result) => {
+        if (result.isDenied) {
+          closeStream();
+          history.push("/"); // 導回首頁
+          dispatch(getLiveStatus(false)); // 視訊室狀態
+
+          // 從學生 firebase 中移除 invitation
+          studentsCollection.doc(identityData.email).update({
+            invitation: firebase.firestore.FieldValue.delete(),
+          });
+        } else if (result.isConfirmed) {
+          closeStream();
+
+          // 學生把留言加到老師 comments []
+          const comments = {
+            email: identityData.email,
+            comment: result.value,
+            time: new Date().getTime(),
+          };
+          teachersCollection
+            .doc(identityData.invitation.email)
+            .update({
+              comments: firebase.firestore.FieldValue.arrayUnion(comments),
+            })
+            .then(() => {
+              Swal.fire({
+                title: "評論成功，自動跳轉至首頁",
+                icon: "success",
+                timer: 1200,
+                timerProgressBar: true,
+                showConfirmButton: false,
+              })
+                .then(() => {
+                  history.push("/"); // 導回首頁
+                  dispatch(getLiveStatus(false)); // 視訊室狀態
+                })
+                .then(() => {
+                  // 從學生 firebase 中移除 invitation
+                  studentsCollection.doc(identityData.email).update({
+                    invitation: firebase.firestore.FieldValue.delete(),
+                  });
+                });
+            });
+        }
+      });
+    }
   };
 
   const handleInvitation = () => {
@@ -367,7 +488,17 @@ const Video = (props) => {
       .doc(liveData.email)
       .update({ invitation })
       .then(() => {
-        window.alert("已發送邀請通知！");
+        Swal.fire({
+          title: `已發送邀請通知，請稍候！`,
+          html: `<h3>發送對象｜${liveData.name}</h3>`,
+          showCloseButton: true,
+          customClass: {
+            confirmButton: "confirm__button",
+          },
+          imageUrl: "/images/theme/theme-9.png",
+          imageWidth: 200,
+          imageAlt: "theme image",
+        });
       });
   };
 
@@ -387,7 +518,7 @@ const Video = (props) => {
             </StyleToggle>
             <StyleToggle>
               <StyleLabel>離開房間</StyleLabel>
-              <StyleExit src={exit} />
+              <StyleExit src={exit} onClick={hangupCall} />
             </StyleToggle>
             {/* <div>
               <StyleMicrophone src={microphone ? phoneOff : phoneOn} />
@@ -405,18 +536,19 @@ const Video = (props) => {
               <StyleButton onClick={createOffer}>產生房間代碼</StyleButton>
             </StyleCreateRoomIdArea>
             <StyleInvitationArea>
-              <StyleEmail>{liveData.email}</StyleEmail>
-              <StyleButton
+              <StyleSendButton
                 onClick={() => {
                   handleInvitation();
                 }}>
                 寄送通知
-              </StyleButton>
+              </StyleSendButton>
             </StyleInvitationArea>
           </StyleCalloutArea>
         ) : (
           <StyleInvitationArea>
-            <StyleInput ref={joinRoom} placeholder="請輸入房間代碼" />
+            <StyleId ref={joinRoom}>
+              {identityData.invitation ? identityData.invitation.roomId : null}
+            </StyleId>
             <StyleButton onClick={answerCall}>加入房間</StyleButton>
           </StyleInvitationArea>
         )}
@@ -424,7 +556,9 @@ const Video = (props) => {
 
       <StyleRemoteArea>
         <StyleName>
-          {liveData.name || identityData.invitation.name || ""}
+          {identity === "teacher"
+            ? liveData.name
+            : identityData.invitation.name}
         </StyleName>
         <StyleVideoSize>
           <StyleVideoArea autoPlay playsInline ref={remoteVideo} />

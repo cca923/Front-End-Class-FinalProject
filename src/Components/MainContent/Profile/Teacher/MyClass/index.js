@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import TeacherCalendar from "./TeacherCalendar";
-import TeacherReservation from "./TeacherReservation";
+import TeacherCalendar from "./Calendar";
+import TeacherReservation from "./Reservation";
 
 const StyleMyClass = styled.div`
   width: 100%;
@@ -19,15 +19,10 @@ const StyleTitle = styled.div`
 `;
 
 const TeacherMyClass = (props) => {
-  const identity = useSelector((state) => state.identity);
-  const dispatch = useDispatch();
-  console.log(identity);
-
   return (
     <StyleMyClass>
       <StyleTitle>Schedule</StyleTitle>
       <TeacherCalendar />
-      <StyleTitle>Reservation</StyleTitle>
       <TeacherReservation />
     </StyleMyClass>
   );

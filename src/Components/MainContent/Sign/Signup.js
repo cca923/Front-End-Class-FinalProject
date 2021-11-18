@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  changeSignPage,
-  getStudentData,
-  getTeacherData,
-} from "../../../Redux/Action";
+import { changeSignLoading, changeSignPage } from "../../../Redux/Action";
 import styled from "styled-components";
 import firebase from "../../../utils/config/firebase-config";
 import {
@@ -22,7 +18,6 @@ const StyleSignup = styled.div`
   border-radius: 0px 15px 15px 15px;
   background-color: white;
   padding: 25px;
-  z-index: 99;
 
   @media only screen and (max-width: 1000px) {
     padding: 20px;
@@ -35,6 +30,7 @@ const StyleForm = styled.form`
 `;
 
 const StyleSubtitle = styled.div`
+  font-weight: 600;
   text-align: center;
   color: #03071e;
   border-bottom: 2px solid #757bc8;
@@ -51,6 +47,7 @@ const StyleInput = styled.input`
   padding: 10px;
   border-radius: 30px;
   border: 2px solid rgb(128, 128, 128);
+  margin: 2px 0;
 
   @media only screen and (max-width: 1000px) {
     font-size: 1rem;
@@ -59,37 +56,48 @@ const StyleInput = styled.input`
 `;
 
 const StyleButton = styled.button`
-  font-size: 1.5rem;
   margin-top: 15px;
-  background-color: #757bc8;
-  border: 2px solid #bbadff;
   padding: 10px;
-  border-radius: 30px;
+  outline: 0;
+  border: 0;
   cursor: pointer;
+  font-size: 1.5rem;
+  color: #fff;
+  text-align: center;
+  border-radius: 50px;
+  background-image: linear-gradient(180deg, #7c8aff, #3c4fe0);
+  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
+    0 1px 3px 0 rgb(93 100 148 / 20%);
+  transition: all 0.2s ease-out;
 
-  &:hover {
-    background-color: #bbadff;
-    border: 2px solid #757bc8;
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
   }
 
   @media only screen and (max-width: 1000px) {
-    margin-top: 5px;
+    padding: 10px;
     border-radius: 20px;
     font-size: 1rem;
-    padding: 5px;
   }
 `;
 
 const StyleFacebookLogin = styled.div`
   background-color: #4267b2;
+  background-image: linear-gradient(180deg, #7192d5, #345087);
   display: flex;
   align-items: center;
   padding: 10px;
-  border-radius: 30px;
+  border-radius: 50px;
   color: white;
-  border: 2px solid #34579c;
   cursor: pointer;
   margin-bottom: 10px;
+  transition: all 0.2s ease-out;
+
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
+  }
 
   @media only screen and (max-width: 1000px) {
     border-radius: 20px;
@@ -117,13 +125,19 @@ const StyleType = styled.div`
 
 const StyleGoogleLogin = styled.div`
   background-color: #e65f5c;
+  background-image: linear-gradient(180deg, #e65f5c, #a94340);
   display: flex;
   align-items: center;
   padding: 10px;
-  border-radius: 30px;
+  border-radius: 50px;
   color: white;
-  border: 2px solid #c90202;
   cursor: pointer;
+  transition: all 0.2s ease-out;
+
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
+  }
 
   @media only screen and (max-width: 1000px) {
     border-radius: 20px;
@@ -196,13 +210,13 @@ const Signup = (props) => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  console.log(identity);
-
   const db = firebase.firestore();
   const studentsCollection = db.collection("students");
   const teachersCollection = db.collection("teachers");
 
   const handleNativeSignup = async () => {
+    dispatch(changeSignLoading(true));
+
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
@@ -211,34 +225,24 @@ const Signup = (props) => {
           const student = studentsCollection.doc(email);
           const data = {
             name,
-            email,
+            email: email,
           };
           student.set(data).then(() => {
+            dispatch(changeSignLoading(false));
             dispatch(changeSignPage(false));
             history.push("/profile/myresume");
           });
-
-          // 監聽 firestore 來更新 Redux
-          // student.onSnapshot((doc) => {
-          //   dispatch(getStudentData(doc.data()));
-          //   console.log("新的學生Data", doc.data());
-          // });
         } else if (identity === "teacher") {
-          const teacher = db.collection("teachers").doc(email);
+          const teacher = teachersCollection.doc(email);
           const data = {
             name,
-            email,
+            email: email,
           };
           teacher.set(data).then(() => {
+            dispatch(changeSignLoading(false));
             dispatch(changeSignPage(false));
             history.push("/profile/myprofile");
           });
-
-          // 監聽 firestore 來更新 Redux
-          // teacher.onSnapshot((doc) => {
-          //   dispatch(getTeacherData(doc.data()));
-          //   console.log("新的老師Data", doc.data());
-          // });
         }
       })
       .catch((error) => {
@@ -272,7 +276,7 @@ const Signup = (props) => {
         />
         <StyleInput
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value.toLowerCase())}
           type="text"
           placeholder="Email"
           required

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import StudentMainArea from "./Student";
 import TeacherMainArea from "./Teacher";
 
-const StyleProfileMainArea = styled.div`
+const StyleMainArea = styled.div`
   width: 70%;
   min-height: 100%;
   /* background-color: #fff; */
@@ -20,16 +20,25 @@ const StyleProfileMainArea = styled.div`
     top: 110%;
     margin-left: 0;
   }
+
+  @media print {
+    width: 100vw;
+    margin-left: 0;
+    top: 0;
+    left: 0;
+    -webkit-print-color-adjust: exact;
+    margin-top: 20px;
+  }
 `;
 
-const ProfileMainArea = (props) => {
+const MainArea = (props) => {
   const identity = useSelector((state) => state.identity);
 
   return (
-    <StyleProfileMainArea>
+    <StyleMainArea>
       {identity === "student" ? <StudentMainArea /> : <TeacherMainArea />}
-    </StyleProfileMainArea>
+    </StyleMainArea>
   );
 };
 
-export default ProfileMainArea;
+export default MainArea;

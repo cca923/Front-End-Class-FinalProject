@@ -138,5 +138,9 @@ img {
 }
 
 body {
-  background-color: #e6e3f2;
+  background-color: #ecedfd;
+}
+
+input[type="text"] {
+  cursor: pointer;
 }

@@ -1,21 +1,4 @@
-const identityDataReducer = (
-  state = {
-    // name: "",
-    // email: "",
-    // photo: "",
-    // uid: "",
-    // about: {},
-    // talents: [],
-    // experience: [],
-    // tag: {},
-    // resume: [],
-    // time: [],
-    // reservation: [],
-    // comments: [],
-    // invitation: {},
-  },
-  action
-) => {
+const identityDataReducer = (state = {}, action) => {
   switch (action.type) {
     case "STUDENT_DATA":
       return (state = action.payload);

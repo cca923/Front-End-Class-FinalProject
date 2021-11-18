@@ -1,0 +1,66 @@
+.confirm__button {
+  width: 150px !important;
+  outline: 0 !important;
+  border: 0 !important;
+  cursor: pointer !important;
+  font-weight: 500 !important;
+  font-size: 1rem !important;
+  color: #fff !important;
+  text-align: center !important;
+  border-radius: 50px !important;
+  background-image: linear-gradient(180deg, #7c8aff, #3c4fe0) !important;
+  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
+    0 1px 3px 0 rgb(93 100 148 / 20%) !important;
+  transition: all 0.2s ease-out !important;
+}
+
+.confirm__button:hover {
+  box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+    0 4px 6px 0 rgb(93 100 148 / 20%) !important;
+}
+
+.cancel__button {
+  width: 150px !important;
+  outline: 0 !important;
+  border: 0 !important;
+  cursor: pointer !important;
+  color: rgb(72, 76, 122) !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  text-align: center !important;
+  border-radius: 50px !important;
+  background-image: linear-gradient(180deg, #fff, #f5f5fa) !important;
+  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
+    0 1px 3px 0 rgb(93 100 148 / 20%) !important;
+  transition: all 0.2s ease-out !important;
+}
+
+.cancel__button:hover {
+  box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+    0 4px 6px 0 rgb(93 100 148 / 20%) !important;
+}
+
+.deny__button {
+  width: 150px !important;
+  outline: 0 !important;
+  border: 0 !important;
+  cursor: pointer !important;
+  color: rgb(72, 76, 122) !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  text-align: center !important;
+  border-radius: 50px !important;
+  background-image: linear-gradient(180deg, #fff, #f5f5fa) !important;
+  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
+    0 1px 3px 0 rgb(93 100 148 / 20%) !important;
+  transition: all 0.2s ease-out !important;
+}
+
+.deny__button:hover {
+  box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+    0 4px 6px 0 rgb(93 100 148 / 20%) !important;
+}
+
+.upload__image {
+  width: 50%;
+}

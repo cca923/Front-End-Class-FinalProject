@@ -6,7 +6,7 @@ import StudentMyClass from "./MyClass/index";
 
 const StyleStudentMainArea = styled.div`
   width: 100%;
-  /* background-color: white; */
+  margin-bottom: 50px;
 `;
 
 const StudentMainArea = (props) => {

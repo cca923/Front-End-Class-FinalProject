@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
+  changeSignLoading,
   changeSignPage,
   getIdentity,
-  getStudentData,
-  getTeacherData,
 } from "../../../Redux/Action";
+import Swal from "sweetalert2";
 import firebase from "../../../utils/config/firebase-config";
 
 import styled from "styled-components";
 import Signin from "./Signin";
 import Signup from "./Signup";
 import Identity from "./Identity";
+import loading from "../../../images/loading.gif";
 
 const StyleSignLayer = styled.div`
   width: 100%;
@@ -22,7 +23,7 @@ const StyleSignLayer = styled.div`
   position: fixed;
   top: 0;
   display: flex;
-  z-index: 999;
+  z-index: 1100;
 `;
 
 const StyleSignContainer = styled.div`
@@ -35,8 +36,7 @@ const StyleSignContainer = styled.div`
   height: 600px;
   margin-left: -250px;
   margin-top: -300px;
-
-  z-index: 1001;
+  z-index: 1200;
 
   @media only screen and (max-width: 1000px) {
     width: 350px;
@@ -59,7 +59,10 @@ const StyleSigninButton = styled.div`
   height: 60px;
   padding: 10px 20px;
   line-height: 40px;
-  background-color: ${(props) => (props.signin ? "white" : "#7678ed")};
+  background-image: ${(props) =>
+    props.signin
+      ? "linear-gradient(180deg, #fff, #fff)"
+      : "linear-gradient(180deg, #867aff, #6055c6);"};
   border-radius: 10px 10px 0px 0px;
   cursor: pointer;
 
@@ -79,7 +82,11 @@ const StyleSignupButton = styled.div`
   height: 60px;
   padding: 10px 20px;
   line-height: 40px;
-  background-color: ${(props) => (props.signup ? "white" : "#7678ed")};
+  background-image: ${(props) =>
+    props.signup
+      ? "linear-gradient(180deg, #fff, #fff)"
+      : "linear-gradient(180deg, #867aff, #6055c6);"};
+
   border-radius: 10px 10px 0px 0px;
   cursor: pointer;
 
@@ -92,8 +99,29 @@ const StyleSignupButton = styled.div`
   }
 `;
 
+const StyleStateWrap = styled.div`
+  width: 100%;
+  height: 100vh;
+  background-color: #979797;
+  opacity: 0.6;
+  position: fixed;
+  top: 0;
+  display: ${(props) => (props.signLoading ? "flex" : "none")};
+  z-index: 1300;
+`;
+
+const StyleLoading = styled.img`
+  width: 50%;
+  margin: auto;
+  height: 350px;
+  object-fit: cover;
+`;
+
 const Sign = (props) => {
   const identity = useSelector((state) => state.identity);
+  const identityData = useSelector((state) => state.identityData);
+  const signLoading = useSelector((state) => state.signLoading);
+
   const dispatch = useDispatch();
   const history = useHistory();
   const [signin, setSignin] = useState(true);
@@ -105,6 +133,8 @@ const Sign = (props) => {
   const teachersCollection = db.collection("teachers");
 
   const handleThirdPartySign = async (provider) => {
+    dispatch(changeSignLoading(true)); // 開啟 loading
+
     firebase
       .auth()
       .signInWithPopup(provider)
@@ -115,8 +145,22 @@ const Sign = (props) => {
             .get()
             .then((doc) => {
               if (doc.exists) {
-                window.alert("此 Email 註冊為老師，請選擇以老師身份登入！");
-                firebase.auth().signOut();
+                firebase
+                  .auth()
+                  .signOut()
+                  .then(() => {
+                    dispatch(changeSignLoading(false));
+                    dispatch(changeSignPage(false));
+                    dispatch(getIdentity(""));
+                    Swal.fire({
+                      title: "此 Email 註冊為老師",
+                      html: `<h3>請選擇以老師身份登入！</h3>`,
+                      icon: "warning",
+                      customClass: {
+                        confirmButton: "confirm__button",
+                      },
+                    });
+                  });
               } else {
                 // 確認是否已有學生帳號
                 studentsCollection
@@ -125,15 +169,7 @@ const Sign = (props) => {
                   .then((doc) => {
                     if (doc.exists) {
                       // 有就導向會員頁面
-
-                      // 監聽 firestore 來更新 Redux
-                      // studentsCollection
-                      //   .doc(res.user.email)
-                      //   .onSnapshot((doc) => {
-                      //     dispatch(getStudentData(doc.data()));
-                      //     console.log("新的學生Data", doc.data());
-                      //   });
-
+                      dispatch(changeSignLoading(false)); // 關掉 loading
                       dispatch(changeSignPage(false)); // 關掉 sign 視窗
                       history.push("/profile/myresume"); // 導向會員頁面
                     } else {
@@ -144,15 +180,10 @@ const Sign = (props) => {
                         email: res.user.email,
                       };
                       student.set(data).then(() => {
+                        dispatch(changeSignLoading(false));
                         dispatch(changeSignPage(false));
                         history.push("/profile/myresume");
                       });
-
-                      // 監聽 firestore 來更新 Redux
-                      // student.onSnapshot((doc) => {
-                      //   dispatch(getStudentData(doc.data()));
-                      //   console.log("新的學生Data", doc.data());
-                      // });
                     }
                   })
                   .catch((error) => {
@@ -169,8 +200,22 @@ const Sign = (props) => {
             .get()
             .then((doc) => {
               if (doc.exists) {
-                window.alert("此 Email 註冊為學生，請選擇以學生身份登入！");
-                firebase.auth().signOut();
+                firebase
+                  .auth()
+                  .signOut()
+                  .then(() => {
+                    dispatch(changeSignLoading(false));
+                    dispatch(changeSignPage(false));
+                    dispatch(getIdentity(""));
+                    Swal.fire({
+                      title: "此 Email 註冊為學生",
+                      html: `<h3>請選擇以學生身份登入！</h3>`,
+                      icon: "warning",
+                      customClass: {
+                        confirmButton: "confirm__button",
+                      },
+                    });
+                  });
               } else {
                 // 確認是否已有老師帳號
                 teachersCollection
@@ -179,15 +224,7 @@ const Sign = (props) => {
                   .then((doc) => {
                     if (doc.exists) {
                       // 有就導向會員頁面
-
-                      // 監聽 firestore 來更新 Redux
-                      // teachersCollection
-                      //   .doc(res.user.email)
-                      //   .onSnapshot((doc) => {
-                      //     dispatch(getTeacherData(doc.data()));
-                      //     console.log("新的Data", doc.data());
-                      //   });
-
+                      dispatch(changeSignLoading(false)); // 關掉 loading
                       dispatch(changeSignPage(false)); // 關掉 sign 視窗
                       history.push("/profile/myprofile"); // 導向會員頁面
                     } else {
@@ -198,15 +235,10 @@ const Sign = (props) => {
                         email: res.user.email,
                       };
                       teacher.set(data).then(() => {
+                        dispatch(changeSignLoading(false));
                         dispatch(changeSignPage(false));
                         history.push("/profile/myprofile");
                       });
-
-                      // 監聽 firestore 來更新 Redux
-                      // teacher.onSnapshot((doc) => {
-                      //   dispatch(getTeacherData(doc.data()));
-                      //   console.log("新的Data", doc.data());
-                      // });
                     }
                   })
                   .catch((error) => {
@@ -244,6 +276,10 @@ const Sign = (props) => {
 
   return (
     <>
+      <StyleStateWrap signLoading={signLoading}>
+        <StyleLoading src={loading} alt={"Loading"} />
+      </StyleStateWrap>
+
       <StyleSignLayer
         onClick={() => {
           dispatch(changeSignPage(false));

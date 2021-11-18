@@ -15,7 +15,7 @@ const StyleIdentity = styled.div`
   margin-top: -300px;
   background-color: #fff;
   border-radius: 15px;
-  z-index: 1001;
+  z-index: 1200;
 
   @media only screen and (max-width: 1000px) {
     width: 350px;
@@ -28,7 +28,7 @@ const StyleIdentity = styled.div`
 const StyleTitle = styled.div`
   font-size: 1.2rem;
   font-weight: 700;
-  border-bottom: 2px solid #7678ed;
+  border-bottom: 2px solid #7367f0;
   margin: 20px auto 0 auto;
   padding-bottom: 10px;
   width: 70%;
@@ -41,6 +41,7 @@ const StyleTitle = styled.div`
 `;
 
 const StyleStudentSelect = styled.div`
+  cursor: pointer;
   margin: auto;
   width: 70%;
   height: 30%;
@@ -56,6 +57,9 @@ const StyleStudentSelect = styled.div`
   opacity: ${(props) => (props.identity === "student" ? "1" : "0.3")};
 
   :hover {
+    box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 5px;
+    transform: scale(1.005);
+    transition: all 0.3s;
     opacity: 1;
   }
 
@@ -66,6 +70,7 @@ const StyleStudentSelect = styled.div`
 `;
 
 const StyleTeacherSelect = styled.div`
+  cursor: pointer;
   margin: 0 auto auto auto;
   width: 70%;
   height: 30%;
@@ -81,6 +86,9 @@ const StyleTeacherSelect = styled.div`
   opacity: ${(props) => (props.identity === "teacher" ? "1" : "0.3")};
 
   :hover {
+    box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 5px;
+    transform: scale(1.005);
+    transition: all 0.3s;
     opacity: 1;
   }
 

@@ -9,6 +9,7 @@ const StyleTeacherMainArea = styled.div`
   /* background-color: white; */
   display: flex;
   flex-direction: column;
+  margin-bottom: 50px;
 `;
 
 const TeacherMainArea = (props) => {

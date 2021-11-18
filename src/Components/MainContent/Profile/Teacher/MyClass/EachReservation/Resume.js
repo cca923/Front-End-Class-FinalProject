@@ -4,6 +4,7 @@ import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
 import firebase from "../../../../../../utils/config/firebase-config";
 import { nanoid } from "nanoid";
+import noPhoto from "../../../../../../images/resume-noPhoto.png";
 
 const StyleResumeLayer = styled.div`
   width: 100vw;
@@ -31,18 +32,12 @@ const StyleResumeContainer = styled.div`
   z-index: 20000;
   overflow-y: scroll;
 
-  @media only screen and (max-width: 1100px) {
-    /* width: 350px;
-    height: 440px;
-    margin-left: -175px;
-    margin-top: -220px; */
-  }
-
-  @media only screen and (max-width: 600) {
-    /* width: 250px;
-    height: 440px;
-    margin-left: -125px;
-    margin-top: -220px; */
+  @media only screen and (max-width: 600px) {
+    top: 15vh;
+    left: 50%;
+    height: 70vmin;
+    min-height: 550px;
+    margin-top: 0;
   }
 `;
 
@@ -65,7 +60,7 @@ const StyleOthers = styled.div`
 const StyleImage = styled.img`
   width: 150px;
   height: 150px;
-  background-color: gray;
+  background-color: #f2f2f2;
 
   @media only screen and (max-width: 1100px) {
     display: none;
@@ -77,7 +72,7 @@ const StyleDetail = styled.div`
   display: flex;
   flex-direction: column;
   width: calc(100% - 150px);
-  /* max-height: calc(100% - 150px); */
+
   @media only screen and (max-width: 1100px) {
     width: 100%;
     padding: 30px 30px 0px 30px;
@@ -92,11 +87,20 @@ const StyleName = styled.h1`
   font-size: 2rem;
   font-weight: 500;
   margin-right: 20px;
+
+  @media only screen and (max-width: 600px) {
+    font-size: 1.5rem;
+  }
 `;
 
 const StyleEmail = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
+
+  @media only screen and (max-width: 600px) {
+    font-size: 1.2rem;
+    line-height: 1.5rem;
+  }
 `;
 
 const StyleAreaTitle = styled.h1`
@@ -117,7 +121,7 @@ const StyleReactQuillDisplay = styled.div`
   height: fit-content;
   z-index: 1000;
   line-height: 1.6rem;
-  padding: 30px;
+  padding: 10px 30px;
 
   a {
     text-decoration: underline;
@@ -141,7 +145,7 @@ const Resume = (props) => {
         <StyleMyResume>
           <StyleAbout>
             <StyleImage
-              src={props.studentData.photo}
+              src={props.studentData.photo || noPhoto}
               alt={props.studentData.name}
             />
             <StyleDetail>

@@ -2,11 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Select from "react-select";
+import Swal from "sweetalert2";
 import firebase from "../../../../../utils/config/firebase-config";
 
 const StyleTeacherTag = styled.div`
   width: 100%;
-  padding: 20px;
+  padding: 20px 40px;
+
+  @media only screen and (max-width: 660px) {
+    padding: 20px;
+  }
 `;
 
 const StyleTitle = styled.div`
@@ -59,59 +64,60 @@ const StyleSelect = styled(Select)`
 `;
 
 const StyleTagSubmitButton = styled.div`
-  width: 200px;
-  font-size: 1rem;
-  color: white;
-  background-color: #757bc8;
-  border-radius: 20px;
-  border: 2px solid #bbadff;
-  padding: 10px;
-  margin: 20px auto 0 auto;
+  width: 150px;
+  outline: 0;
+  border: 0;
   cursor: pointer;
+  color: rgb(72, 76, 122);
+  font-weight: 600;
+  font-size: 1rem;
   text-align: center;
+  line-height: 38px;
+  margin: 20px auto 10px auto;
+  border-radius: 50px;
+  background-image: linear-gradient(180deg, #fff, #f5f5fa);
+  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
+    0 1px 3px 0 rgb(93 100 148 / 20%);
+  transition: all 0.2s ease-out;
 
-  &:hover {
-    background-color: #bbadff;
-    border: 2px solid #757bc8;
-    color: black;
-  }
-
-  @media only screen and (max-width: 1300px) {
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
   }
 `;
 
 const StyleTagDisplayArea = styled.div`
   display: flex;
   padding: 10px 0;
+
+  @media only screen and (max-width: 600px) {
+    flex-direction: column;
+  }
 `;
 
 const StyleTag = styled.div`
-  background-color: #bbadff;
+  background-color: #7367f0;
+  color: #fff;
   width: fit-content;
   border-radius: 10px;
   display: flex;
   padding: 10px;
   margin-right: 10px;
-`;
 
-const StyleTagIcon = styled.div`
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  display: inline-block;
-  align-content: center;
-  background-size: cover;
-  background-position: center;
-  background-image: url("/images/tag.png");
+  @media only screen and (max-width: 600px) {
+    margin-bottom: 10px;
+    width: 100%;
+  }
 `;
 
 const StyleValue = styled.div`
   line-height: 20px;
 `;
 
-const TeacherTag = (props) => {
+const TeacherTag = () => {
   const identityData = useSelector((state) => state.identityData);
   const tag = identityData.tag;
+
   const db = firebase.firestore();
   const user = firebase.auth().currentUser;
   const teachersRef = db.collection("teachers").doc(user.email);
@@ -119,7 +125,6 @@ const TeacherTag = (props) => {
   const [selectIndustry, setSelectIndustry] = useState("");
   const [selectTitle, setSelectTitle] = useState("");
   const [selectLanguage, setSelectLanguage] = useState("");
-  const [displayTag, setDisplayTag] = useState(false);
 
   const industryOptions = [
     { value: "農、林、漁、牧業", label: "農、林、漁、牧業" },
@@ -171,42 +176,48 @@ const TeacherTag = (props) => {
   };
 
   const handleDisplay = () => {
-    if (selectIndustry !== "" && selectTitle !== "" && selectLanguage !== "") {
+    if (
+      selectIndustry.length !== 0 &&
+      selectTitle.length !== 0 &&
+      selectLanguage.length !== 0
+    ) {
       const tag = {
         industry: selectIndustry.value,
         title: selectTitle.value,
         language: selectLanguage.value,
       };
       teachersRef.update({ tag }).then(() => {
-        setDisplayTag(true);
+        Swal.fire({
+          title: "更改成功！",
+          icon: "success",
+          timer: 1200,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
       });
     } else {
-      window.alert("請選擇分類標籤！");
+      Swal.fire({
+        title: "請選擇分類標籤！",
+        icon: "warning",
+        customClass: {
+          confirmButton: "confirm__button",
+        },
+      });
     }
   };
-
-  useEffect(() => {
-    // 初始狀態
-    if (tag) {
-      setDisplayTag(true);
-    }
-  }, [tag]);
 
   return (
     <StyleTeacherTag>
       <StyleTitle>分類標籤｜Tag</StyleTitle>
-      {displayTag ? (
+      {tag ? (
         <StyleTagDisplayArea>
           <StyleTag>
-            {/* <StyleTagIcon /> */}
             <StyleValue>{tag.industry}</StyleValue>
           </StyleTag>
           <StyleTag>
-            {/* <StyleTagIcon /> */}
             <StyleValue>{tag.title}</StyleValue>
           </StyleTag>
           <StyleTag>
-            {/* <StyleTagIcon /> */}
             <StyleValue>{tag.language}</StyleValue>
           </StyleTag>
         </StyleTagDisplayArea>
@@ -244,7 +255,7 @@ const TeacherTag = (props) => {
           </StyleTagContainer>
         </StyleData>
         <StyleTagSubmitButton onClick={handleDisplay}>
-          {displayTag ? "更新" : "送出"}標籤
+          {tag ? "更改" : "送出"}標籤
         </StyleTagSubmitButton>
       </StyleForm>
     </StyleTeacherTag>

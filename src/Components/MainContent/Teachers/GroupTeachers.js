@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import firebase from "../../../utils/config/firebase-config";
 import { nanoid } from "nanoid";
+import noPhoto from "../../../images/resume-noPhoto.png";
+import noResult from "../../../images/noResult.gif";
+import loading from "../../../images/loading.gif";
 
 const StyleGroupTeachers = styled.div`
   width: 100%;
@@ -18,7 +21,7 @@ const StyleGroupTeachers = styled.div`
     gap: 30px 30px;
   }
 
-  @media only screen and (max-width: 1300px) {
+  @media only screen and (max-width: 1450px) {
     grid-template-columns: repeat(1, 1fr);
     gap: 20px 20px;
     padding: 40px;
@@ -49,14 +52,20 @@ const StyleEachTeacher = styled.a`
 
   @media only screen and (max-width: 650px) {
     height: fit-content;
-    /* flex-direction: column; */
+  }
+
+  :hover {
+    box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 5px;
+    transform: scale(1.005);
+    transition: all 0.3s;
   }
 `;
 
 const StyleImage = styled.img`
   width: 100px;
   height: 100px;
-  background-color: grey;
+  background-color: #e1e1e1;
+  object-fit: cover;
 `;
 
 const StyleDetail = styled.div`
@@ -65,11 +74,6 @@ const StyleDetail = styled.div`
   flex-direction: column;
   padding: 15px 0;
 
-  @media only screen and (max-width: 1020px) {
-    /* width: fit-content; */
-    /* padding: 10px 0 0 30px; */
-  }
-
   @media only screen and (max-width: 780px) {
     padding: 15px 0;
   }
@@ -77,12 +81,21 @@ const StyleDetail = styled.div`
 
 const StyleAbout = styled.div`
   display: flex;
+
+  @media only screen and (max-width: 450px) {
+    flex-direction: column;
+  }
 `;
 
 const StyleAboutDetail = styled.div`
   display: flex;
   flex-direction: column;
   margin-left: 10px;
+
+  @media only screen and (max-width: 450px) {
+    margin-left: 0px;
+    margin-top: 15px;
+  }
 `;
 
 const StyleName = styled.div`
@@ -94,19 +107,21 @@ const StyleName = styled.div`
 const StyleCompany = styled.div`
   font-size: 1.2rem;
   margin-top: 10px;
-  border-left: 2px solid #7678ed;
+  border-left: 2px solid #7367f0;
   padding-left: 8px;
 `;
 
 const StyleData = styled.span`
   font-size: 1rem;
   margin-top: 10px;
-  border-left: 2px solid #7678ed;
+  border-left: 2px solid #7367f0;
   padding-left: 8px;
+  line-height: 1.3rem;
 `;
 
 const StyleTagDisplayArea = styled.div`
   display: flex;
+  margin-top: auto;
 
   @media only screen and (max-width: 1020px) {
     width: 100%;
@@ -116,10 +131,15 @@ const StyleTagDisplayArea = styled.div`
   @media only screen and (max-width: 780px) {
     margin-top: 0;
   }
+
+  @media only screen and (max-width: 600px) {
+    flex-direction: column;
+  }
 `;
 
 const StyleTag = styled.div`
-  background-color: #bbadff;
+  background-color: #7367f0;
+  color: #fff;
   width: fit-content;
   border-radius: 10px;
   display: flex;
@@ -131,18 +151,58 @@ const StyleTag = styled.div`
     margin: 0;
     margin-right: 10px;
   }
+
+  @media only screen and (max-width: 600px) {
+    margin-bottom: 10px;
+    width: 100%;
+  }
 `;
 
 const StyleValue = styled.div`
   line-height: 20px;
 `;
 
+const StyleStateWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
+const StyleNoResult = styled.img`
+  width: 30%;
+  margin: 20px auto 0;
+  object-fit: cover;
+`;
+
+const StyleNpResultText = styled.div`
+  width: 100%;
+  margin: 10px auto;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #343434;
+
+  @media only screen and (max-width: 1200px) {
+    font-size: 1.5rem;
+  }
+
+  @media only screen and (max-width: 600px) {
+    font-size: 1rem;
+  }
+`;
+
+const StyleLoading = styled.img`
+  width: 50%;
+  margin: 0 auto;
+  height: 350px;
+  object-fit: cover;
+`;
+
 const GroupTeachers = (props) => {
   const db = firebase.firestore();
   const teachersCollection = db.collection("teachers");
-  const [teachersData, setTeachersData] = useState([]);
-  console.log("所有老師", teachersData);
-  const teachersFilterData = [];
+  const [teachersData, setTeachersData] = useState();
+  // console.log("所有老師", teachersData);
 
   useEffect(() => {
     teachersCollection
@@ -171,68 +231,97 @@ const GroupTeachers = (props) => {
       });
   }, []);
 
-  if (
-    props.selectIndustry === "" &&
-    props.selectTitle === "" &&
-    props.selectLanguage === ""
-  ) {
-    // 如果沒有 tag 就顯示 firebase 全部的資料
-    teachersFilterData.push(...teachersData);
-  } else {
-    // 如果有 tag 就篩選出符合條件的資料
-    const matchData = teachersData.filter((teacher) => {
-      if (props.selectIndustry.value === teacher.tag.industry) {
-        return true;
-      } else if (props.selectTitle.value === teacher.tag.title) {
-        return true;
-      } else if (props.selectLanguage.value === teacher.tag.language) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+  // 確認老師的 Tag 是否完全包含「選擇的 Tag」
+  const checker = (arr, targetTag) =>
+    targetTag.every((option) => arr.includes(option));
 
-    teachersFilterData.push(...matchData);
+  const targetTag = [];
+  if (props.selectIndustry !== "") {
+    targetTag.push(props.selectIndustry.value);
   }
+  if (props.selectTitle !== "") {
+    targetTag.push(props.selectTitle.value);
+  }
+  if (props.selectLanguage !== "") {
+    targetTag.push(props.selectLanguage.value);
+  }
+  // console.log(targetTag);
 
-  return (
-    <StyleGroupTeachers>
-      {teachersFilterData.map((teacher) => {
-        return (
-          <StyleEachTeacher
-            key={nanoid()}
-            as={Link}
-            to={`/teachers/${teacher.uid}`}>
-            <StyleAbout>
-              <StyleImage alt={teacher.name} src={teacher.photo} />
-              <StyleAboutDetail>
-                <StyleName>{teacher.name}</StyleName>
-                <StyleCompany>{teacher.about.presentCompany}</StyleCompany>
-                <StyleCompany>{teacher.about.presentTitle}</StyleCompany>
-              </StyleAboutDetail>
-            </StyleAbout>
+  // 拿掉 teachersData initial state 從 [] 改成 undefined
+  // 因為一開始會 undefined，所以給 ? ，然後再進行判斷！
+  const filterResult = teachersData?.filter((teacher) => {
+    if (
+      props.selectIndustry === "" &&
+      props.selectTitle === "" &&
+      props.selectLanguage === ""
+    ) {
+      return teachersData;
+    } else {
+      const teacherTag = [];
+      teacherTag.push(teacher.tag.industry);
+      teacherTag.push(teacher.tag.title);
+      teacherTag.push(teacher.tag.language);
 
-            <StyleDetail>
-              {teacher.talents.map((talent) => {
-                return <StyleData>{talent.description}</StyleData>;
-              })}
-            </StyleDetail>
+      return checker(teacherTag, targetTag);
+    }
+  });
 
-            <StyleTagDisplayArea>
-              <StyleTag>
-                <StyleValue>{teacher.tag.industry}</StyleValue>
-              </StyleTag>
-              <StyleTag>
-                <StyleValue>{teacher.tag.title}</StyleValue>
-              </StyleTag>
-              <StyleTag>
-                <StyleValue>{teacher.tag.language}</StyleValue>
-              </StyleTag>
-            </StyleTagDisplayArea>
-          </StyleEachTeacher>
-        );
-      })}
-    </StyleGroupTeachers>
+  return filterResult ? (
+    <>
+      {filterResult.length !== 0 ? (
+        <StyleGroupTeachers>
+          {filterResult.map((teacher) => {
+            return (
+              <StyleEachTeacher
+                key={nanoid()}
+                as={Link}
+                to={`/teachers/${teacher.uid}`}>
+                <StyleAbout>
+                  <StyleImage
+                    alt={teacher.name}
+                    src={teacher.photo || noPhoto}
+                  />
+                  <StyleAboutDetail>
+                    <StyleName>{teacher.name}</StyleName>
+                    <StyleCompany>{teacher.about.presentCompany}</StyleCompany>
+                    <StyleCompany>{teacher.about.presentTitle}</StyleCompany>
+                  </StyleAboutDetail>
+                </StyleAbout>
+
+                <StyleDetail>
+                  {teacher.talents.map((talent) => {
+                    return (
+                      <StyleData key={nanoid()}>{talent.description}</StyleData>
+                    );
+                  })}
+                </StyleDetail>
+
+                <StyleTagDisplayArea>
+                  <StyleTag>
+                    <StyleValue>{teacher.tag.industry}</StyleValue>
+                  </StyleTag>
+                  <StyleTag>
+                    <StyleValue>{teacher.tag.title}</StyleValue>
+                  </StyleTag>
+                  <StyleTag>
+                    <StyleValue>{teacher.tag.language}</StyleValue>
+                  </StyleTag>
+                </StyleTagDisplayArea>
+              </StyleEachTeacher>
+            );
+          })}
+        </StyleGroupTeachers>
+      ) : (
+        <StyleStateWrap>
+          <StyleNoResult src={noResult} alt={"No Result"} />
+          <StyleNpResultText>No Result｜找不到符合條件的前輩</StyleNpResultText>
+        </StyleStateWrap>
+      )}
+    </>
+  ) : (
+    <StyleStateWrap>
+      <StyleLoading src={loading} alt={"Loading"} />
+    </StyleStateWrap>
   );
 };
 

@@ -2,11 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
+import Swal from "sweetalert2";
 import firebase from "../../../../../../utils/config/firebase-config";
 
 const StyleTeacherTalent = styled.div`
   width: 100%;
   padding: 0 20px;
+
+  @media only screen and (max-width: 660px) {
+    padding: 0 3px;
+  }
 `;
 
 const StyleEachDetail = styled.div`
@@ -17,7 +22,8 @@ const StyleEachDetail = styled.div`
 
 const StyleSubtitle = styled.div`
   position: absolute;
-  background-color: #898292;
+  background-color: #9092db;
+  box-shadow: rgba(0, 0, 225, 0.35) 0px -50px 36px -28px inset;
   padding: 15px;
   border-radius: 25px;
   top: 5px;
@@ -26,30 +32,41 @@ const StyleSubtitle = styled.div`
   font-size: 1.2rem;
   text-align: center;
   color: #fff;
+
+  @media only screen and (max-width: 600px) {
+    width: 200px;
+    font-size: 1.1rem;
+  }
 `;
 
 const StyleContainer = styled.div`
   height: 100%;
-  background-color: #f8f3f8;
-  border-top: 2px solid #898292;
+  background-color: #f3f3f3;
+  border-top: 2px solid #8e94f2;
   border-radius: 20px;
   padding: 50px 30px 20px 30px;
 `;
 
 const StyleTalentArea = styled.div`
-  display: flex;
-  justify-content: space-around;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 0px 40px;
+  padding: 20px 20px 0;
 
-  @media only screen and (max-width: 900px) {
-    flex-direction: column;
+  @media only screen and (max-width: 1000px) {
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 20px 0px;
   }
 `;
 
 const StyleTalentContainer = styled.div`
   display: flex;
   flex-direction: column;
+  padding: 0 10px;
 
-  @media only screen and (max-width: 900px) {
+  @media only screen and (max-width: 1000px) {
+    padding: 0 10px;
     margin-bottom: 5px;
   }
 `;
@@ -64,7 +81,7 @@ const StyleLabel = styled.label`
 `;
 
 const StyleLabelTitle = styled.span`
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   line-height: 2rem;
   color: #898292;
@@ -77,63 +94,54 @@ const StyleLabelSubtitle = styled.div`
   color: #898292;
   border-bottom: 2px solid #898292;
   margin: 5px 0;
-  width: 200px;
 
-  @media only screen and (max-width: 900px) {
+  @media only screen and (max-width: 1000px) {
     width: fit-content;
   }
 `;
 
 const StyleInput = styled.input`
+  font-size: 1rem;
   padding: 5px;
-  width: 200px;
   height: 40px;
   border: 2px solid #e4e5e1;
   border-radius: 8px;
-
-  @media only screen and (max-width: 1020px) {
-    width: 100%;
-  }
 `;
 
 const StyleDescriptionInput = styled.input`
+  font-size: 1rem;
   padding: 5px;
-  width: 200px;
   height: 100px;
   border: 2px solid #e4e5e1;
   border-radius: 8px;
 
-  @media only screen and (max-width: 1020px) {
-    width: 100%;
-  }
-
-  @media only screen and (max-width: 900px) {
+  @media only screen and (max-width: 1000px) {
     height: 60px;
   }
 `;
 
 const StyleTalentDisplayContainer = styled.div`
   width: 100%;
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 0px 40px;
+  margin-bottom: 45px;
+  background-color: #fff;
+  border-radius: 25px;
+  padding: 20px;
+  box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 5px;
 
-  @media only screen and (max-width: 900px) {
-    flex-direction: column;
+  @media only screen and (max-width: 1000px) {
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 20px 0px;
   }
 `;
 
 const StyleTalentDisplay = styled.div`
-  margin: 20px 0 10px 0;
-  padding: 5px 20px;
+  padding: 5px 10px;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  width: 239px;
-
-  @media only screen and (max-width: 900px) {
-    width: 100%;
-    margin: 10px 0 5px 0;
-  }
 `;
 
 const StyleTalentDisplayLabel = styled.span`
@@ -145,40 +153,42 @@ const StyleTalentDisplayLabel = styled.span`
 `;
 
 const StyleTalentDisplayText = styled.div`
-  width: 199px;
   margin-top: 5px;
   padding: 0 3px;
+  line-height: 1.5rem;
 
-  @media only screen and (max-width: 900px) {
+  @media only screen and (max-width: 1000px) {
     width: 100%;
   }
 `;
 
 const StyleTagSubmitButton = styled.div`
-  width: 200px;
-  font-size: 1rem;
-  color: white;
-  background-color: #757bc8;
-  border-radius: 20px;
-  border: 2px solid #bbadff;
-  padding: 10px;
-  margin: 20px auto 0 auto;
+  width: 150px;
+  outline: 0;
+  border: 0;
   cursor: pointer;
+  color: rgb(72, 76, 122);
+  font-weight: 600;
+  font-size: 1rem;
   text-align: center;
+  line-height: 38px;
+  margin: 20px auto 10px auto;
+  border-radius: 50px;
+  background-image: linear-gradient(180deg, #fff, #f5f5fa);
+  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
+    0 1px 3px 0 rgb(93 100 148 / 20%);
+  transition: all 0.2s ease-out;
 
-  &:hover {
-    background-color: #bbadff;
-    border: 2px solid #757bc8;
-    color: black;
-  }
-
-  @media only screen and (max-width: 1300px) {
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
   }
 `;
 
-const TeacherTalent = (props) => {
+const TeacherTalent = () => {
   const identityData = useSelector((state) => state.identityData);
   const talentsData = identityData.talents;
+
   const db = firebase.firestore();
   const user = firebase.auth().currentUser;
   const teachersRef = db.collection("teachers").doc(user.email);
@@ -189,18 +199,23 @@ const TeacherTalent = (props) => {
   const [talent2Description, setTalent2Description] = useState("");
   const [talent3Title, setTalent3Title] = useState("");
   const [talent3Description, setTalent3Description] = useState("");
-  const [displayTalent, setDisplayTalent] = useState(false);
 
   const handleTalentDisplay = () => {
     if (
-      talent1Title === "" &&
-      talent1Description === "" &&
-      talent2Title === "" &&
-      talent2Description === "" &&
-      talent3Title === "" &&
-      talent3Description === ""
+      talent1Title.length === 0 ||
+      talent1Description.length === 0 ||
+      talent2Title.length === 0 ||
+      talent2Description.length === 0 ||
+      talent3Title.length === 0 ||
+      talent3Description.length === 0
     ) {
-      window.alert("請輸入技能！");
+      Swal.fire({
+        title: "請輸入完整三項技能！",
+        icon: "warning",
+        customClass: {
+          confirmButton: "confirm__button",
+        },
+      });
     } else {
       const talents = [
         { title: talent1Title, description: talent1Description },
@@ -208,7 +223,13 @@ const TeacherTalent = (props) => {
         { title: talent3Title, description: talent3Description },
       ];
       teachersRef.update({ talents }).then(() => {
-        setDisplayTalent(true);
+        Swal.fire({
+          title: "更改成功！",
+          icon: "success",
+          timer: 1200,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
         setTalent1Title("");
         setTalent1Description("");
         setTalent2Title("");
@@ -219,18 +240,31 @@ const TeacherTalent = (props) => {
     }
   };
 
-  useEffect(() => {
-    // 初始狀態
-    if (talentsData) {
-      setDisplayTalent(true);
-    }
-  }, [talentsData]);
-
   return (
     <StyleTeacherTalent>
       <StyleEachDetail>
         <StyleSubtitle>擅長技能｜Talent</StyleSubtitle>
         <StyleContainer>
+          {talentsData ? (
+            <StyleTalentDisplayContainer>
+              {talentsData.map((talent, index) => {
+                return (
+                  <StyleTalentDisplay key={nanoid()}>
+                    <StyleLabel>
+                      {index + 1}.
+                      <StyleTalentDisplayLabel>
+                        {talent.title}
+                      </StyleTalentDisplayLabel>
+                    </StyleLabel>
+                    <StyleTalentDisplayText>
+                      {talent.description}
+                    </StyleTalentDisplayText>
+                  </StyleTalentDisplay>
+                );
+              })}
+            </StyleTalentDisplayContainer>
+          ) : null}
+
           <StyleTalentArea>
             <StyleTalentContainer>
               <StyleLabel>
@@ -240,8 +274,8 @@ const TeacherTalent = (props) => {
                 value={talent1Title}
                 onChange={(e) => setTalent1Title(e.target.value)}
                 type="text"
-                placeholder="請輸入技能名稱(限4字)"
-                maxLength="4"
+                placeholder="請輸入技能名稱(限5字)"
+                maxLength="5"
                 required
               />
 
@@ -264,8 +298,8 @@ const TeacherTalent = (props) => {
                 value={talent2Title}
                 onChange={(e) => setTalent2Title(e.target.value)}
                 type="text"
-                placeholder="請輸入技能名稱(限4字)"
-                maxLength="4"
+                placeholder="請輸入技能名稱(限5字)"
+                maxLength="5"
                 required
               />
               <StyleLabelSubtitle>技能介紹</StyleLabelSubtitle>
@@ -287,8 +321,8 @@ const TeacherTalent = (props) => {
                 value={talent3Title}
                 onChange={(e) => setTalent3Title(e.target.value)}
                 type="text"
-                placeholder="請輸入技能名稱(限4字)"
-                maxLength="4"
+                placeholder="請輸入技能名稱(限5字)"
+                maxLength="5"
                 required
               />
               <StyleLabelSubtitle>技能介紹</StyleLabelSubtitle>
@@ -303,27 +337,8 @@ const TeacherTalent = (props) => {
             </StyleTalentContainer>
           </StyleTalentArea>
           <StyleTagSubmitButton onClick={handleTalentDisplay}>
-            {displayTalent ? "更新" : "送出"}技能
+            {talentsData ? "更改" : "送出"}技能
           </StyleTagSubmitButton>
-          {displayTalent ? (
-            <StyleTalentDisplayContainer>
-              {talentsData.map((talent, index) => {
-                return (
-                  <StyleTalentDisplay key={nanoid()}>
-                    <StyleLabel>
-                      {index + 1}.
-                      <StyleTalentDisplayLabel>
-                        {talent.title}
-                      </StyleTalentDisplayLabel>
-                    </StyleLabel>
-                    <StyleTalentDisplayText>
-                      {talent.description}
-                    </StyleTalentDisplayText>
-                  </StyleTalentDisplay>
-                );
-              })}
-            </StyleTalentDisplayContainer>
-          ) : null}
         </StyleContainer>
       </StyleEachDetail>
     </StyleTeacherTalent>

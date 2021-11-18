@@ -4,9 +4,7 @@ import Header from "../../Header/Header";
 import Introduction from "./Introduction";
 import video from "../../../images/home-video.mp4";
 
-const StyleHome = styled.div`
-  opacity: 0.8;
-`;
+const StyleHome = styled.div``;
 
 const StyleImageTeacherArea = styled.div`
   width: 50%;
@@ -39,6 +37,8 @@ const StyleVideoArea = styled.video`
   top: 0;
   left: 0;
   z-index: -100;
+  opacity: 0.8;
+  background-color: #9092db;
 `;
 
 const StyleTextArea = styled.div`
@@ -55,6 +55,11 @@ const StyleTextTitle = styled.div`
   letter-spacing: -2px;
   line-height: 5rem;
   margin-bottom: 80px;
+
+  @media only screen and (max-width: 730px) {
+    font-size: 5rem;
+    margin-bottom: 20px;
+  }
 `;
 
 const StyleTextSlogan = styled.div`
@@ -62,8 +67,14 @@ const StyleTextSlogan = styled.div`
   font-size: 5rem;
   font-weight: 900;
   letter-spacing: -2px;
-  border-left: 20px solid #7678ed;
+  border-left: 20px solid #7367f0;
   padding-left: 20px;
+  letter-spacing: 3px;
+
+  @media only screen and (max-width: 730px) {
+    font-size: 2rem;
+    border-left: 10px solid #7367f0;
+  }
 `;
 
 const StyleScrollIcon = styled.div`

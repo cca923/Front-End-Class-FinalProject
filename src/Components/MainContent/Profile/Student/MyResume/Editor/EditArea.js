@@ -13,11 +13,13 @@ const StyleCustomDisplay = styled.div`
   max-width: 100%;
   resize: none;
   margin: 10px 0px;
+  line-height: 1.3rem;
 `;
 
 const EditArea = (props) => {
   const identityData = useSelector((state) => state.identityData);
   const resumeData = identityData.resume;
+
   const user = firebase.auth().currentUser;
   const db = firebase.firestore();
   const studentsRef = db.collection("students").doc(user.email);

@@ -2,37 +2,97 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Sidebar from "./Sidebar";
 import GroupTeachers from "./GroupTeachers";
+import headerImage from "../../../images/theme/theme-16.png";
 
-const StyleTeachers = styled.div`
-  opacity: 0.8;
+const StyleHeaderArea = styled.div`
+  display: flex;
+
+  @media only screen and (max-width: 800px) {
+    flex-direction: column;
+  }
 `;
 
-const StyleImageStudentArea = styled.div`
+const StyleImageArea = styled.img`
   width: 50vw;
   height: 300px;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: 20vw -5vw;
-  display: inline-block;
+  display: inline-flex;
   vertical-align: bottom;
-  background-image: url("/images/home-student.png");
+  background-color: #7367f0;
+  opacity: 0.8;
+  box-shadow: rgba(0, 0, 225, 0.35) 0px -50px 36px -28px inset;
+  object-fit: cover;
+  object-position: top 35% right 0;
 
   @media only screen and (max-width: 1020px) {
-    height: 200px;
+  }
+
+  @media only screen and (max-width: 800px) {
+    display: block;
+  }
+
+  @media only screen and (max-width: 800px) {
+    order: -1;
+    width: 100%;
+    height: 150px;
   }
 `;
 
 const StyleBanner = styled.div`
-  display: inline-block;
+  display: inline-flex;
   width: 50vw;
   height: 300px;
-  background-color: #898292;
+  background-color: #c4c4c4;
+  flex-direction: column;
   vertical-align: bottom;
   position: relative;
 
+  @media only screen and (max-width: 800px) {
+    width: 100%;
+    height: 150px;
+  }
+`;
+
+const StyleTitle = styled.div`
+  margin: auto auto 0 80px;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #000;
+
+  @media only screen and (max-width: 1500px) {
+    font-size: 2rem;
+  }
+
   @media only screen and (max-width: 1020px) {
-    height: 200px;
+    margin: auto auto 0 40px;
+    font-size: 1.5rem;
+  }
+`;
+
+const StyleSubtitle = styled.div`
+  margin: 20px auto 0 80px;
+  font-size: 1.2rem;
+  font-weight: 400;
+  border-left: 3px solid #fff;
+  padding-left: 10px;
+  line-height: 30px;
+
+  @media only screen and (max-width: 1500px) {
+    font-size: 1.1rem;
+  }
+
+  @media only screen and (max-width: 1020px) {
+    margin: 10px auto 0 40px;
+  }
+`;
+
+const StyleCaption = styled.div`
+  margin: 10px auto 55px 80px;
+  padding-left: 13px;
+  font-size: 0.9rem;
+
+  @media only screen and (max-width: 1020px) {
+    margin: 5px auto 30px 40px;
   }
 `;
 
@@ -53,9 +113,16 @@ const Teachers = (props) => {
   const [displayTag, setDisplayTag] = useState(false);
 
   return (
-    <StyleTeachers>
-      <StyleBanner />
-      <StyleImageStudentArea />
+    <>
+      <StyleHeaderArea>
+        <StyleBanner>
+          <StyleTitle>一對一視訊＆預約履歷修改</StyleTitle>
+          <StyleSubtitle>職涯路上，隨時導航！</StyleSubtitle>
+          <StyleCaption>依照目標產業、專業領域，預約適合的人選！</StyleCaption>
+        </StyleBanner>
+        <StyleImageArea src={headerImage} alt={"header image"} />
+      </StyleHeaderArea>
+
       <StyleTeachersContainer>
         <Sidebar
           selectIndustry={selectIndustry}
@@ -78,7 +145,7 @@ const Teachers = (props) => {
           setDisplayTag={setDisplayTag}
         />
       </StyleTeachersContainer>
-    </StyleTeachers>
+    </>
   );
 };
 

@@ -4,8 +4,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { getIdentity } from "../../../Redux/Action";
 import styled from "styled-components";
 import firebase from "../../../utils/config/firebase-config";
-import ProfileSidebar from "./ProfileSidebar";
-import ProfileMainArea from "./ProfileMainArea";
+import Sidebar from "./Sidebar";
+import MainArea from "./MainArea";
+import loading from "../../../images/loading.gif";
 
 const StyleProfile = styled.div`
   position: relative;
@@ -13,44 +14,78 @@ const StyleProfile = styled.div`
   flex-direction: column;
   width: 100%;
 
+  /* BUG */
   @media only screen and (max-width: 1300px) {
-    height: 320px;
+    /* height: 320px; */
+  }
+`;
+
+const StyleHeaderArea = styled.div`
+  width: 100%;
+  height: 100px;
+  background-color: #7367f0;
+
+  @media print {
+    display: none;
   }
 `;
 
 const StyleProfileStudentImage = styled.div`
   width: 100%;
-  height: 500px;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: contain;
-  display: inline-block;
-  vertical-align: bottom;
-  background-image: url("/images/profile-student.png");
-
-  @media only screen and (max-width: 1300px) {
-    height: 320px;
-  }
-`;
-
-const StyleProfileTeacherImage = styled.div`
-  width: 100%;
-  height: 500px;
+  height: 400px;
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
   display: inline-block;
   vertical-align: bottom;
+  background-position: center;
+  background-image: url("/images/profile-student.png");
+
+  @media only screen and (max-width: 1300px) {
+    height: 220px;
+  }
+
+  @media print {
+    display: none;
+  }
+`;
+
+const StyleProfileTeacherImage = styled.div`
+  width: 100%;
+  height: 400px;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: inline-block;
+  vertical-align: bottom;
+  background-position: center;
   background-image: url("/images/profile-teacher.png");
 
   @media only screen and (max-width: 1300px) {
-    height: 320px;
+    height: 220px;
   }
+
+  @media print {
+    display: none;
+  }
+`;
+
+const StyleStateWrap = styled.div`
+  display: flex;
+  width: 100%;
+`;
+
+const StyleLoading = styled.img`
+  width: 50%;
+  margin: 0 auto;
+  height: 350px;
+  object-fit: cover;
 `;
 
 const Profile = (props) => {
   const identity = useSelector((state) => state.identity);
   const identityData = useSelector((state) => state.identityData);
+
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -68,7 +103,6 @@ const Profile = (props) => {
           dispatch(getIdentity("teacher"));
           teachersRef.update({
             uid: user.uid, // 加入作為巢狀路由 URL
-            photo: user.photoURL, // 加入照片 URL
           });
         }
       })
@@ -83,7 +117,6 @@ const Profile = (props) => {
           dispatch(getIdentity("student"));
           studentsRef.update({
             uid: user.uid,
-            photo: user.photoURL, // 加入照片 URL
           });
         }
       })
@@ -95,17 +128,22 @@ const Profile = (props) => {
   // TODO:沒登入過要 Redireact 回首頁！
   return (
     <StyleProfile>
-      {user !== null ? (
+      <StyleHeaderArea />
+      {Object.keys(identityData).length !== 0 ? (
         <>
           {identity === "student" ? (
             <StyleProfileStudentImage />
           ) : (
             <StyleProfileTeacherImage />
           )}
-          <ProfileMainArea />
-          <ProfileSidebar />
+          <MainArea />
+          <Sidebar />
         </>
-      ) : null}
+      ) : (
+        <StyleStateWrap>
+          <StyleLoading src={loading} alt={"Loading"} />
+        </StyleStateWrap>
+      )}
     </StyleProfile>
   );
 };

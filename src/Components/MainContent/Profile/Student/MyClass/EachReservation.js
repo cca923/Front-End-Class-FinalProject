@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import firebase from "../../../../../utils/config/firebase-config";
+import noPhoto from "../../../../../images/resume-noPhoto.png";
 
-const StyleEachStudent = styled.div`
+const StyleEachTeacher = styled.div`
   width: 100%;
   height: fit-content;
   background-color: #fff;
@@ -11,6 +12,7 @@ const StyleEachStudent = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  box-shadow: 6px 6px 12px 2px rgba(0, 0, 0, 0.1);
 
   @media only screen and (max-width: 1020px) {
     height: 120px;
@@ -34,7 +36,8 @@ const StyleOrderNumber = styled.div`
 const StyleImage = styled.img`
   width: 100px;
   height: 100px;
-  background-color: grey;
+  background-color: #e1e1e1;
+  object-fit: cover;
 `;
 
 const StyleDetail = styled.div`
@@ -61,33 +64,11 @@ const StyleEachDetail = styled.div`
 
 const StyleLabel = styled.div`
   width: 50px;
-  border-right: 1px solid #7678ed;
+  border-right: 1px solid #7367f0;
   margin-right: 10px;
 `;
 
 const StyleData = styled.span``;
-
-const StyleChat = styled.div`
-  position: absolute;
-  right: 20px;
-  bottom: 0px;
-  padding: 10px;
-  width: 120px;
-  font-size: 1rem;
-  color: white;
-  background-color: #757bc8;
-  border: 2px solid #bbadff;
-  border-radius: 18px;
-  margin: 0 auto 20px auto;
-  cursor: pointer;
-  text-align: center;
-
-  &:hover {
-    background-color: #bbadff;
-    border: 2px solid #757bc8;
-    color: black;
-  }
-`;
 
 const EachReservation = (props) => {
   const db = firebase.firestore();
@@ -110,12 +91,12 @@ const EachReservation = (props) => {
   }, []);
 
   return (
-    <StyleEachStudent>
+    <StyleEachTeacher>
       <StyleOrderNumber>
         預定編號：
         <span>{props.eachReservation.time}</span>
       </StyleOrderNumber>
-      <StyleImage alt={teacherData.name} src={teacherData.photo} />
+      <StyleImage alt={teacherData.name} src={teacherData.photo || noPhoto} />
       <StyleDetail>
         <StyleEachDetail>
           <StyleLabel>姓名</StyleLabel>
@@ -128,7 +109,7 @@ const EachReservation = (props) => {
         <StyleEachDetail>
           <StyleLabel>日期</StyleLabel>
           <StyleData>
-            {new Date(props.eachReservation.time * 1000).toLocaleString(
+            {new Date(props.eachReservation.time).toLocaleString(
               navigator.language,
               {
                 year: "numeric",
@@ -140,10 +121,8 @@ const EachReservation = (props) => {
             )}
           </StyleData>
         </StyleEachDetail>
-
-        {/* <StyleChat>和他聊聊</StyleChat> */}
       </StyleDetail>
-    </StyleEachStudent>
+    </StyleEachTeacher>
   );
 };
 

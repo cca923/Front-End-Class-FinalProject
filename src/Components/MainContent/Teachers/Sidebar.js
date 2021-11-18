@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Select from "react-select";
+import slider from "../../../images/slider.png";
 
 const StyleSidebar = styled.div`
   width: 300px;
   display: inline-block;
-  background-color: #e9e9e9;
+  background-color: #f3f3f3;
 
   @media only screen and (max-width: 1020px) {
     width: 100%;
-    /* height: 300px; */
     height: fit-content;
+    z-index: 100;
   }
 `;
 
@@ -27,14 +28,67 @@ const StyleForm = styled.form`
   display: flex;
   flex-direction: column;
   padding: 20px;
-  background-color: #e9e9e9;
-  border-radius: 20px;
+  background-color: #f3f3f3;
 
   @media only screen and (max-width: 1020px) {
+    display: ${(props) => (props.layer ? "flex" : "none")};
+    /* Display 和 transition 有衝突 */
+    visibility: ${(props) => (props.layer ? "visible" : "hidden")};
+    opacity: ${(props) => (props.layer ? "1" : "0")};
+    height: ${(props) => (props.layer ? "58vh" : "0")};
     width: 100%;
-    height: fit-content;
-    padding: 10px 20px 20px 20px;
+    padding: 10px 40px 20px 40px;
+    top: 0;
+    transition: 0.5s;
+    overflow-x: hidden;
   }
+`;
+
+const StyleFilterArea = styled.div`
+  display: none;
+
+  @media only screen and (max-width: 1020px) {
+    display: block;
+    width: 100%;
+    height: 100px;
+    background-color: #f3f3f3;
+    padding: 20px 40px;
+  }
+`;
+
+const StyleFilterTilte = styled.div`
+  display: flex;
+  width: 100%;
+  padding: 10px 20px;
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 30px;
+  background-color: #e4e5e1;
+
+  @media only screen and (max-width: 1020px) {
+    display: none;
+  }
+`;
+
+const StyleFilterbutton = styled.div`
+  display: none;
+
+  @media only screen and (max-width: 1020px) {
+    background-color: #fff;
+    display: flex;
+    height: 100%;
+    box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 5px;
+    border-radius: 5px;
+    justify-content: center;
+    line-height: 60px;
+    cursor: pointer;
+  }
+`;
+
+const StyleFilterIcon = styled.img`
+  width: 30px;
+  height: 30px;
+  margin: auto 0 auto 10px;
 `;
 
 const StyleData = styled.div`
@@ -44,10 +98,6 @@ const StyleData = styled.div`
   justify-content: space-around;
 
   @media only screen and (max-width: 1020px) {
-    flex-direction: row;
-  }
-
-  @media only screen and (max-width: 730px) {
     flex-direction: column;
   }
 `;
@@ -57,7 +107,7 @@ const StyleTagContainer = styled.div`
   flex-direction: column;
 
   @media only screen and (max-width: 1020px) {
-    padding: 5px;
+    padding: 5px 0;
   }
 `;
 
@@ -74,11 +124,7 @@ const StyleSelect = styled(Select)`
   width: 250px;
   margin-bottom: 10px;
 
-  @media only screen and (max-width: 900px) {
-    width: 200px;
-  }
-
-  @media only screen and (max-width: 730px) {
+  @media only screen and (max-width: 1020px) {
     width: 100%;
   }
 `;
@@ -86,32 +132,51 @@ const StyleSelect = styled(Select)`
 const StyleTagDisplayArea = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 20px 20px 0;
 
   @media only screen and (max-width: 1020px) {
-    padding: 20px 30px 0 30px;
+    display: ${(props) => (props.layer ? "flex" : "none")};
+    padding: 20px 40px 0 40px;
     flex-direction: row;
+  }
+
+  @media only screen and (max-width: 600px) {
+    flex-direction: column;
   }
 `;
 
 const StyleTag = styled.div`
-  background-color: #bbadff;
+  background-color: #7367f0;
+  color: #fff;
   width: 100%;
   border-radius: 10px;
   display: flex;
   padding: 10px;
-  margin: 10px auto;
+  margin: 8px auto;
 
   @media only screen and (max-width: 1020px) {
     width: fit-content;
     margin: 0;
     margin-right: 10px;
   }
+
+  @media only screen and (max-width: 600px) {
+    margin-bottom: 10px;
+    width: 100%;
+  }
 `;
 
 const StyleValue = styled.div`
   line-height: 20px;
   margin-right: auto;
+
+  @media only screen and (max-width: 1020px) {
+    margin-right: 10px;
+  }
+
+  @media only screen and (max-width: 600px) {
+    margin-right: auto;
+  }
 `;
 
 const StyleRemove = styled.div`
@@ -130,6 +195,8 @@ const StyleRemove = styled.div`
 `;
 
 const Sidebar = (props) => {
+  const [layer, setLayer] = useState(false);
+
   const industryOptions = [
     { value: "農、林、漁、牧業", label: "農、林、漁、牧業" },
     { value: "礦業及土石採取業", label: "礦業及土石採取業" },
@@ -193,8 +260,23 @@ const Sidebar = (props) => {
   return (
     <StyleSidebar>
       <StyleSticky>
+        <StyleFilterArea>
+          <StyleFilterbutton
+            onClick={() => {
+              layer ? setLayer(false) : setLayer(true);
+            }}>
+            篩選條件
+            <StyleFilterIcon src={slider} alt={"篩選條件"} />
+          </StyleFilterbutton>
+        </StyleFilterArea>
+
+        <StyleFilterTilte>
+          篩選條件
+          <StyleFilterIcon src={slider} alt={"篩選條件"} />
+        </StyleFilterTilte>
+
         {props.displayTag ? (
-          <StyleTagDisplayArea>
+          <StyleTagDisplayArea layer={layer}>
             {props.selectIndustry !== "" ? (
               <StyleTag>
                 <StyleValue>{props.selectIndustry.value}</StyleValue>
@@ -227,7 +309,8 @@ const Sidebar = (props) => {
             ) : null}
           </StyleTagDisplayArea>
         ) : null}
-        <StyleForm>
+
+        <StyleForm layer={layer}>
           <StyleData>
             <StyleTagContainer>
               <StyleLabel>產業｜Industry</StyleLabel>
@@ -259,11 +342,6 @@ const Sidebar = (props) => {
               />
             </StyleTagContainer>
           </StyleData>
-          {/* {displayTag ? null : (
-          <StyleTagSubmitButton onClick={handleDisplay}>
-            送出標籤
-          </StyleTagSubmitButton>
-        )} */}
         </StyleForm>
       </StyleSticky>
     </StyleSidebar>

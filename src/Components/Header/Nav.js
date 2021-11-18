@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { changeSignPage } from "../../Redux/Action";
+import { changeSignPage, getLiveStatus } from "../../Redux/Action";
 import firebase from "../../utils/config/firebase-config";
-import Invitation from "./Invitation";
+import Swal from "sweetalert2";
+import video from "../../images/video-on.png";
 
 const StyleNav = styled.nav`
   margin-left: auto;
   line-height: 100px;
   position: relative;
+
+  @media only screen and (max-width: 1020px) {
+    display: none;
+  }
 `;
 
 const StyleLink = styled(NavLink)`
@@ -19,6 +25,25 @@ const StyleLink = styled(NavLink)`
   border-left: 2px solid ${(props) => (props.headerColor ? "#666" : "#fff")};
   width: 150px;
   padding: 0px 20px;
+
+  :hover {
+    color: ${(props) => (props.headerColor ? "#8e94f2" : "#fd8e87")};
+    transition: all 0.2s;
+  }
+
+  @media only screen and (max-width: 1020px) {
+    color: #fff;
+    border-left: 2px solid #fff;
+    height: 30px;
+    width: fit-content;
+    line-height: 30px;
+    margin: auto;
+
+    &:hover {
+      color: #ffbfaa;
+      transition: all 0.2s;
+    }
+  }
 `;
 
 const StyleSignLink = styled.a`
@@ -28,7 +53,25 @@ const StyleSignLink = styled.a`
   border-left: 2px solid ${(props) => (props.headerColor ? "#666" : "#fff")};
   width: 150px;
   padding: 0px 20px;
-  cursor: pointer;
+  cursor: ${(props) => (props.liveStatus ? "not-allowed" : "pointer")};
+
+  :hover {
+    color: ${(props) => (props.headerColor ? "#8e94f2" : "#fd8e87")};
+    transition: all 0.2s;
+  }
+
+  @media only screen and (max-width: 1020px) {
+    color: #fff;
+    height: 30px;
+    width: fit-content;
+    line-height: 30px;
+    margin: auto;
+
+    &:hover {
+      color: #ffbfaa;
+      transition: all 0.2s;
+    }
+  }
 `;
 
 const StyleInvitationArea = styled.div`
@@ -40,14 +83,14 @@ const StyleInvitationArea = styled.div`
   position: relative;
 `;
 
-const StyleNotification = styled.div`
+const StyleNoNotification = styled.div`
   position: absolute;
   right: 25px;
   top: -1px;
   width: 30px;
   height: 30px;
   line-height: 100px;
-  display: inline-block;
+  display: ${(props) => (props.invitationData ? "none" : "inline-block")};
   align-content: center;
   background-size: cover;
   background-position: center;
@@ -56,13 +99,24 @@ const StyleNotification = styled.div`
     props.headerColor
       ? "url('/images/bell-scroll.png')"
       : "url('/images/bell-static.png')"};
+`;
 
-  &:hover {
-    background-image: url("/images/bell.gif");
-    border-radius: 50%;
-    padding: 5px;
-    opacity: 0.8;
-  }
+const StyleNewNotification = styled.div`
+  position: absolute;
+  right: 25px;
+  top: -1px;
+  width: 30px;
+  height: 30px;
+  line-height: 100px;
+  display: ${(props) => (props.invitationData ? "inline-block" : "none")};
+  align-content: center;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  background-image: url("/images/bell.gif");
+  border-radius: 50%;
+  padding: 5px;
+  opacity: 0.8;
 `;
 
 const StyleInvitation = styled.div`
@@ -78,13 +132,11 @@ const StyleInvitation = styled.div`
 const Nav = (props) => {
   const identityData = useSelector((state) => state.identityData);
   const invitationData = identityData.invitation;
-  // console.log(invitationData);
-
   const identity = useSelector((state) => state.identity);
+  const liveStatus = useSelector((state) => state.liveStatus); // 視訊室狀態
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const [displayNotification, setDisplayNotification] = useState(false);
-  const [displayInvitation, setDisplayInvitation] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
@@ -93,21 +145,10 @@ const Nav = (props) => {
     });
   }, []);
 
-  useEffect(() => {
-    if (invitationData) {
-      setDisplayNotification(true);
-    }
-  }, [invitationData]);
-
   // 不用 signStatus Redux 判斷，用 onAuthStateChanged，拆開成兩個 useEffect
   return currentUser === null ? (
-    <StyleNav>
-      <StyleLink
-        headerColor={props.headerColor}
-        exact
-        to="/"
-        activeClassName="selected"
-        activeStyle={{ backgroundColor: "#bbadff" }}>
+    <StyleNav layer={props.layer}>
+      <StyleLink headerColor={props.headerColor} exact to="/">
         Home
       </StyleLink>
       <StyleSignLink
@@ -117,71 +158,106 @@ const Nav = (props) => {
       </StyleSignLink>
     </StyleNav>
   ) : (
-    <StyleNav>
-      {identity === "student" ? (
-        <>
-          <StyleLink
-            headerColor={props.headerColor}
-            exact
-            to="/"
-            activeClassName="selected"
-            activeStyle={{ backgroundColor: "#bbadff" }}>
-            Home
-          </StyleLink>
-          <StyleLink
-            headerColor={props.headerColor}
-            to="/teachers"
-            activeClassName="selected"
-            activeStyle={{ backgroundColor: "#bbadff" }}>
-            Teachers
-          </StyleLink>
-        </>
-      ) : null}
-      <StyleLink
-        headerColor={props.headerColor}
-        to="/live"
-        activeClassName="selected"
-        activeStyle={{ backgroundColor: "#bbadff" }}>
-        Live
-      </StyleLink>
-
-      {identity === "student" ? (
-        <>
-          <StyleLink
-            headerColor={props.headerColor}
-            to="/profile/myresume"
-            activeClassName="selected"
-            activeStyle={{ backgroundColor: "#bbadff" }}>
-            Profile
-          </StyleLink>
-          <StyleInvitationArea headerColor={props.headerColor}>
-            <StyleNotification
-              headerColor={props.headerColor}
-              onClick={() => {
-                if (displayNotification) {
-                  setDisplayInvitation(true);
-                }
-              }}
-            />
-            {displayNotification ? (
-              <StyleInvitation>New!</StyleInvitation>
-            ) : null}
-            {displayInvitation ? (
-              <Invitation
-                setDisplayInvitation={setDisplayInvitation}
-                invitationData={invitationData}
-              />
-            ) : null}
-          </StyleInvitationArea>
-        </>
+    <StyleNav layer={props.layer}>
+      {liveStatus ? (
+        <StyleSignLink headerColor={props.headerColor} liveStatus={liveStatus}>
+          Live
+        </StyleSignLink>
       ) : (
-        <StyleLink
-          headerColor={props.headerColor}
-          to="/profile/myprofile"
-          activeClassName="selected"
-          activeStyle={{ backgroundColor: "#bbadff" }}>
-          Profile
-        </StyleLink>
+        <>
+          {identity === "student" ? (
+            <>
+              <StyleLink headerColor={props.headerColor} exact to="/">
+                Home
+              </StyleLink>
+              <StyleLink headerColor={props.headerColor} to="/teachers">
+                Teachers
+              </StyleLink>
+            </>
+          ) : null}
+
+          <StyleLink headerColor={props.headerColor} to="/live">
+            Live
+          </StyleLink>
+
+          {identity === "student" ? (
+            <>
+              <StyleLink headerColor={props.headerColor} to="/profile/myresume">
+                Profile
+              </StyleLink>
+              <StyleInvitationArea headerColor={props.headerColor}>
+                <StyleNewNotification
+                  invitationData={invitationData}
+                  onClick={() => {
+                    if (invitationData) {
+                      Swal.fire({
+                        title: `預約對象｜${invitationData.name}`,
+                        html: `<h3>正在邀請您前往視訊！</h3>`,
+                        confirmButtonText: "Go｜前往",
+                        showLoaderOnConfirm: true,
+                        showCancelButton: true,
+                        cancelButtonText: "Cancel｜取消",
+                        showCloseButton: true,
+                        customClass: {
+                          confirmButton: "confirm__button",
+                          cancelButton: "cancel__button",
+                        },
+                        imageUrl: "/images/theme/theme-7.png",
+                        imageWidth: 200,
+                        imageAlt: "theme image",
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          dispatch(getLiveStatus(true)); // 視訊室狀態
+                          history.push("/live");
+
+                          Swal.fire({
+                            html: `<img src="${video}" 
+                        style="
+                        width: 100px;
+                        height: 100px; 
+                        border-radius: 50%;
+                        padding: 20px;
+                        margin: auto;
+                        display: inline-block;
+                        align-content: center;
+                        background-size: cover;
+                        background-position: center;
+                        background-color: #595959;
+                        border: 5px solid #c3c3c3;
+                        "></img>`,
+                            title: `請先開啟視訊鏡頭！`,
+                            customClass: {
+                              confirmButton: "confirm__button",
+                            },
+                          });
+                        }
+                      });
+                    }
+                  }}
+                />
+                <StyleNoNotification
+                  invitationData={invitationData}
+                  headerColor={props.headerColor}
+                  onClick={() => {
+                    Swal.fire({
+                      title: "沒有任何視訊邀請！",
+                      customClass: {
+                        confirmButton: "confirm__button",
+                      },
+                    });
+                  }}
+                />
+                {invitationData ? (
+                  <StyleInvitation>New!</StyleInvitation>
+                ) : null}
+              </StyleInvitationArea>
+            </>
+          ) : (
+            <StyleLink headerColor={props.headerColor} to="/profile/myprofile">
+              Profile
+            </StyleLink>
+          )}
+        </>
       )}
     </StyleNav>
   );
