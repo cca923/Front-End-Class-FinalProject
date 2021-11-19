@@ -5,6 +5,7 @@ import identityDataReducer from "./identityDataReducer";
 import liveDataReducer from "./liveDataReducer";
 import liveStatusReducer from "./liveStatusReducer";
 import signLoadingReducer from "./signLoadingReducer";
+import runGuideReducer from "./runGuideReducer";
 
 const allReducers = combineReducers({
   identity: identityReducer,
@@ -13,6 +14,7 @@ const allReducers = combineReducers({
   liveData: liveDataReducer,
   liveStatus: liveStatusReducer,
   signLoading: signLoadingReducer,
+  runGuide: runGuideReducer,
 });
 
 export default allReducers;

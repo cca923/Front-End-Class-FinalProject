@@ -46,3 +46,10 @@ export const getLiveStatus = (liveState) => {
     payload: liveState,
   };
 };
+
+export const startRunGuide = (runState) => {
+  return {
+    type: "RUN_GUIDE",
+    payload: runState,
+  };
+};

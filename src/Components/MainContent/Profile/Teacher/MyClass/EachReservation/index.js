@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { getLiveData, getLiveStatus } from "../../../../../../Redux/Action";
+import {
+  getLiveData,
+  getLiveStatus,
+  startRunGuide,
+} from "../../../../../../Redux/Action";
 import styled from "styled-components";
 import firebase from "../../../../../../utils/config/firebase-config";
 import Swal from "sweetalert2";
@@ -42,6 +46,7 @@ const StyleImage = styled.img`
   width: 100px;
   height: 100px;
   background-color: #e1e1e1;
+  object-fit: cover;
 `;
 
 const StyleDetail = styled.div`
@@ -124,27 +129,6 @@ const StyleLive = styled.div`
     box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
       0 4px 6px 0 rgb(93 100 148 / 20%);
   }
-
-  /* position: absolute;
-  right: 130px;
-  bottom: 0px;
-  padding: 10px;
-  width: 100px;
-  font-size: 1rem;
-  color: white;
-  background-color: #757bc8;
-  border: 2px solid #bbadff;
-  border-radius: 18px;
-  margin: 0 auto 20px auto;
-  cursor: pointer;
-  text-align: center;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #bbadff;
-    border: 2px solid #757bc8;
-    color: black;
-  } */
 `;
 
 const EachReservation = (props) => {
@@ -211,6 +195,7 @@ const EachReservation = (props) => {
                 confirmButtonText: "Go｜前往",
                 showCancelButton: true,
                 cancelButtonText: "Cancel｜取消",
+                showCloseButton: true,
                 customClass: {
                   confirmButton: "confirm__button",
                   cancelButton: "cancel__button",
@@ -222,32 +207,11 @@ const EachReservation = (props) => {
                 if (result.isConfirmed) {
                   dispatch(getLiveData(studentData));
                   dispatch(getLiveStatus(true)); // 視訊室狀態
-
                   history.push("/live");
-                  Swal.fire({
-                    html: `<img src="${video}" 
-                    style="
-                    width: 100px;
-                    height: 100px; 
-                    border-radius: 50%;
-                    padding: 20px;
-                    margin: auto;
-                    display: inline-block;
-                    align-content: center;
-                    background-size: cover;
-                    background-position: center;
-                    background-color: #595959;
-                    border: 5px solid #c3c3c3;
-                    "></img>`,
-                    title: `請先開啟視訊鏡頭！`,
-                    customClass: {
-                      confirmButton: "confirm__button",
-                    },
-                  });
+                  dispatch(startRunGuide(true)); // 開始操作導覽
                 } else if (result.isDenied) {
                   dispatch(getLiveData(null));
                   dispatch(getLiveStatus(false)); // 視訊室狀態
-                  console.log();
                 }
               });
             }}>

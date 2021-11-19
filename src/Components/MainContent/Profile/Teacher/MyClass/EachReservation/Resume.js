@@ -61,6 +61,7 @@ const StyleImage = styled.img`
   width: 150px;
   height: 150px;
   background-color: #f2f2f2;
+  object-fit: cover;
 
   @media only screen and (max-width: 1100px) {
     display: none;

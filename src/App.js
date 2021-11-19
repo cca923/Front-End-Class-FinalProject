@@ -174,7 +174,7 @@ function App() {
                     <Profile />
                   </Route>
 
-                  <Route component={NoMatch} exact />
+                  {/* <Route component={NoMatch} exact /> */}
                   {/* <Redirect to="/404" /> */}
                 </>
               ) : (

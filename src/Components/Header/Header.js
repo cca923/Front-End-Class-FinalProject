@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { getLiveStatus } from "../../Redux/Action";
+import { getLiveStatus, startRunGuide } from "../../Redux/Action";
 import Swal from "sweetalert2";
 import video from "../../images/video-on.png";
 import Nav from "./Nav";
@@ -81,6 +81,10 @@ const StyleMenuClose = styled.div`
   background-position: center;
   cursor: pointer;
   background-image: url("/images/close.png");
+
+  &:hover {
+    background-image: url("/images/close-hover.png");
+  }
 
   @media only screen and (max-width: 1020px) {
     display: ${(props) => (props.layer ? "inline-block" : " none")};
@@ -161,6 +165,28 @@ const StyleInvitation = styled.div`
   font-size: 1rem;
 `;
 
+const StylequestionArea = styled.div`
+  display: none;
+  position: absolute;
+  right: 80px;
+  top: 35px;
+  width: 30px;
+  height: 30px;
+  line-height: 100px;
+  align-content: center;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  background-image: ${(props) =>
+    props.headerColor
+      ? "url('/images/question-scroll.png')"
+      : "url('/images/question-static.png')"};
+
+  @media only screen and (max-width: 1020px) {
+    display: inline-block;
+  }
+`;
+
 const Header = () => {
   const identityData = useSelector((state) => state.identityData);
   const invitationData = identityData.invitation;
@@ -198,7 +224,15 @@ const Header = () => {
         </StyleLink>
       )}
 
-      {liveStatus ? null : (
+      {liveStatus ? (
+        <StylequestionArea
+          headerColor={headerColor}
+          liveStatus={liveStatus}
+          onClick={() => {
+            dispatch(startRunGuide(true)); // 開始操作導覽
+          }}
+        />
+      ) : (
         <>
           {identity === "student" ? (
             <StyleInvitationArea headerColor={headerColor}>
@@ -225,27 +259,7 @@ const Header = () => {
                       if (result.isConfirmed) {
                         dispatch(getLiveStatus(true)); // 視訊室狀態
                         history.push("/live");
-
-                        Swal.fire({
-                          html: `<img src="${video}" 
-                        style="
-                        width: 100px;
-                        height: 100px; 
-                        border-radius: 50%;
-                        padding: 20px;
-                        margin: auto;
-                        display: inline-block;
-                        align-content: center;
-                        background-size: cover;
-                        background-position: center;
-                        background-color: #595959;
-                        border: 5px solid #c3c3c3;
-                        "></img>`,
-                          title: `請先開啟視訊鏡頭！`,
-                          customClass: {
-                            confirmButton: "confirm__button",
-                          },
-                        });
+                        dispatch(startRunGuide(true)); // 開始操作導覽
                       }
                     });
                   }
