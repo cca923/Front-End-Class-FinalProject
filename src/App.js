@@ -173,6 +173,9 @@ function App() {
                   <Route path="/profile">
                     <Profile />
                   </Route>
+
+                  <Route component={NoMatch} exact />
+                  {/* <Redirect to="/404" /> */}
                 </>
               ) : (
                 <StyleStateWrap>
@@ -183,10 +186,6 @@ function App() {
           ) : (
             <Redirect to="/" />
           )}
-
-          <Route exact path="*">
-            <NoMatch />
-          </Route>
         </Switch>
       </ScrollToTop>
     </>

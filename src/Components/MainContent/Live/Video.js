@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { getLiveData, getLiveStatus } from "../../../Redux/Action";
@@ -6,10 +6,8 @@ import styled from "styled-components";
 import Swal from "sweetalert2";
 import firebase from "../../../utils/config/firebase-config";
 import videoOn from "../../../images/video-on.png";
-import videoOff from "../../../images/video-off.png";
 import exit from "../../../images/exit.png";
-import phoneOn from "../../../images/microphone-on.png";
-import phoneOff from "../../../images/microphone-off.png";
+import Joyride from "react-joyride";
 
 const StyleVideo = styled.div`
   display: flex;
@@ -191,7 +189,7 @@ const StyleButton = styled.div`
 const StyleSendButton = styled.div`
   width: 120px;
   font-size: 1rem;
-  margin: 10px auto 0;
+  margin: 0 auto 10px auto;
   outline: 0;
   border: 0;
   cursor: pointer;
@@ -212,28 +210,17 @@ const StyleSendButton = styled.div`
 `;
 
 const StyleRoomId = styled.div`
-  width: 210px;
+  width: 100%;
   font-size: 1rem;
   border: 2px solid #c5c5c5;
-  border-right: none;
-  border-radius: 50px 0 0 50px;
-  padding: 10px;
+  border-radius: 50px;
   text-align: center;
+  visibility: hidden;
 `;
 
 const StyleInvitationArea = styled.div`
   display: flex;
-`;
-
-const StyleId = styled.div`
-  width: 210px;
-  font-size: 1rem;
-  background-color: #fff;
-  border-radius: 50px 0 0 50px;
-  border: 2px solid #c5c5c5;
-  border-right: none;
-  line-height: 34px;
-  text-align: center;
+  flex-direction: column;
 `;
 
 const Video = (props) => {
@@ -292,6 +279,10 @@ const Video = (props) => {
     // Show stream in HTML video
     localVideo.current.srcObject = localStream;
     remoteVideo.current.srcObject = remoteStream;
+
+    if (identity === "teacher") {
+      createOffer();
+    }
   };
 
   const createOffer = async () => {
@@ -531,10 +522,6 @@ const Video = (props) => {
 
         {identity === "teacher" ? (
           <StyleCalloutArea>
-            <StyleCreateRoomIdArea>
-              <StyleRoomId ref={createId} />
-              <StyleButton onClick={createOffer}>產生房間代碼</StyleButton>
-            </StyleCreateRoomIdArea>
             <StyleInvitationArea>
               <StyleSendButton
                 onClick={() => {
@@ -543,13 +530,18 @@ const Video = (props) => {
                 寄送通知
               </StyleSendButton>
             </StyleInvitationArea>
+            <StyleCreateRoomIdArea>
+              <StyleRoomId ref={createId} />
+              {/* <StyleButton onClick={createOffer}>產生房間代碼</StyleButton> */}
+            </StyleCreateRoomIdArea>
           </StyleCalloutArea>
         ) : (
           <StyleInvitationArea>
-            <StyleId ref={joinRoom}>
+            <StyleSendButton onClick={answerCall}>加入房間</StyleSendButton>
+
+            <StyleRoomId ref={joinRoom}>
               {identityData.invitation ? identityData.invitation.roomId : null}
-            </StyleId>
-            <StyleButton onClick={answerCall}>加入房間</StyleButton>
+            </StyleRoomId>
           </StyleInvitationArea>
         )}
       </StyleLocalArea>

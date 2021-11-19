@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import DatePicker from "react-datepicker";
@@ -144,7 +144,7 @@ const TeacherCalendar = (props) => {
   const user = firebase.auth().currentUser;
   const teachersRef = db.collection("teachers").doc(user.email);
 
-  const [selectedDate, setselectedDate] = useState(
+  const [selectedDate, setSelectedDate] = useState(
     setHours(setMinutes(new Date(), 0), 9)
   );
   const [excludeTimes, setExcludeTimes] = useState([]);
@@ -152,58 +152,34 @@ const TeacherCalendar = (props) => {
   const timeList = document.querySelectorAll(
     ".react-datepicker__time-list-item"
   );
-  const getAllTimes = (date) => {
-    // for (let i = 0; i < timeDataConvert.length; i++) {
-    //   if (timeDataConvert[i].getDate() === date.getDate()) {
-    //     if (
-    //       format(timeDataConvert[i], "HH:mm") === format(date, "HH:mm")
-    //       // .map((existDate) => format(existDate, "HH:mm"))
-    //       // .includes(format(date, "HH:mm"))
-    //     ) {
-    //       break;
-    //     } else {
-    //       console.log(date);
-    //     }
-    //   }
-    // }
 
-    // if (
-    //   timeDataConvert
-    //     .map((existDate) => existDate.getDate())
-    //     .includes(date.getDate()) &&
-    //   !timeDataConvert
-    //     .map((existDate) => format(existDate, "HH:mm"))
-    //     .includes(format(date, "HH:mm"))
-    // ) {
-    //   console.log(date);
-    // }
-
-    timeDataConvert.forEach((existDate) => {
-      if (existDate.getDate() === date.getDate()) {
-        if (
-          !timeDataConvert
-            .map((existDate) => format(existDate, "HH:mm"))
-            .includes(format(date, "HH:mm"))
-        ) {
-          // console.log(date);
-        }
-      }
+  const getFirstSelectableTime = () => {
+    // First Selectable
+    const selectableTime = Array.from(timeList).filter((alldate) => {
+      return !alldate.classList.contains(
+        "react-datepicker__time-list-item--disabled"
+      );
     });
+
+    Array.from(timeList).forEach((alldate) => {
+      alldate.classList.remove("react-datepicker__time-list-item--selected");
+    });
+
+    console.log(selectableTime[0]);
+
+    selectableTime[0]?.classList.add(
+      "react-datepicker__time-list-item--selected"
+    );
   };
 
-  // const getFirstSelectableTime = () => {
-  //   timeList.forEach((time) => {
-  //     time.classList.remove("react-datepicker__time-list-item--selected");
-  //   });
-
-  //   const selectableTime = Array.from(timeList).filter(
-  //     (time) =>
-  //       !time.classList.contains("react-datepicker__time-list-item--disabled")
-  //   );
-  //   selectableTime[0].classList.add(
-  //     "react-datepicker__time-list-item--selected"
-  //   );
-  // };
+  const removeFirstSelectableTime = (time) => {
+    const timeList = document.querySelectorAll(
+      ".react-datepicker__time-list-item"
+    );
+    Array.from(timeList).forEach((alldate) => {
+      alldate.classList.remove("react-datepicker__time-list-item--selected");
+    });
+  };
 
   const addDateToSchedule = (e) => {
     const selectedTargetValue = selectedDate.toLocaleString(
@@ -249,26 +225,9 @@ const TeacherCalendar = (props) => {
                 timer: 1500,
                 timerProgressBar: true,
                 showConfirmButton: false,
+              }).then(() => {
+                getFirstSelectableTime();
               });
-              // const timeList = document.querySelectorAll(
-              //   ".react-datepicker__time-list-item"
-              // );
-              // const target = Array.from(timeList).filter(
-              //   (time) => time.textContent === format(selectedDate, "HH:mm")
-              // );
-              // target[0].classList.add("react-datepicker__time-list-item--disabled");
-              // target[0].classList.remove(
-              //   "react-datepicker__time-list-item--selected"
-              // );
-              // const selectableTime = Array.from(timeList).filter(
-              //   (time) =>
-              //     !time.classList.contains(
-              //       "react-datepicker__time-list-item--disabled"
-              //     )
-              // );
-              // selectableTime[0].classList.add(
-              //   "react-datepicker__time-list-item--selected"
-              // );
             });
         }
       });
@@ -280,9 +239,12 @@ const TeacherCalendar = (props) => {
     const arrExcludeTimes = [];
 
     timeDataConvert.forEach((existDate) => {
-      if (existDate.getDate() === daytime.getDate()) {
-        arrExcludeTimes.push(existDate);
-        console.log("依照現有日期篩選要排除的日期", arrExcludeTimes);
+      // 先確認月份再確認日期
+      if (existDate.getMonth() === daytime.getMonth()) {
+        if (existDate.getDate() === daytime.getDate()) {
+          arrExcludeTimes.push(existDate);
+          console.log("依照firebase判斷要從日曆上排除的時間", arrExcludeTimes);
+        }
       }
 
       setExcludeTimes(arrExcludeTimes);
@@ -335,29 +297,77 @@ const TeacherCalendar = (props) => {
     });
   };
 
+  // 日曆上過濾過期的時間
+  const filterPassedTime = (time) => {
+    // getFirstSelectableTime(time);
+
+    const currentDate = new Date();
+    const selectedDate = new Date(time);
+
+    return currentDate.getTime() < selectedDate.getTime();
+  };
+
   useEffect(() => {
-    if (timeData) {
-      // 日曆：過濾出要排除的時間
-      const arrExcludeTimes = [];
-      timeDataConvert.forEach((existDate) => {
+    // 可預約：過濾出沒過期的時間
+    const filtertime = timeData
+      .map((data) => {
+        return new Date(data);
+      })
+      .filter((data) => {
+        return data > new Date();
+      });
+
+    setTimeDataConvert(filtertime);
+
+    // 日曆：過濾出要排除的時間
+    const arrExcludeTimes = [];
+
+    filtertime.forEach((existDate) => {
+      if (existDate.getMonth() === selectedDate.getMonth()) {
         if (existDate.getDate() === selectedDate.getDate()) {
           arrExcludeTimes.push(existDate);
         }
-      });
+      }
+    });
 
-      setExcludeTimes(arrExcludeTimes);
+    setExcludeTimes(arrExcludeTimes);
+  }, [timeData, selectedDate]);
 
-      // 可預約：過濾出沒過期的時間
-      const filtertime = timeData
-        .map((data) => {
-          return new Date(data);
-        })
-        .filter((data) => {
-          return data > new Date();
-        });
-      setTimeDataConvert(filtertime);
-    }
-  }, [timeData]);
+  useEffect(() => {
+    // First Selectable
+    const timeList = document.querySelectorAll(
+      ".react-datepicker__time-list-item"
+    );
+
+    console.log(timeList);
+
+    const selectableTime = Array.from(timeList).filter((alldate) => {
+      return !alldate.classList.contains(
+        "react-datepicker__time-list-item--disabled"
+      );
+    });
+
+    console.log(selectableTime[0]);
+
+    // const hour = selectableTime[0].textContent.slice(0, 2);
+    // console.log(hour);
+    // if (hour[0] === String(0)) {
+    //   setHours(setMinutes(new Date(), 0), hour.slice(1));
+    // } else {
+    //   setHours(setMinutes(new Date(), 0), hour);
+    // }
+
+    // console.log(selectableTime);
+    // console.log(selectableTime[0]);
+
+    Array.from(timeList).forEach((alldate) => {
+      alldate.classList.remove("react-datepicker__time-list-item--selected");
+    });
+
+    // selectableTime[0]?.classList.add(
+    //   "react-datepicker__time-list-item--selected"
+    // );
+  }, []);
 
   return (
     <StyleCalender>
@@ -365,9 +375,13 @@ const TeacherCalendar = (props) => {
         <DatePicker
           selected={selectedDate}
           onChange={(date) => {
-            setselectedDate(date);
+            setSelectedDate(date);
+            removeFirstSelectableTime();
           }}
-          onSelect={(date) => getExcludedTimes(date)}
+          onSelect={(date) => {
+            getExcludedTimes(date);
+          }}
+          onMonthChange={(date) => getExcludedTimes(date)}
           monthsShown
           inline
           showTimeSelect={true}
@@ -379,7 +393,7 @@ const TeacherCalendar = (props) => {
           dateFormat="yyyy/MM/dd"
           timeFormat="HH:mm"
           excludeTimes={excludeTimes}
-          timeClassName={(date) => getAllTimes(date)}
+          filterTime={filterPassedTime}
         />
         <StyleDatePickerButton onClick={addDateToSchedule}>
           確認
