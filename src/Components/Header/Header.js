@@ -17,6 +17,7 @@ const StyleHeader = styled.header`
   background-color: ${(props) =>
     props.headerColor ? "rgb(255,255,255,0.8)" : "none"};
   z-index: 1000;
+  transition: all 0.2s;
 
   @media print {
     display: none;
@@ -199,7 +200,7 @@ const Header = () => {
   const [layer, setLayer] = useState(false);
 
   const changeBackground = () => {
-    if (window.scrollY >= 10) {
+    if (window.scrollY >= 5) {
       setHeaderColor(true);
     } else {
       setHeaderColor(false);
