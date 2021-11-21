@@ -27,6 +27,7 @@ const StyleTeacher = styled.div`
 
 const StyleImage = styled.img`
   width: 150px;
+  min-width: 150px;
   height: 150px;
   background-color: #e1e1e1;
   border-radius: 50% 50% 50% 3px;
@@ -37,6 +38,7 @@ const StyleImage = styled.img`
 
   @media only screen and (max-width: 1300px) {
     width: 100px;
+    min-width: 100px;
     height: 100px;
   }
 `;

@@ -214,6 +214,8 @@ const TeacherExperience = () => {
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const startMaxDate = useRef();
+  const endMaxDate = useRef();
 
   const handleExperienceDisplay = () => {
     if (
@@ -305,6 +307,11 @@ const TeacherExperience = () => {
     setSelectTimeOrder(tag);
   };
 
+  useEffect(() => {
+    startMaxDate.current.max = new Date().toISOString().split("T")[0];
+    endMaxDate.current.max = new Date().toISOString().split("T")[0];
+  }, []);
+
   return (
     <StyleTeacherExperience>
       <StyleEachDetail>
@@ -380,6 +387,7 @@ const TeacherExperience = () => {
             <StyleEachContainer>
               <StyleExperienceLabel>起始日期｜Start Date</StyleExperienceLabel>
               <StyleInput
+                ref={startMaxDate}
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 type="date"
@@ -389,6 +397,7 @@ const TeacherExperience = () => {
             <StyleEachContainer>
               <StyleExperienceLabel>終止日期｜End Date</StyleExperienceLabel>
               <StyleInput
+                ref={endMaxDate}
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 type="date"

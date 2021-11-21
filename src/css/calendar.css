@@ -107,3 +107,9 @@
     width: 100%;
   }
 }
+
+.hidden_time {
+  visibility: hidden;
+  height: 0px !important;
+  padding: 0px !important;
+}

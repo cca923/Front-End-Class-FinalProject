@@ -234,7 +234,7 @@ const Nav = (props) => {
                           cancelButton: "cancel__button",
                         },
                         imageUrl: "/images/theme/theme-7.png",
-                        imageWidth: 200,
+                        imageWidth: 130,
                         imageAlt: "theme image",
                       }).then((result) => {
                         if (result.isConfirmed) {

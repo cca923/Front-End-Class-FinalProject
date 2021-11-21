@@ -112,7 +112,7 @@ const Calender = (props) => {
         cancelButton: "cancel__button",
       },
       imageUrl: "/images/theme/theme-14.png",
-      imageWidth: 200,
+      imageWidth: 130,
       imageAlt: "theme image",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -194,12 +194,6 @@ const Calender = (props) => {
         </StyleAvailableTimeContainer>
       </StyleContainer>
     </StyleEachDetail>
-
-    // <StyleCalender>
-    //   <StyleSubtitle>可預約時間</StyleSubtitle>
-    //   <StyleContainer></StyleContainer>
-
-    // </StyleCalender>
   );
 };
 

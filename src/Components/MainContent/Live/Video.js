@@ -410,6 +410,7 @@ const Video = (props) => {
           inputAttributes: {
             maxlength: "200",
           },
+          showCloseButton: true,
           showLoaderOnConfirm: true,
           confirmButtonText: "Submit｜發送",
           showDenyButton: true,
@@ -492,7 +493,7 @@ const Video = (props) => {
             confirmButton: "confirm__button",
           },
           imageUrl: "/images/theme/theme-9.png",
-          imageWidth: 200,
+          imageWidth: 130,
           imageAlt: "theme image",
         });
       });
@@ -647,6 +648,7 @@ const Video = (props) => {
           styles={{
             options: {
               zIndex: 10000,
+              // backgroundSize: "100vh",
             },
           }}
           tooltipComponent={Tooltip}

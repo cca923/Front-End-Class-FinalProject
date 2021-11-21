@@ -218,7 +218,15 @@ const GroupTeachers = (props) => {
             doc.data().talents &&
             doc.data().experience &&
             doc.data().time && // 有填寫可預約時間的
-            doc.data().time.length !== 0 // 沒有被全部預約完讓 time = [ ] 的
+            doc.data().time.length !== 0 && // 沒有被全部預約完讓 time = [ ] 的
+            doc
+              .data()
+              .time.map((data) => {
+                return new Date(data);
+              })
+              .filter((data) => {
+                return data > new Date();
+              }).length !== 0 // 不能出現 time 仍有時間，但都已經過期的老師
           ) {
             arrTeachers.push(doc.data());
           }

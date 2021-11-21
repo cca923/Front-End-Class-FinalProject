@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Header from "../../Header/Header";
 import Introduction from "./Introduction";
@@ -18,17 +18,6 @@ const StyleImageTeacherArea = styled.div`
   background-image: url("/images/home-teacher.png");
 `;
 
-const StyleImageStudentArea = styled.div`
-  width: 50%;
-  height: 100vh;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
-  display: inline-block;
-  vertical-align: bottom;
-  background-image: url("/images/home-student.png");
-`;
-
 const StyleVideoArea = styled.video`
   object-fit: cover;
   width: 100vw;
@@ -39,6 +28,7 @@ const StyleVideoArea = styled.video`
   z-index: -100;
   opacity: 0.8;
   background-color: #9092db;
+  visibility: ${(props) => (props.videoReady ? "visible" : "hidden")};
 `;
 
 const StyleTextArea = styled.div`
@@ -86,6 +76,24 @@ const StyleScrollIcon = styled.div`
   position: absolute;
   text-align: center;
   transform: translateX(-50%);
+  cursor: pointer;
+  animation: bounce 2s infinite;
+
+  @keyframes bounce {
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-30px);
+    }
+    60% {
+      transform: translateY(-15px);
+    }
+  }
 
   :after {
     background-image: url("/images/down.png");
@@ -100,15 +108,33 @@ const StyleScrollIcon = styled.div`
 `;
 
 const Home = () => {
+  const target = useRef();
+  const [videoReady, setVideoReady] = useState(false);
+
   return (
     <StyleHome>
-      <StyleVideoArea src={video} autoPlay loop muted></StyleVideoArea>
+      <StyleVideoArea
+        videoReady={videoReady}
+        src={video}
+        autoPlay
+        loop
+        muted
+        onCanPlay={() => {
+          setVideoReady(true);
+        }}
+      />
       <StyleTextArea>
         <StyleTextTitle>Re-Live</StyleTextTitle>
         <StyleTextSlogan>Resume Your Life</StyleTextSlogan>
       </StyleTextArea>
-      <StyleScrollIcon>Scroll</StyleScrollIcon>
-      <Introduction />
+      <StyleScrollIcon
+        onClick={() => {
+          console.log(target.current);
+          target.current.scrollIntoView({ behavior: "smooth" });
+        }}>
+        Scroll
+      </StyleScrollIcon>
+      <Introduction target={target} />
     </StyleHome>
   );
 };

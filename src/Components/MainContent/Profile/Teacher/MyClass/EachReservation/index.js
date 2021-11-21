@@ -201,7 +201,7 @@ const EachReservation = (props) => {
                   cancelButton: "cancel__button",
                 },
                 imageUrl: "/images/theme/theme-3.png",
-                imageWidth: 200,
+                imageWidth: 130,
                 imageAlt: "theme image",
               }).then((result) => {
                 if (result.isConfirmed) {

@@ -84,16 +84,6 @@ const StyleAvailableTimeTitle = styled.div`
   margin-bottom: 15px;
 `;
 
-const StyleEachAvailableTime = styled.div`
-  background-color: #fff;
-  width: 90%;
-  padding: 10px;
-  margin: 0 auto 20px auto;
-  border-radius: 3px;
-  display: flex;
-  box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 5px;
-`;
-
 const StyleAvailableTime = styled.div`
   line-height: 30px;
   font-size: 1.1rem;
@@ -103,7 +93,7 @@ const StyleAvailableTime = styled.div`
 const StyleDeleteButton = styled.div`
   width: 30px;
   height: 30px;
-  display: inline-block;
+  visibility: hidden;
   align-content: center;
   background-size: cover;
   background-position: center;
@@ -111,6 +101,21 @@ const StyleDeleteButton = styled.div`
 
   &:hover {
     background-image: url("/images/trash-hover.gif");
+  }
+`;
+
+const StyleEachAvailableTime = styled.div`
+  background-color: #fff;
+  width: 90%;
+  padding: 10px;
+  margin: 0 auto 20px auto;
+  border-radius: 3px;
+  display: flex;
+  box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 5px;
+  cursor: pointer;
+
+  :hover ${StyleDeleteButton} {
+    visibility: visible;
   }
 `;
 
@@ -137,17 +142,23 @@ const StyleCalenderIcon = styled(FontAwesomeIcon)`
 const TeacherCalendar = (props) => {
   const identityData = useSelector((state) => state.identityData);
   const timeData = identityData.time;
+  const reservationTimeData = identityData.reservation;
   const [timeDataConvert, setTimeDataConvert] = useState([]);
-  // console.log("可以的沒過期的時間", timeDataConvert);
+  // console.log("日曆ban掉還可被預約的沒過期時間", timeDataConvert);
+  const [reservationTimeDataConvert, setReservationTimeDataConvert] = useState(
+    []
+  );
+  // console.log("日曆ban掉被預約過的沒過期時間", reservationTimeDataConvert);
 
   const db = firebase.firestore();
   const user = firebase.auth().currentUser;
   const teachersRef = db.collection("teachers").doc(user.email);
 
   const [selectedDate, setSelectedDate] = useState(
-    setHours(setMinutes(new Date(), 0), 9)
+    setHours(setMinutes(new Date(), 0), 0)
   );
   const [excludeTimes, setExcludeTimes] = useState([]);
+  // console.log(excludeTimes);
 
   const timeList = document.querySelectorAll(
     ".react-datepicker__time-list-item"
@@ -172,7 +183,7 @@ const TeacherCalendar = (props) => {
     );
   };
 
-  const removeFirstSelectableTime = (time) => {
+  const removeSelectableTime = (time) => {
     const timeList = document.querySelectorAll(
       ".react-datepicker__time-list-item"
     );
@@ -193,12 +204,21 @@ const TeacherCalendar = (props) => {
       }
     );
 
-    if (selectedDate) {
+    if (selectedDate.getHours() === 0) {
+      console.log(selectedDate);
+      Swal.fire({
+        title: "請選擇加入的時段",
+        icon: "warning",
+        showCloseButton: true,
+        customClass: {
+          confirmButton: "confirm__button",
+        },
+      });
+    } else {
       Swal.fire({
         title: `加入時段｜${selectedTargetValue}`,
         html: `<h3>是否加入我的可預約時段中？</h3>`,
         confirmButtonText: "Yes｜加入",
-        showLoaderOnConfirm: true,
         showCancelButton: true,
         cancelButtonText: "Cancel｜取消",
         customClass: {
@@ -206,7 +226,7 @@ const TeacherCalendar = (props) => {
           cancelButton: "cancel__button",
         },
         imageUrl: "/images/theme/theme-11.png",
-        imageWidth: 200,
+        imageWidth: 130,
         imageAlt: "theme image",
       }).then((result) => {
         if (result.isConfirmed) {
@@ -226,7 +246,8 @@ const TeacherCalendar = (props) => {
                 timerProgressBar: true,
                 showConfirmButton: false,
               }).then(() => {
-                getFirstSelectableTime();
+                removeSelectableTime();
+                // getFirstSelectableTime();
               });
             });
         }
@@ -234,7 +255,7 @@ const TeacherCalendar = (props) => {
     }
   };
 
-  // 依照 firebase 日期篩選選擇到的日期中要排除的時間
+  // 依照 time(available) & reservation.time(reserved) 判斷要從日曆上排除的時間
   const getExcludedTimes = (daytime) => {
     const arrExcludeTimes = [];
 
@@ -243,9 +264,21 @@ const TeacherCalendar = (props) => {
       if (existDate.getMonth() === daytime.getMonth()) {
         if (existDate.getDate() === daytime.getDate()) {
           arrExcludeTimes.push(existDate);
-          console.log("依照firebase判斷要從日曆上排除的時間", arrExcludeTimes);
         }
       }
+
+      reservationTimeDataConvert.forEach((existDate) => {
+        if (existDate.getMonth() === selectedDate.getMonth()) {
+          if (existDate.getDate() === selectedDate.getDate()) {
+            arrExcludeTimes.push(existDate);
+          }
+        }
+      });
+
+      // console.log(
+      //   "依照 time(available) & reservation.time(reserved) 判斷要從日曆上排除的時間",
+      //   arrExcludeTimes
+      // );
 
       setExcludeTimes(arrExcludeTimes);
     });
@@ -268,7 +301,7 @@ const TeacherCalendar = (props) => {
         cancelButton: "cancel__button",
       },
       imageUrl: "/images/theme/theme-12.png",
-      imageWidth: 200,
+      imageWidth: 130,
       imageAlt: "theme image",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -308,66 +341,53 @@ const TeacherCalendar = (props) => {
   };
 
   useEffect(() => {
-    // 可預約：過濾出沒過期的時間
-    const filtertime = timeData
-      .map((data) => {
-        return new Date(data);
-      })
-      .filter((data) => {
-        return data > new Date();
-      });
-
-    setTimeDataConvert(filtertime);
-
-    // 日曆：過濾出要排除的時間
+    // 日曆：過濾出要排除的時間(選了的：可預約、已預約都要被排除)
     const arrExcludeTimes = [];
 
-    filtertime.forEach((existDate) => {
-      if (existDate.getMonth() === selectedDate.getMonth()) {
-        if (existDate.getDate() === selectedDate.getDate()) {
-          arrExcludeTimes.push(existDate);
+    if (timeData) {
+      // 可預約：過濾出沒過期的時間
+      const filtertime = timeData
+        .map((data) => {
+          return new Date(data);
+        })
+        .filter((data) => {
+          return data > new Date();
+        });
+
+      setTimeDataConvert(filtertime);
+
+      filtertime.forEach((existDate) => {
+        if (existDate.getMonth() === selectedDate.getMonth()) {
+          if (existDate.getDate() === selectedDate.getDate()) {
+            arrExcludeTimes.push(existDate);
+          }
         }
-      }
-    });
+      });
+    }
+
+    if (reservationTimeData) {
+      // 已被預約了所以也要被日曆 ban 掉：過濾預約了且沒過期的時間
+      const filterReservationTime = reservationTimeData
+        .map((eachReservation) => {
+          return new Date(eachReservation.time);
+        })
+        .filter((time) => {
+          return time > new Date();
+        });
+
+      setReservationTimeDataConvert(filterReservationTime);
+
+      filterReservationTime.forEach((existDate) => {
+        if (existDate.getMonth() === selectedDate.getMonth()) {
+          if (existDate.getDate() === selectedDate.getDate()) {
+            arrExcludeTimes.push(existDate);
+          }
+        }
+      });
+    }
 
     setExcludeTimes(arrExcludeTimes);
   }, [timeData, selectedDate]);
-
-  useEffect(() => {
-    // First Selectable
-    const timeList = document.querySelectorAll(
-      ".react-datepicker__time-list-item"
-    );
-
-    console.log(timeList);
-
-    const selectableTime = Array.from(timeList).filter((alldate) => {
-      return !alldate.classList.contains(
-        "react-datepicker__time-list-item--disabled"
-      );
-    });
-
-    console.log(selectableTime[0]);
-
-    // const hour = selectableTime[0].textContent.slice(0, 2);
-    // console.log(hour);
-    // if (hour[0] === String(0)) {
-    //   setHours(setMinutes(new Date(), 0), hour.slice(1));
-    // } else {
-    //   setHours(setMinutes(new Date(), 0), hour);
-    // }
-
-    // console.log(selectableTime);
-    // console.log(selectableTime[0]);
-
-    Array.from(timeList).forEach((alldate) => {
-      alldate.classList.remove("react-datepicker__time-list-item--selected");
-    });
-
-    // selectableTime[0]?.classList.add(
-    //   "react-datepicker__time-list-item--selected"
-    // );
-  }, []);
 
   return (
     <StyleCalender>
@@ -376,10 +396,10 @@ const TeacherCalendar = (props) => {
           selected={selectedDate}
           onChange={(date) => {
             setSelectedDate(date);
-            removeFirstSelectableTime();
           }}
           onSelect={(date) => {
             getExcludedTimes(date);
+            setSelectedDate(setHours(setMinutes(new Date(date), 0), 0));
           }}
           onMonthChange={(date) => getExcludedTimes(date)}
           monthsShown
@@ -394,6 +414,9 @@ const TeacherCalendar = (props) => {
           timeFormat="HH:mm"
           excludeTimes={excludeTimes}
           filterTime={filterPassedTime}
+          timeClassName={(time) =>
+            time.getHours() === 0 ? "hidden_time" : undefined
+          }
         />
         <StyleDatePickerButton onClick={addDateToSchedule}>
           確認
@@ -406,23 +429,29 @@ const TeacherCalendar = (props) => {
         </StyleAvailableTimeTitle>
         <StyleAvailableTimeArea>
           {timeData ? (
-            timeDataConvert.sort(compareAsc).map((date) => {
-              return (
-                <StyleEachAvailableTime key={nanoid()}>
-                  <StyleAvailableTime id={date}>
-                    {date.toLocaleString(navigator.language, {
-                      year: "numeric",
-                      month: "numeric",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </StyleAvailableTime>
-                  <StyleDeleteButton
-                    onClick={deleteDateFromSchedule}></StyleDeleteButton>
-                </StyleEachAvailableTime>
-              );
-            })
+            <>
+              {timeDataConvert.length !== 0 ? (
+                timeDataConvert.sort(compareAsc).map((date) => {
+                  return (
+                    <StyleEachAvailableTime key={nanoid()}>
+                      <StyleAvailableTime id={date}>
+                        {date.toLocaleString(navigator.language, {
+                          year: "numeric",
+                          month: "numeric",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </StyleAvailableTime>
+                      <StyleDeleteButton
+                        onClick={deleteDateFromSchedule}></StyleDeleteButton>
+                    </StyleEachAvailableTime>
+                  );
+                })
+              ) : (
+                <StyleNoData>尚未提供可預約時段</StyleNoData>
+              )}
+            </>
           ) : (
             <StyleNoData>尚未提供可預約時段</StyleNoData>
           )}

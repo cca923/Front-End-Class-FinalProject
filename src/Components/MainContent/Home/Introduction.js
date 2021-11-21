@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import edit from "../../../images/edit-hover.png";
 import select from "../../../images/home-choose.png";
@@ -8,8 +8,12 @@ const StyleIntroduction = styled.div`
   background: #ecedfd;
   position: relative;
   padding: 1rem;
-  height: fit-content;
+  height: calc(100vh - 100px);
   margin-top: 100vh;
+
+  @media only screen and (max-width: 1000px) {
+    height: fit-content;
+  }
 `;
 
 const StyleTitleWrap = styled.div`
@@ -22,6 +26,10 @@ const StyleTitleWrap = styled.div`
   @media only screen and (max-width: 1350px) {
     margin: 50px auto;
   }
+
+  @media only screen and (max-width: 1000px) {
+    margin: 30px auto 0 auto;
+  }
 `;
 
 const StyleTitle = styled.div`
@@ -30,6 +38,10 @@ const StyleTitle = styled.div`
 
   @media only screen and (max-width: 1350px) {
     font-size: 1.8rem;
+  }
+
+  @media only screen and (max-width: 1000px) {
+    font-size: 1.5rem;
   }
 `;
 
@@ -49,6 +61,11 @@ const StyleStepWrap = styled.div`
   height: fit-content;
   position: relative;
   margin: 50px;
+
+  @media only screen and (max-width: 1000px) {
+    flex-direction: column;
+    margin: 20px;
+  }
 `;
 
 const StyleStepMenu = styled.div`
@@ -56,24 +73,23 @@ const StyleStepMenu = styled.div`
   height: 100%;
   flex-direction: column;
   margin-right: 80px;
-`;
 
-const StyleEachStep = styled.div`
-  padding: 40px 20px;
-  line-height: 48px;
-
-  cursor: pointer;
-  position: relative;
+  @media only screen and (max-width: 1000px) {
+    height: fit-content;
+    margin: auto;
+    width: 260px;
+  }
 `;
 
 const StyleText = styled.span`
   font-size: 1.2rem;
   font-weight: 700;
   opacity: 0.6;
+  transition: 0.2s;
 
-  &:hover {
-    opacity: 1;
-    transition: 0.2s;
+  @media only screen and (max-width: 1000px) {
+    font-size: 1rem;
+    line-height: 40px;
   }
 `;
 
@@ -84,6 +100,11 @@ const StyleStepOrder = styled.span`
   color: grey;
   margin-bottom: 5px;
   margin-right: 10px;
+
+  @media only screen and (max-width: 1000px) {
+    font-size: 2rem;
+    line-height: 40px;
+  }
 `;
 
 const StyleIconWrap = styled.div`
@@ -98,18 +119,52 @@ const StyleIconWrap = styled.div`
   background-color: #ecedfd;
   border-radius: 50%;
   right: 0;
+  transition: all 0.3s;
 
-  :hover {
-    transition: all 0.3s;
-    border-color: 2px solid #7367f0;
-    box-shadow: rgba(0, 0, 226, 0.12) 0px 2px 4px 0px,
-      rgba(0, 0, 226, 0.32) 0px 2px 16px 0px;
+  @media only screen and (max-width: 1000px) {
+    padding: 5px;
+    width: 45px;
+    height: 45px;
   }
 `;
 
 const StyleIcon = styled.img`
   width: 40px;
   height: 40px;
+  opacity: 0.6;
+  margin: auto;
+
+  @media only screen and (max-width: 1000px) {
+    width: 30px;
+    height: 30px;
+  }
+`;
+
+const StyleEachStep = styled.div`
+  padding: 40px 20px;
+  line-height: 48px;
+  cursor: pointer;
+  position: relative;
+
+  &:hover ${StyleText} {
+    opacity: 1;
+  }
+
+  &:hover ${StyleIcon} {
+    opacity: 1;
+  }
+
+  &:hover ${StyleIconWrap} {
+    opacity: 1;
+    border-color: 2px solid #7367f0;
+    box-shadow: rgba(0, 0, 226, 0.12) 0px 2px 4px 0px,
+      rgba(0, 0, 226, 0.32) 0px 2px 16px 0px;
+  }
+
+  @media only screen and (max-width: 1000px) {
+    padding: 5px;
+    line-height: 40px;
+  }
 `;
 
 const StyleLine = styled.div`
@@ -119,6 +174,16 @@ const StyleLine = styled.div`
   right: auto;
   bottom: 0;
   border-left: 2px dashed #484c7a;
+
+  @media only screen and (max-width: 1000px) {
+    left: 0;
+    top: 180px;
+    right: 0;
+    bottom: auto;
+    margin-right: 32px;
+    margin-left: 32px;
+    border-top: 2px dashed #484c7a;
+  }
 `;
 
 const StyleStepContent = styled.div`
@@ -128,6 +193,11 @@ const StyleStepContent = styled.div`
   border-radius: 20px;
   height: fit-content;
   margin-top: 80px;
+
+  @media only screen and (max-width: 1000px) {
+    width: 100%;
+    margin-top: 60px;
+  }
 `;
 
 const StyleStepContentTitle = styled.div`
@@ -146,6 +216,10 @@ const StyleStepContentTitle = styled.div`
   @media only screen and (max-width: 1350px) {
     font-size: 1.2rem;
     width: 250px;
+  }
+
+  @media only screen and (max-width: 1000px) {
+    width: 220px;
   }
 `;
 
@@ -235,7 +309,7 @@ const Introduction = (props) => {
   };
 
   return (
-    <StyleIntroduction>
+    <StyleIntroduction ref={props.target}>
       <StyleTitleWrap>
         <StyleTitle>職涯大哉問，一對一視訊，讓前輩來 Carry !</StyleTitle>
         <StyleSubtitle>簡單的預約流程，約到不簡單的人</StyleSubtitle>
