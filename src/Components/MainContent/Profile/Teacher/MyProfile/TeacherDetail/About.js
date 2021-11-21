@@ -262,14 +262,12 @@ const StyleAboutMeData = styled.div`
 
   @media only screen and (max-width: 1800px) {
     min-width: 100px;
-    height: 100px;
   }
 
   @media only screen and (max-width: 1300px) {
     font-size: 1rem;
     margin-top: 0px;
     line-height: 1.5rem;
-    height: fit-content;
   }
 
   @media only screen and (max-width: 600px) {

@@ -57,7 +57,7 @@ const StyleDatePickerButton = styled.button`
 
 const StyleAvailableTimeContainer = styled.div`
   width: 30%;
-  height: 455px;
+  height: 500px;
   background-color: #757bc8;
   display: flex;
   flex-direction: column;

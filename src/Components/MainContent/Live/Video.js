@@ -357,7 +357,7 @@ const Video = (props) => {
     };
 
     if (identity === "teacher") {
-      if (localStream === null) {
+      if (!localVideo.current.srcObject?.active) {
         // 沒開鏡頭時...
         history.push("/profile/myclass");
         dispatch(getLiveData(null));
@@ -376,7 +376,7 @@ const Video = (props) => {
         // });
       }
     } else if (identity === "student") {
-      if (localStream === null) {
+      if (!localVideo.current.srcObject?.active) {
         // 沒開鏡頭時...
         Swal.fire({
           title: "確定要離開視訊房間嗎？",

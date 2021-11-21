@@ -178,14 +178,12 @@ const StyleAboutMeData = styled.div`
 
   @media only screen and (max-width: 1800px) {
     min-width: 100px;
-    height: 100px;
   }
 
   @media only screen and (max-width: 1300px) {
     font-size: 1rem;
     margin-top: 0px;
     line-height: 1.5rem;
-    height: fit-content;
   }
 `;
 
@@ -292,7 +290,7 @@ const StyleJobTitleLabel = styled.div`
 `;
 
 const StyleJobValue = styled.div`
-  width: 180px;
+  min-width: 180px;
   color: black;
   font-weight: 600;
   line-height: 24px;
@@ -312,6 +310,7 @@ const StyleJobTimeValue = styled.div`
   width: 200px;
   line-height: 24px;
   padding: 2px 0;
+  text-align: end;
 `;
 
 const StyleMoreButton = styled.div`

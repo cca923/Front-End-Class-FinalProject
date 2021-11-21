@@ -67,32 +67,6 @@ function App() {
           console.log("資料讀取錯誤", error);
         });
 
-      // db.collection("students")
-      //   .where("email", "==", currentUser.email)
-      //   .get()
-      //   .then((querySnapshot) => {
-      //     querySnapshot.forEach((doc) => {
-      //       dispatch(getIdentity("student"));
-      //       console.log("是學生");
-      //     });
-      //   })
-      //   .catch((error) => {
-      //     console.log("資料讀取錯誤", error);
-      //   });
-
-      // db.collection("teachers")
-      //   .where("email", "==", currentUser.email)
-      //   .get()
-      //   .then((querySnapshot) => {
-      //     querySnapshot.forEach((doc) => {
-      //       dispatch(getIdentity("teacher"));
-      //       console.log("是老師");
-      //     });
-      //   })
-      //   .catch((error) => {
-      //     console.log("資料讀取錯誤", error);
-      //   });
-
       db.collection("students")
         .where("email", "==", currentUser.email)
         .get()
@@ -113,34 +87,6 @@ function App() {
         .catch((error) => {
           console.log("資料讀取錯誤", error);
         });
-
-      // teachersRef
-      //   .get()
-      //   .then((doc) => {
-      //     if (doc.exists) {
-      //       teachersRef.onSnapshot((doc) => {
-      //         dispatch(getTeacherData(doc.data()));
-      //         console.log("老師資料", doc.data());
-      //       });
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     console.log("資料讀取有誤：", error);
-      //   });
-
-      // studentsRef
-      //   .get()
-      //   .then((doc) => {
-      //     if (doc.exists) {
-      //       studentsRef.onSnapshot((doc) => {
-      //         dispatch(getStudentData(doc.data()));
-      //         console.log("學生資料", doc.data());
-      //       });
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     console.log("資料讀取有誤：", error);
-      //   });
     });
   }, []);
 
