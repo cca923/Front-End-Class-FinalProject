@@ -634,6 +634,8 @@ const Video = (props) => {
     console.groupEnd();
   };
 
+  console.log(runGuide);
+
   return (
     <>
       {identity === "teacher" ? (
@@ -648,7 +650,6 @@ const Video = (props) => {
           styles={{
             options: {
               zIndex: 10000,
-              // backgroundSize: "100vh",
             },
           }}
           tooltipComponent={Tooltip}
@@ -657,7 +658,7 @@ const Video = (props) => {
         <Joyride
           callback={handleJoyrideCallback}
           continuous={true}
-          run={startRunGuide}
+          run={runGuide}
           scrollToFirstStep={true}
           showProgress={true}
           showSkipButton={true}
