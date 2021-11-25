@@ -1,13 +1,10 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { changeSignLoading, changeSignPage } from "../../../Redux/Action";
+import { changeSignLoading } from "../../../Redux/Action";
 import styled from "styled-components";
-import firebase from "../../../utils/config/firebase-config";
-import {
-  facebookProvider,
-  googleProvider,
-} from "../../../utils/service/authMethod";
+import { nativeUserSignup, setNewUserData } from "../../../utils/firebase";
+import { facebookProvider, googleProvider } from "../../../utils/firebase";
 import facebook from "../../../images/facebook.png";
 import google from "../../../images/google.png";
 
@@ -201,7 +198,11 @@ const StyleErrorMessage = styled.div`
   }
 `;
 
-const Signup = (props) => {
+const Signup = ({
+  closeSignFeature,
+  thirdPartyErrorMessage,
+  handleThirdPartySign,
+}) => {
   const identity = useSelector((state) => state.identity);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -210,57 +211,39 @@ const Signup = (props) => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const db = firebase.firestore();
-  const studentsCollection = db.collection("students");
-  const teachersCollection = db.collection("teachers");
-
   const handleNativeSignup = async () => {
     dispatch(changeSignLoading(true));
 
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        if (identity === "student") {
-          const student = studentsCollection.doc(email);
-          const data = {
-            name,
-            email: email,
-          };
-          student.set(data).then(() => {
-            dispatch(changeSignLoading(false));
-            dispatch(changeSignPage(false));
-            history.push("/profile/myresume");
-          });
-        } else if (identity === "teacher") {
-          const teacher = teachersCollection.doc(email);
-          const data = {
-            name,
-            email: email,
-          };
-          teacher.set(data).then(() => {
-            dispatch(changeSignLoading(false));
-            dispatch(changeSignPage(false));
-            history.push("/profile/myprofile");
-          });
-        }
-      })
-      .catch((error) => {
-        switch (error.code) {
-          case "auth/email-already-in-use":
-            setErrorMessage("信箱已存在");
-            break;
-          case "auth/invalid-email":
-            setErrorMessage("");
-            setErrorMessage("信箱格式不正確");
-            break;
-          case "auth/weak-password":
-            setErrorMessage("");
-            setErrorMessage("密碼強度不足");
-            break;
-          default:
-        }
-      });
+    try {
+      const userData = await nativeUserSignup(email, password);
+
+      if (identity === "student") {
+        await setNewUserData("students", name, userData.user);
+        closeSignFeature();
+        history.push("/profile/myresume");
+      } else if (identity === "teacher") {
+        await setNewUserData("teachers", name, userData.user);
+        closeSignFeature();
+        history.push("/profile/myprofile");
+      }
+    } catch (error) {
+      dispatch(changeSignLoading(false));
+
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          setErrorMessage("信箱已存在");
+          break;
+        case "auth/invalid-email":
+          setErrorMessage("");
+          setErrorMessage("信箱格式不正確");
+          break;
+        case "auth/weak-password":
+          setErrorMessage("");
+          setErrorMessage("密碼強度不足");
+          break;
+        default:
+      }
+    }
   };
 
   return (
@@ -288,7 +271,7 @@ const Signup = (props) => {
           placeholder="密碼"
           required
         />
-        {<StyleErrorMessage>{props.thirdPartyErrorMessage}</StyleErrorMessage>}
+        {<StyleErrorMessage>{thirdPartyErrorMessage}</StyleErrorMessage>}
         {<StyleErrorMessage>{errorMessage}</StyleErrorMessage>}
 
         <StyleButton onClick={handleNativeSignup} type="button">
@@ -298,15 +281,14 @@ const Signup = (props) => {
         <StyleSeperator>或</StyleSeperator>
 
         <StyleFacebookLogin
-          onClick={() => props.handleThirdPartySign(facebookProvider)}>
+          onClick={() => handleThirdPartySign(facebookProvider)}>
           <StyleIconContainer>
             <StyleFacebookIcon src={facebook} alt="facebook" />
           </StyleIconContainer>
           <StyleType>使用 Facebook 註冊</StyleType>
         </StyleFacebookLogin>
 
-        <StyleGoogleLogin
-          onClick={() => props.handleThirdPartySign(googleProvider)}>
+        <StyleGoogleLogin onClick={() => handleThirdPartySign(googleProvider)}>
           <StyleIconContainer>
             <StyleFacebookIcon src={google} alt="google" />
           </StyleIconContainer>

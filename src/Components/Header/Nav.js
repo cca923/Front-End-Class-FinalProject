@@ -8,7 +8,7 @@ import {
   getLiveStatus,
   startRunGuide,
 } from "../../Redux/Action";
-import firebase from "../../utils/config/firebase-config";
+import firebase from "../../utils/firebase";
 import Swal from "sweetalert2";
 
 const StyleNav = styled.nav`
@@ -24,13 +24,13 @@ const StyleNav = styled.nav`
 const StyleLink = styled(NavLink)`
   font-size: 1.5rem;
   font-weight: 400;
-  color: ${(props) => (props.headerColor ? "#222" : "#fff")};
-  border-left: 2px solid ${(props) => (props.headerColor ? "#666" : "#fff")};
+  color: ${(props) => (props.headercolor ? "#222" : "#fff")};
+  border-left: 2px solid ${(props) => (props.headercolor ? "#666" : "#fff")};
   width: 150px;
   padding: 0px 20px;
 
   :hover {
-    color: ${(props) => (props.headerColor ? "#8e94f2" : "#fd8e87")};
+    color: ${(props) => (props.headercolor ? "#8e94f2" : "#fd8e87")};
     transition: all 0.2s;
   }
 
@@ -81,7 +81,7 @@ const StyleInvitationArea = styled.div`
   display: inline;
   font-size: 1.5rem;
   font-weight: 400;
-  border-left: 2px solid ${(props) => (props.headerColor ? "#666" : "#fff")};
+  border-left: 2px solid ${(props) => props.headercolor};
   padding: 0px 40px;
   position: relative;
 `;
@@ -93,15 +93,12 @@ const StyleNoNotification = styled.div`
   width: 30px;
   height: 30px;
   line-height: 100px;
-  display: ${(props) => (props.invitationData ? "none" : "inline-block")};
+  display: ${(props) => props.invitationdata};
   align-content: center;
   background-size: cover;
   background-position: center;
   cursor: pointer;
-  background-image: ${(props) =>
-    props.headerColor
-      ? "url('/images/bell-scroll.png')"
-      : "url('/images/bell-static.png')"};
+  background-image: ${(props) => props.headercolor};
 `;
 
 const StyleNewNotification = styled.div`
@@ -111,7 +108,7 @@ const StyleNewNotification = styled.div`
   width: 30px;
   height: 30px;
   line-height: 100px;
-  display: ${(props) => (props.invitationData ? "inline-block" : "none")};
+  display: ${(props) => props.invitationdata};
   align-content: center;
   background-size: cover;
   background-position: center;
@@ -128,7 +125,7 @@ const StyleInvitation = styled.div`
   top: -12px;
   width: 30px;
   height: 30px;
-  color: red;
+  color: ${(props) => props.headercolor};
   font-size: 1rem;
 `;
 
@@ -144,10 +141,7 @@ const StylequestionArea = styled.div`
   background-size: cover;
   background-position: center;
   cursor: pointer;
-  background-image: ${(props) =>
-    props.headerColor
-      ? "url('/images/question-scroll.png')"
-      : "url('/images/question-static.png')"};
+  background-image: ${(props) => props.headercolor};
 `;
 
 const Nav = (props) => {
@@ -169,7 +163,7 @@ const Nav = (props) => {
   // 不用 signStatus Redux 判斷，用 onAuthStateChanged，拆開成兩個 useEffect
   return currentUser === null ? (
     <StyleNav layer={props.layer}>
-      <StyleLink headerColor={props.headerColor} exact to="/">
+      <StyleLink headercolor={props.headerColor} exact to="/">
         Home
       </StyleLink>
       <StyleSignLink
@@ -183,12 +177,16 @@ const Nav = (props) => {
       {liveStatus ? (
         <>
           <StyleSignLink
-            headerColor={props.headerColor}
+            headercolor={props.headerColor}
             liveStatus={liveStatus}>
             Live
           </StyleSignLink>
           <StylequestionArea
-            headerColor={props.headerColor}
+            headercolor={
+              props.headerColor
+                ? "url('/images/question-scroll.png')"
+                : "url('/images/question-static.png')"
+            }
             onClick={() => {
               dispatch(startRunGuide(true)); // 開始操作導覽
             }}
@@ -198,27 +196,28 @@ const Nav = (props) => {
         <>
           {identity === "student" ? (
             <>
-              <StyleLink headerColor={props.headerColor} exact to="/">
+              <StyleLink headercolor={props.headerColor} exact to="/">
                 Home
               </StyleLink>
-              <StyleLink headerColor={props.headerColor} to="/teachers">
+              <StyleLink headercolor={props.headerColor} to="/teachers">
                 Teachers
               </StyleLink>
             </>
           ) : null}
 
-          <StyleLink headerColor={props.headerColor} to="/live">
+          <StyleLink headercolor={props.headerColor} to="/live">
             Live
           </StyleLink>
 
           {identity === "student" ? (
             <>
-              <StyleLink headerColor={props.headerColor} to="/profile/myresume">
+              <StyleLink headercolor={props.headerColor} to="/profile/myresume">
                 Profile
               </StyleLink>
-              <StyleInvitationArea headerColor={props.headerColor}>
+              <StyleInvitationArea
+                headercolor={props.headerColor ? "#666" : "#fff"}>
                 <StyleNewNotification
-                  invitationData={invitationData}
+                  invitationdata={invitationData ? "inline-block" : "none"}
                   onClick={() => {
                     if (invitationData) {
                       Swal.fire({
@@ -247,8 +246,12 @@ const Nav = (props) => {
                   }}
                 />
                 <StyleNoNotification
-                  invitationData={invitationData}
-                  headerColor={props.headerColor}
+                  invitationdata={invitationData ? "none" : "inline-block"}
+                  headercolor={
+                    props.headerColor
+                      ? "url('/images/bell-scroll.png')"
+                      : "url('/images/bell-static.png')"
+                  }
                   onClick={() => {
                     Swal.fire({
                       title: "沒有任何視訊邀請！",
@@ -259,12 +262,15 @@ const Nav = (props) => {
                   }}
                 />
                 {invitationData ? (
-                  <StyleInvitation>New!</StyleInvitation>
+                  <StyleInvitation
+                    headercolor={props.headerColor ? "red" : "#ffee32"}>
+                    New!
+                  </StyleInvitation>
                 ) : null}
               </StyleInvitationArea>
             </>
           ) : (
-            <StyleLink headerColor={props.headerColor} to="/profile/myprofile">
+            <StyleLink headercolor={props.headerColor} to="/profile/myprofile">
               Profile
             </StyleLink>
           )}

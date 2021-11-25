@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import styled from "styled-components";
-import firebase from "../../../../utils/config/firebase-config";
+import firebase from "../../../../utils/firebase";
 import Calender from "./Calender";
 import Comments from "./Comments/index";
 import Introduction from "./Introduction";
@@ -42,20 +42,25 @@ const StyleLoading = styled.img`
 `;
 
 const EachTeacher = (props) => {
-  const { teacherUid } = useParams();
+  const params = useParams();
+  const history = useHistory();
   const db = firebase.firestore();
   const teachersCollection = db.collection("teachers");
   const [teacherData, setTeacherData] = useState();
-  console.log("該老師的資料！", teacherData);
+  // console.log("該老師的資料！", teacherData);
 
   useEffect(() => {
     teachersCollection
-      .where("uid", "==", teacherUid)
+      .where("uid", "==", params.teacherUid)
       .get()
       .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          setTeacherData(doc.data());
-        });
+        if (querySnapshot.empty) {
+          history.push("/404");
+        } else {
+          querySnapshot.forEach((doc) => {
+            setTeacherData(doc.data());
+          });
+        }
       })
       .catch((error) => {
         console.log("資料讀取錯誤", error);

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Swal from "sweetalert2";
-import firebase from "../../../../../../utils/config/firebase-config";
+import firebase from "../../../../../../utils/firebase";
 import noPhoto from "../../../../../../images/no-photo.png";
 
 const StyleTeacherAbout = styled.div`
@@ -106,6 +106,7 @@ const StyleImage = styled.img`
   border-radius: 50% 50% 50% 3px;
   margin: auto 20px auto 5px;
   box-shadow: rgba(0, 0, 0, 0.2) 2px 2px 3px;
+  object-fit: cover;
 
   @media only screen and (max-width: 1500px) {
     max-width: 150px;

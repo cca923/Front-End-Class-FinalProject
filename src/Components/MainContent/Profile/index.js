@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { getIdentity } from "../../../Redux/Action";
+import React from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
-import firebase from "../../../utils/config/firebase-config";
-import Sidebar from "./Sidebar";
+import Sidebar from "./Sidebar/index";
 import MainArea from "./MainArea";
 import loading from "../../../images/loading.gif";
 
@@ -13,11 +10,6 @@ const StyleProfile = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-
-  /* BUG */
-  @media only screen and (max-width: 1300px) {
-    /* height: 320px; */
-  }
 `;
 
 const StyleHeaderArea = styled.div`
@@ -86,46 +78,6 @@ const Profile = (props) => {
   const identity = useSelector((state) => state.identity);
   const identityData = useSelector((state) => state.identityData);
 
-  const dispatch = useDispatch();
-  const history = useHistory();
-
-  const user = firebase.auth().currentUser;
-  const db = firebase.firestore();
-
-  useEffect(() => {
-    const teachersRef = db.collection("teachers").doc(user.email);
-    const studentsRef = db.collection("students").doc(user.email);
-
-    teachersRef
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          dispatch(getIdentity("teacher"));
-          teachersRef.update({
-            uid: user.uid, // 加入作為巢狀路由 URL
-          });
-        }
-      })
-      .catch((error) => {
-        console.log("資料讀取有誤：", error);
-      });
-
-    studentsRef
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          dispatch(getIdentity("student"));
-          studentsRef.update({
-            uid: user.uid,
-          });
-        }
-      })
-      .catch((error) => {
-        console.log("資料讀取有誤：", error);
-      });
-  }, []);
-
-  // TODO:沒登入過要 Redireact 回首頁！
   return (
     <StyleProfile>
       <StyleHeaderArea />

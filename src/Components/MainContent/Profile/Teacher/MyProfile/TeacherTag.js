@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Select from "react-select";
 import Swal from "sweetalert2";
-import firebase from "../../../../../utils/config/firebase-config";
+import firebase from "../../../../../utils/firebase";
 
 const StyleTeacherTag = styled.div`
   width: 100%;

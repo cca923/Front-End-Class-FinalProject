@@ -1,20 +1,18 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  changeSignLoading,
-  changeSignPage,
-  getIdentity,
-} from "../../../Redux/Action";
+import { changeSignLoading, getIdentity } from "../../../Redux/Action";
 import styled from "styled-components";
-import firebase from "../../../utils/config/firebase-config";
 import {
-  facebookProvider,
-  googleProvider,
-} from "../../../utils/service/authMethod";
+  nativeUserSignin,
+  studentData,
+  teacherData,
+  userSignOut,
+} from "../../../utils/firebase";
+import { facebookProvider, googleProvider } from "../../../utils/firebase";
 import facebook from "../../../images/facebook.png";
 import google from "../../../images/google.png";
-import Swal from "sweetalert2";
+import { wrongIdentitySigninAlert } from "../../../utils/swal";
 
 const StyleSignin = styled.div`
   font-size: 1.5rem;
@@ -204,106 +202,63 @@ const StyleErrorMessage = styled.div`
   }
 `;
 
-const Signin = (props) => {
+const Signin = ({
+  closeSignFeature,
+  thirdPartyErrorMessage,
+  handleThirdPartySign,
+}) => {
   const identity = useSelector((state) => state.identity);
-  console.log(identity);
-
   const dispatch = useDispatch();
   const history = useHistory();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const db = firebase.firestore();
-  const studentsCollection = db.collection("students");
-  const teachersCollection = db.collection("teachers");
-
-  const handleNativeSignin = () => {
+  const handleNativeSignin = async () => {
     dispatch(changeSignLoading(true));
 
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((res) => {
-        if (identity === "student") {
-          // 確認是否已是老師，提醒使用者選擇老師帳號登入
-          teachersCollection
-            .doc(email)
-            .get()
-            .then((doc) => {
-              if (doc.exists) {
-                firebase
-                  .auth()
-                  .signOut()
-                  .then(() => {
-                    dispatch(changeSignLoading(false));
-                    dispatch(changeSignPage(false));
-                    dispatch(getIdentity(""));
-                    Swal.fire({
-                      title: "此 Email 註冊為老師",
-                      html: `<h3>請選擇以老師身份登入！</h3>`,
-                      icon: "warning",
-                      customClass: {
-                        confirmButton: "confirm__button",
-                      },
-                    });
-                  });
-              } else {
-                dispatch(changeSignLoading(false));
-                dispatch(changeSignPage(false));
-                history.push("/profile/myresume");
-              }
-            })
-            .catch((error) => {
-              console.log("帳號讀取有問題", error);
-            });
-        } else if (identity === "teacher") {
-          studentsCollection
-            .doc(email)
-            .get()
-            .then((doc) => {
-              if (doc.exists) {
-                firebase
-                  .auth()
-                  .signOut()
-                  .then(() => {
-                    dispatch(changeSignLoading(false));
-                    dispatch(changeSignPage(false));
-                    dispatch(getIdentity(""));
-                    Swal.fire({
-                      title: "此 Email 註冊為學生",
-                      html: `<h3>請選擇以學生身份登入！</h3>`,
-                      icon: "warning",
-                      customClass: {
-                        confirmButton: "confirm__button",
-                      },
-                    });
-                  });
-              } else {
-                dispatch(changeSignLoading(false));
-                dispatch(changeSignPage(false));
-                history.push("/profile/myprofile");
-              }
-            })
-            .catch((error) => {
-              console.log("帳號讀取有問題", error);
-            });
+    try {
+      await nativeUserSignin(email, password);
+
+      if (identity === "student") {
+        const teacherDoc = await teacherData(email);
+        if (teacherDoc.exists) {
+          await userSignOut();
+          closeSignFeature();
+          dispatch(getIdentity(""));
+          await wrongIdentitySigninAlert("老師");
+        } else {
+          closeSignFeature();
+          history.push("/profile/myresume");
         }
-      })
-      .catch((error) => {
-        switch (error.code) {
-          case "auth/user-not-found":
-            setErrorMessage("信箱不存在");
-            break;
-          case "auth/invalid-email":
-            setErrorMessage("信箱格式不正確");
-            break;
-          case "auth/wrong-password":
-            setErrorMessage("密碼錯誤");
-            break;
-          default:
+      } else if (identity === "teacher") {
+        const studentDoc = await studentData(email);
+        if (studentDoc.exists) {
+          await userSignOut();
+          closeSignFeature();
+          dispatch(getIdentity(""));
+          await wrongIdentitySigninAlert("學生");
+        } else {
+          closeSignFeature();
+          history.push("/profile/myprofile");
         }
-      });
+      }
+    } catch (error) {
+      dispatch(changeSignLoading(false));
+
+      switch (error.code) {
+        case "auth/user-not-found":
+          setErrorMessage("信箱不存在");
+          break;
+        case "auth/invalid-email":
+          setErrorMessage("信箱格式不正確");
+          break;
+        case "auth/wrong-password":
+          setErrorMessage("密碼錯誤");
+          break;
+        default:
+      }
+    }
   };
 
   return (
@@ -324,7 +279,7 @@ const Signin = (props) => {
           placeholder="密碼"
           required
         />
-        {<StyleErrorMessage>{props.thirdPartyErrorMessage}</StyleErrorMessage>}
+        {<StyleErrorMessage>{thirdPartyErrorMessage}</StyleErrorMessage>}
         {<StyleErrorMessage>{errorMessage}</StyleErrorMessage>}
 
         <StyleButton onClick={handleNativeSignin} type="button">
@@ -335,15 +290,14 @@ const Signin = (props) => {
       <StyleSeperator>或</StyleSeperator>
 
       <StyleFacebookLogin
-        onClick={() => props.handleThirdPartySign(facebookProvider)}>
+        onClick={() => handleThirdPartySign(facebookProvider)}>
         <StyleIconContainer>
           <StyleFacebookIcon src={facebook} alt="facebook" />
         </StyleIconContainer>
         <StyleType>使用 Facebook 登入</StyleType>
       </StyleFacebookLogin>
 
-      <StyleGoogleLogin
-        onClick={() => props.handleThirdPartySign(googleProvider)}>
+      <StyleGoogleLogin onClick={() => handleThirdPartySign(googleProvider)}>
         <StyleIconContainer>
           <StyleFacebookIcon src={google} alt="google" />
         </StyleIconContainer>

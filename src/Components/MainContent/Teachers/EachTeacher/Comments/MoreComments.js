@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import firebase from "../../../../../utils/config/firebase-config";
+import firebase from "../../../../../utils/firebase";
 import noPhoto from "../../../../../images/no-photo.png";
 
 const StyleMoreComments = styled.div`
@@ -63,7 +63,7 @@ const MoreComments = (props) => {
   const db = firebase.firestore();
   const studentsCollection = db.collection("students");
   const [studentData, setStudentData] = useState([]);
-  console.log("該學生的資料！", studentData);
+  // console.log("該學生的資料！", studentData);
 
   useEffect(() => {
     studentsCollection

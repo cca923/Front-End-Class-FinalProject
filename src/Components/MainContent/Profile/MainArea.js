@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import StudentMainArea from "./Student";
@@ -7,11 +7,10 @@ import TeacherMainArea from "./Teacher";
 const StyleMainArea = styled.div`
   width: 70%;
   min-height: 100%;
-  /* background-color: #fff; */
   position: absolute;
   top: 45%;
   left: 61%;
-  margin-left: -35%;
+  margin-left: -36%;
   display: flex;
 
   @media only screen and (max-width: 1300px) {
@@ -31,7 +30,7 @@ const StyleMainArea = styled.div`
   }
 `;
 
-const MainArea = (props) => {
+const MainArea = () => {
   const identity = useSelector((state) => state.identity);
 
   return (

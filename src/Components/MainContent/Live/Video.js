@@ -8,7 +8,7 @@ import {
 } from "../../../Redux/Action";
 import styled from "styled-components";
 import Swal from "sweetalert2";
-import firebase from "../../../utils/config/firebase-config";
+import firebase from "../../../utils/firebase";
 import videoOn from "../../../images/video-on.png";
 import exit from "../../../images/exit.png";
 import Joyride, { STATUS } from "react-joyride";
@@ -633,8 +633,6 @@ const Video = (props) => {
     console.log(data);
     console.groupEnd();
   };
-
-  console.log(runGuide);
 
   return (
     <>

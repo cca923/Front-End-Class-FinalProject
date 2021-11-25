@@ -3,7 +3,14 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { getIdentity, getStudentData, getTeacherData } from "./Redux/Action";
-import firebase from "./utils/config/firebase-config";
+import {
+  onUserChanged,
+  teacherData,
+  studentData,
+  teacherSnapshot,
+  docRef,
+  studentSnapshot,
+} from "./utils/firebase";
 import Sign from "./Components/MainContent/Sign/Sign";
 import Home from "./Components/MainContent/Home";
 import Live from "./Components/MainContent/Live/index";
@@ -30,67 +37,49 @@ const StyleLoading = styled.img`
 function App() {
   const identityData = useSelector((state) => state.identityData);
   const identity = useSelector((state) => state.identity);
+  const signPage = useSelector((state) => state.signPage);
   const dispatch = useDispatch();
   console.log("目前使用者身份：", identity, "Redux: Email", identityData.email);
   // 判斷登錯身份，會登出 auth，但 Redux 沒有清空 (currentUser 無，identityData 有)！
 
-  const db = firebase.firestore();
-
   const [currentUser, setCurrentUser] = useState();
+  console.log("Auth 使用者", currentUser);
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged((currentUser) => {
+    onUserChanged(async (currentUser) => {
       setCurrentUser(currentUser);
-      // console.log(currentUser);
 
-      const teachersRef = db.collection("teachers").doc(currentUser.email);
-      const studentsRef = db.collection("students").doc(currentUser.email);
+      if (currentUser) {
+        const teacherDoc = await teacherData(currentUser.email);
+        if (teacherDoc.exists) {
+          dispatch(getIdentity("teacher"));
 
-      db.collection("teachers")
-        .where("email", "==", currentUser.email)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            if (doc.exists) {
-              dispatch(getIdentity("teacher"));
-
-              teachersRef.onSnapshot((doc) => {
-                if (doc.data().email === currentUser.email) {
-                  dispatch(getTeacherData(doc.data()));
-                  console.log("老師資料", doc.data());
-                }
-              });
+          teacherSnapshot(
+            docRef("teachers", currentUser.email),
+            currentUser.email,
+            teacherDoc,
+            (data) => {
+              dispatch(getTeacherData(data));
             }
-          });
-        })
-        .catch((error) => {
-          console.log("資料讀取錯誤", error);
-        });
+          );
+        }
 
-      db.collection("students")
-        .where("email", "==", currentUser.email)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            if (doc.exists) {
-              dispatch(getIdentity("student"));
+        const studentDoc = await studentData(currentUser.email);
+        if (studentDoc.exists) {
+          dispatch(getIdentity("student"));
 
-              if (doc.data().email === currentUser.email) {
-                studentsRef.onSnapshot((doc) => {
-                  dispatch(getStudentData(doc.data()));
-                  console.log("學生資料", doc.data());
-                });
-              }
+          studentSnapshot(
+            docRef("students", currentUser.email),
+            currentUser.email,
+            studentDoc,
+            (data) => {
+              dispatch(getStudentData(data));
             }
-          });
-        })
-        .catch((error) => {
-          console.log("資料讀取錯誤", error);
-        });
+          );
+        }
+      }
     });
-  }, []);
-
-  const signPage = useSelector((state) => state.signPage);
+  }, []); // 不可以放 currentUser，Redux 裝的資料會判斷錯誤！
 
   return (
     <>
@@ -106,7 +95,7 @@ function App() {
           {currentUser !== null ? (
             <>
               {currentUser !== undefined ? (
-                <>
+                <Switch>
                   <Route path="/teachers" exact>
                     <Teachers />
                   </Route>
@@ -119,10 +108,13 @@ function App() {
                   <Route path="/profile">
                     <Profile />
                   </Route>
-
-                  {/* <Route component={NoMatch} exact /> */}
-                  {/* <Redirect to="/404" /> */}
-                </>
+                  <Route path="/404" exact>
+                    <NoMatch />
+                  </Route>
+                  <Route path="">
+                    <Redirect to="/404" />
+                  </Route>
+                </Switch>
               ) : (
                 <StyleStateWrap>
                   <StyleLoading src={loading} alt={"Loading"} />

@@ -5,7 +5,7 @@ import EasyEdit, { Types } from "react-easy-edit";
 import "../../../../../../css/edit.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-import firebase from "../../../../../../utils/config/firebase-config";
+import firebase from "../../../../../../utils/firebase";
 
 const StyleCustomDisplay = styled.div`
   display: inline-block;

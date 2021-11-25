@@ -7,7 +7,7 @@ import {
   startRunGuide,
 } from "../../../../../../Redux/Action";
 import styled from "styled-components";
-import firebase from "../../../../../../utils/config/firebase-config";
+import firebase from "../../../../../../utils/firebase";
 import Swal from "sweetalert2";
 import Resume from "./Resume";
 import video from "../../../../../../images/video-on.png";

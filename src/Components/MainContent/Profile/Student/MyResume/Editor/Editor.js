@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import ReactQuill from "react-quill"; // ES6
+import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
@@ -8,7 +8,7 @@ import editIcon from "../../../../../../images/edit.png";
 import editIconHover from "../../../../../../images/edit-hover.png";
 import saveIcon from "../../../../../../images/save.png";
 import saveIconHover from "../../../../../../images/save-hover.png";
-import firebase from "../../../../../../utils/config/firebase-config";
+import firebase from "../../../../../../utils/firebase";
 
 const StyleEditorArea = styled.div`
   display: flex;

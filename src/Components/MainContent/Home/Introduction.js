@@ -7,7 +7,7 @@ import video from "../../../images/home-video.png";
 const StyleIntroduction = styled.div`
   background: #ecedfd;
   position: relative;
-  padding: 1rem;
+  padding: 5rem;
   height: calc(100vh - 100px);
   margin-top: 100vh;
 
@@ -256,7 +256,7 @@ const Introduction = (props) => {
     } else if (stepDisplay === "two") {
       return <StyleStepContentTitle>篩選條件｜預約前輩</StyleStepContentTitle>;
     } else if (stepDisplay === "three") {
-      return <StyleStepContentTitle>視訊討論｜即時修改</StyleStepContentTitle>;
+      return <StyleStepContentTitle>視訊討論｜在線修改</StyleStepContentTitle>;
     }
   };
 
@@ -358,11 +358,6 @@ const Introduction = (props) => {
           {handleTitle()}
           <StyleContainer>{handleContent()}</StyleContainer>
         </StyleStepContent>
-
-        {/* <StyleStepContent>
-          {handleTitle()}
-          {handleContent()}
-        </StyleStepContent> */}
       </StyleStepWrap>
     </StyleIntroduction>
   );

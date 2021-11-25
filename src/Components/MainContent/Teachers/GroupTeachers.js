@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import firebase from "../../../utils/config/firebase-config";
+import firebase from "../../../utils/firebase";
 import { nanoid } from "nanoid";
 import noPhoto from "../../../images/resume-noPhoto.png";
 import noResult from "../../../images/noResult.gif";

@@ -2,7 +2,7 @@
   min-width: 100%;
 }
 .easy-edit-component-wrapper {
-  display: block;
+  display: block !important;
 }
 
 .easy-edit-textarea {

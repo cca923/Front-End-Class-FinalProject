@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import firebase from "../../../../../utils/config/firebase-config";
+import firebase from "../../../../../utils/firebase";
 import noPhoto from "../../../../../images/resume-noPhoto.png";
 
 const StyleEachTeacher = styled.div`

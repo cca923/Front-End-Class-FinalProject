@@ -6,14 +6,19 @@ import {
   changeSignPage,
   getIdentity,
 } from "../../../Redux/Action";
-import Swal from "sweetalert2";
-import firebase from "../../../utils/config/firebase-config";
-
+import {
+  setNewUserData,
+  signInWithPopup,
+  studentData,
+  teacherData,
+  userSignOut,
+} from "../../../utils/firebase";
 import styled from "styled-components";
 import Signin from "./Signin";
 import Signup from "./Signup";
 import Identity from "./Identity";
 import loading from "../../../images/loading.gif";
+import { wrongIdentitySigninAlert } from "../../../utils/swal";
 
 const StyleSignLayer = styled.div`
   width: 100%;
@@ -119,7 +124,6 @@ const StyleLoading = styled.img`
 
 const Sign = (props) => {
   const identity = useSelector((state) => state.identity);
-  const identityData = useSelector((state) => state.identityData);
   const signLoading = useSelector((state) => state.signLoading);
 
   const dispatch = useDispatch();
@@ -128,150 +132,86 @@ const Sign = (props) => {
   const [signup, setSignup] = useState(false);
   const [thirdPartyErrorMessage, setThirdPartyErrorMessage] = useState("");
 
-  const db = firebase.firestore();
-  const studentsCollection = db.collection("students");
-  const teachersCollection = db.collection("teachers");
+  const closeSignFeature = () => {
+    dispatch(changeSignLoading(false)); // 關掉 loading
+    dispatch(changeSignPage(false)); // 關掉 sign 視窗
+  };
 
   const handleThirdPartySign = async (provider) => {
     dispatch(changeSignLoading(true)); // 開啟 loading
 
-    firebase
-      .auth()
-      .signInWithPopup(provider)
-      .then((res) => {
-        if (identity === "student") {
-          teachersCollection
-            .doc(res.user.email)
-            .get()
-            .then((doc) => {
-              if (doc.exists) {
-                firebase
-                  .auth()
-                  .signOut()
-                  .then(() => {
-                    dispatch(changeSignLoading(false));
-                    dispatch(changeSignPage(false));
-                    dispatch(getIdentity(""));
-                    Swal.fire({
-                      title: "此 Email 註冊為老師",
-                      html: `<h3>請選擇以老師身份登入！</h3>`,
-                      icon: "warning",
-                      customClass: {
-                        confirmButton: "confirm__button",
-                      },
-                    });
-                  });
-              } else {
-                // 確認是否已有學生帳號
-                studentsCollection
-                  .doc(res.user.email)
-                  .get()
-                  .then((doc) => {
-                    if (doc.exists) {
-                      // 有就導向會員頁面
-                      dispatch(changeSignLoading(false)); // 關掉 loading
-                      dispatch(changeSignPage(false)); // 關掉 sign 視窗
-                      history.push("/profile/myresume"); // 導向會員頁面
-                    } else {
-                      // 沒有就建立新帳號！
-                      const student = studentsCollection.doc(res.user.email);
-                      const data = {
-                        name: res.user.displayName,
-                        email: res.user.email,
-                      };
-                      student.set(data).then(() => {
-                        dispatch(changeSignLoading(false));
-                        dispatch(changeSignPage(false));
-                        history.push("/profile/myresume");
-                      });
-                    }
-                  })
-                  .catch((error) => {
-                    console.log("帳號讀取有問題", error);
-                  });
-              }
-            })
-            .catch((error) => {
-              console.log("帳號讀取有問題", error);
-            });
-        } else if (identity === "teacher") {
-          studentsCollection
-            .doc(res.user.email)
-            .get()
-            .then((doc) => {
-              if (doc.exists) {
-                firebase
-                  .auth()
-                  .signOut()
-                  .then(() => {
-                    dispatch(changeSignLoading(false));
-                    dispatch(changeSignPage(false));
-                    dispatch(getIdentity(""));
-                    Swal.fire({
-                      title: "此 Email 註冊為學生",
-                      html: `<h3>請選擇以學生身份登入！</h3>`,
-                      icon: "warning",
-                      customClass: {
-                        confirmButton: "confirm__button",
-                      },
-                    });
-                  });
-              } else {
-                // 確認是否已有老師帳號
-                teachersCollection
-                  .doc(res.user.email)
-                  .get()
-                  .then((doc) => {
-                    if (doc.exists) {
-                      // 有就導向會員頁面
-                      dispatch(changeSignLoading(false)); // 關掉 loading
-                      dispatch(changeSignPage(false)); // 關掉 sign 視窗
-                      history.push("/profile/myprofile"); // 導向會員頁面
-                    } else {
-                      // 沒有就建立新帳號！
-                      const teacher = teachersCollection.doc(res.user.email);
-                      const data = {
-                        name: res.user.displayName,
-                        email: res.user.email,
-                      };
-                      teacher.set(data).then(() => {
-                        dispatch(changeSignLoading(false));
-                        dispatch(changeSignPage(false));
-                        history.push("/profile/myprofile");
-                      });
-                    }
-                  })
-                  .catch((error) => {
-                    console.log("帳號讀取有問題", error);
-                  });
-              }
-            })
-            .catch((error) => {
-              console.log("帳號讀取有問題", error);
-            });
+    try {
+      const userData = await signInWithPopup(provider);
+
+      if (identity === "student") {
+        const teacherDoc = await teacherData(userData.user.email);
+        if (teacherDoc.exists) {
+          await userSignOut();
+          closeSignFeature();
+          dispatch(getIdentity(""));
+          await wrongIdentitySigninAlert("老師");
+        } else {
+          if (userData.additionalUserInfo.isNewUser) {
+            await setNewUserData(
+              "students",
+              userData.user.displayName,
+              userData.user
+            );
+            closeSignFeature();
+            history.push("/profile/myresume");
+          } else {
+            closeSignFeature();
+            history.push("/profile/myresume"); // 導向會員頁面
+          }
         }
-      })
-      .catch((error) => {
-        console.log("帳號讀取有問題", error);
-        switch (error.code) {
-          case "auth/email-already-in-use":
-            setThirdPartyErrorMessage("信箱已存在");
-            break;
-          case "auth/invalid-email":
-            setThirdPartyErrorMessage("信箱格式不正確");
-            break;
-          case "auth/weak-password":
-            setThirdPartyErrorMessage("密碼強度不足");
-            break;
-          case "auth/user-not-found":
-            setThirdPartyErrorMessage("信箱不存在");
-            break;
-          case "auth/wrong-password":
-            setThirdPartyErrorMessage("密碼錯誤");
-            break;
-          default:
+      } else if (identity === "teacher") {
+        const studentDoc = await studentData(userData.user.email);
+        if (studentDoc.exists) {
+          await userSignOut();
+          closeSignFeature();
+          dispatch(getIdentity(""));
+          await wrongIdentitySigninAlert("學生");
+        } else {
+          if (userData.additionalUserInfo.isNewUser) {
+            await setNewUserData(
+              "teachers",
+              userData.user.displayName,
+              userData.user
+            );
+            closeSignFeature();
+            history.push("/profile/myprofile");
+          } else {
+            closeSignFeature();
+            history.push("/profile/myprofile"); // 導向會員頁面
+          }
         }
-      });
+      }
+    } catch (error) {
+      dispatch(changeSignLoading(false));
+
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          setThirdPartyErrorMessage("信箱已存在");
+          break;
+        case "auth/invalid-email":
+          setThirdPartyErrorMessage("信箱格式不正確");
+          break;
+        case "auth/weak-password":
+          setThirdPartyErrorMessage("密碼強度不足");
+          break;
+        case "auth/user-not-found":
+          setThirdPartyErrorMessage("信箱不存在");
+          break;
+        case "auth/wrong-password":
+          setThirdPartyErrorMessage("密碼錯誤");
+          break;
+        case "auth/account-exists-with-different-credential":
+          setThirdPartyErrorMessage("信箱相同但使用不同登入方式的帳戶已經存在");
+          break;
+
+        default:
+      }
+    }
   };
 
   return (
@@ -310,12 +250,14 @@ const Sign = (props) => {
           </StyleButtonContainer>
           {signin ? (
             <Signin
-              errorMessage={thirdPartyErrorMessage}
+              closeSignFeature={closeSignFeature}
+              thirdPartyErrorMessage={thirdPartyErrorMessage}
               handleThirdPartySign={handleThirdPartySign}
             />
           ) : (
             <Signup
-              errorMessage={thirdPartyErrorMessage}
+              closeSignFeature={closeSignFeature}
+              thirdPartyErrorMessage={thirdPartyErrorMessage}
               handleThirdPartySign={handleThirdPartySign}
             />
           )}

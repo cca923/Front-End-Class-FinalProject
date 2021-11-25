@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 import StudentMyResume from "./MyResume/index";
 import StudentMyClass from "./MyClass/index";
 
@@ -18,6 +18,9 @@ const StudentMainArea = (props) => {
         </Route>
         <Route path="/profile/myresume" exact>
           <StudentMyResume />
+        </Route>
+        <Route path="">
+          <Redirect to="/404" />
         </Route>
       </Switch>
     </StyleStudentMainArea>

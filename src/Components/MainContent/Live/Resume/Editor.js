@@ -6,7 +6,7 @@ import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
 import editIcon from "../../../../images/edit.png";
 import saveIcon from "../../../../images/save.png";
-import firebase from "../../../../utils/config/firebase-config";
+import firebase from "../../../../utils/firebase";
 
 const StyleEditorArea = styled.div`
   display: flex;
@@ -72,7 +72,6 @@ const Editor = (props) => {
   console.log("目前的使用者", identity, identityData.email);
   const resumeData = liveData.resume;
 
-  const user = firebase.auth().currentUser;
   const db = firebase.firestore();
   const studentsRef = db.collection("students").doc(liveData.email);
 
@@ -114,13 +113,15 @@ const Editor = (props) => {
 
   useEffect(() => {
     // 初始狀態
-    if (resumeData && resumeData.detail) {
+    if (resumeData && resumeData?.detail) {
       // 有過 Detail
       studentsRef.get().then((doc) => {
         setValue(doc.data().resume.detail);
       });
+    } else {
+      setValue("該用戶尚未編輯過履歷");
     }
-  }, [resumeData, resumeData.detail]);
+  }, [resumeData, resumeData?.detail]);
 
   return (
     <StyleEditorArea>

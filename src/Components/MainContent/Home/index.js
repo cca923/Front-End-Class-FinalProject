@@ -129,7 +129,6 @@ const Home = () => {
       </StyleTextArea>
       <StyleScrollIcon
         onClick={() => {
-          console.log(target.current);
           target.current.scrollIntoView({ behavior: "smooth" });
         }}>
         Scroll

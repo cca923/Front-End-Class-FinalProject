@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 import TeacherMyClass from "./MyClass/index";
 import TeacherMyProfile from "./MyProfile/index";
+import NoMatch from "../../../NoMatch";
 
 const StyleTeacherMainArea = styled.div`
   width: 100%;
-  /* background-color: white; */
   display: flex;
   flex-direction: column;
   margin-bottom: 50px;
@@ -21,6 +21,9 @@ const TeacherMainArea = (props) => {
         </Route>
         <Route path="/profile/myprofile" exact>
           <TeacherMyProfile />
+        </Route>
+        <Route path="">
+          <Redirect to="/404" />
         </Route>
       </Switch>
     </StyleTeacherMainArea>

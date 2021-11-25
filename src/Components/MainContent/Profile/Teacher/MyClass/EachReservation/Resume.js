@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
-import firebase from "../../../../../../utils/config/firebase-config";
+import firebase from "../../../../../../utils/firebase";
 import { nanoid } from "nanoid";
 import noPhoto from "../../../../../../images/resume-noPhoto.png";
 
@@ -156,13 +156,15 @@ const Resume = (props) => {
               </StyleIdentityArea>
               <StyleAreaTitle>About</StyleAreaTitle>
               <StyleCustomDisplay>
-                {props.studentData.resume.about}
+                {props.studentData.resume?.about || "該用戶尚未編輯過履歷"}
               </StyleCustomDisplay>
             </StyleDetail>
           </StyleAbout>
           <StyleOthers>
             <StyleReactQuillDisplay>
-              {ReactHtmlParser(props.studentData.resume.detail)}
+              {ReactHtmlParser(
+                props.studentData.resume?.detail || "該用戶尚未編輯過履歷"
+              )}
             </StyleReactQuillDisplay>
           </StyleOthers>
         </StyleMyResume>

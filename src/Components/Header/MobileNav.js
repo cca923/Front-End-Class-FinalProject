@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { changeSignPage } from "../../Redux/Action";
-import firebase from "../../utils/config/firebase-config";
+import firebase from "../../utils/firebase";
 
 const StyleNav = styled.nav`
   line-height: 40px;
@@ -51,14 +51,14 @@ const MobileNav = (props) => {
     });
   }, []);
 
-  // 不用 signStatus Redux 判斷，用 onAuthStateChanged，拆開成兩個 useEffect
+  // 不用 signStatus Redux 判斷，用 onAuthStateChanged
   return currentUser === null ? (
     <StyleNav layer={props.layer}>
-      <StyleLink headerColor={props.headerColor} exact to="/">
+      <StyleLink headercolor={props.headerColor} exact to="/">
         Home
       </StyleLink>
       <StyleSignLink
-        headerColor={props.headerColor}
+        headercolor={props.headerColor}
         onClick={() => dispatch(changeSignPage(true))}>
         Sign
       </StyleSignLink>
@@ -66,31 +66,31 @@ const MobileNav = (props) => {
   ) : (
     <StyleNav layer={props.layer}>
       {liveStatus ? (
-        <StyleSignLink headerColor={props.headerColor} liveStatus={liveStatus}>
+        <StyleSignLink headercolor={props.headerColor} liveStatus={liveStatus}>
           Live
         </StyleSignLink>
       ) : (
         <>
           {identity === "student" ? (
             <>
-              <StyleLink headerColor={props.headerColor} exact to="/">
+              <StyleLink headercolor={props.headerColor} exact to="/">
                 Home
               </StyleLink>
-              <StyleLink headerColor={props.headerColor} to="/teachers">
+              <StyleLink headercolor={props.headerColor} to="/teachers">
                 Teachers
               </StyleLink>
             </>
           ) : null}
-          <StyleLink headerColor={props.headerColor} to="/live">
+          <StyleLink headercolor={props.headerColor} to="/live">
             Live
           </StyleLink>
 
           {identity === "student" ? (
-            <StyleLink headerColor={props.headerColor} to="/profile/myresume">
+            <StyleLink headercolor={props.headerColor} to="/profile/myresume">
               Profile
             </StyleLink>
           ) : (
-            <StyleLink headerColor={props.headerColor} to="/profile/myprofile">
+            <StyleLink headercolor={props.headerColor} to="/profile/myprofile">
               Profile
             </StyleLink>
           )}

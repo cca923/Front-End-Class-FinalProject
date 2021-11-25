@@ -39,6 +39,7 @@ const StyleImage = styled.img`
   width: 150px;
   height: 150px;
   background-color: #f2f2f2;
+  object-fit: cover;
 `;
 
 const StyleDetail = styled.div`
@@ -130,7 +131,7 @@ const Resume = (props) => {
               </StyleIdentityArea>
               <StyleAreaTitle>About</StyleAreaTitle>
               <StyleCustomDisplay>
-                {liveData.resume.about || ""}
+                {liveData.resume?.about || "該用戶尚未編輯過履歷"}
               </StyleCustomDisplay>
             </StyleDetail>
           </StyleAbout>
@@ -155,14 +156,16 @@ const Resume = (props) => {
               </StyleIdentityArea>
               <StyleAreaTitle>About</StyleAreaTitle>
               <StyleCustomDisplay>
-                {identityData.resume.about || ""}
+                {identityData.resume?.about || "該用戶尚未編輯過履歷"}
               </StyleCustomDisplay>
             </StyleDetail>
           </StyleAbout>
 
           <StyleOthers>
             <StyleReactQuillDisplay>
-              {ReactHtmlParser(identityData.resume.detail)}
+              {ReactHtmlParser(
+                identityData.resume?.detail || "該用戶尚未編輯過履歷"
+              )}
             </StyleReactQuillDisplay>
           </StyleOthers>
         </StyleMyResume>

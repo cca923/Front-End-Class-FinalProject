@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import DatePicker from "react-datepicker";
-import { setHours, setMinutes, compareAsc, format } from "date-fns";
+import { setHours, setMinutes, compareAsc } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../../css/calendar.css";
 import Swal from "sweetalert2";
 import { nanoid } from "nanoid";
-import firebase from "../../../../../utils/config/firebase-config";
+import firebase from "../../../../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 
@@ -160,29 +160,6 @@ const TeacherCalendar = (props) => {
   const [excludeTimes, setExcludeTimes] = useState([]);
   // console.log(excludeTimes);
 
-  const timeList = document.querySelectorAll(
-    ".react-datepicker__time-list-item"
-  );
-
-  const getFirstSelectableTime = () => {
-    // First Selectable
-    const selectableTime = Array.from(timeList).filter((alldate) => {
-      return !alldate.classList.contains(
-        "react-datepicker__time-list-item--disabled"
-      );
-    });
-
-    Array.from(timeList).forEach((alldate) => {
-      alldate.classList.remove("react-datepicker__time-list-item--selected");
-    });
-
-    console.log(selectableTime[0]);
-
-    selectableTime[0]?.classList.add(
-      "react-datepicker__time-list-item--selected"
-    );
-  };
-
   const removeSelectableTime = (time) => {
     const timeList = document.querySelectorAll(
       ".react-datepicker__time-list-item"
@@ -205,7 +182,6 @@ const TeacherCalendar = (props) => {
     );
 
     if (selectedDate.getHours() === 0) {
-      console.log(selectedDate);
       Swal.fire({
         title: "請選擇加入的時段",
         icon: "warning",
@@ -228,30 +204,29 @@ const TeacherCalendar = (props) => {
         imageUrl: "/images/theme/theme-11.png",
         imageWidth: 130,
         imageAlt: "theme image",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          teachersRef
-            .update({
+      })
+        .then((result) => {
+          if (result.isConfirmed) {
+            return teachersRef.update({
               time: firebase.firestore.FieldValue.arrayUnion(
                 selectedDate.getTime()
                 // selectedDate.valueOf() // 一樣
               ),
-            })
-            .then(() => {
-              Swal.fire({
-                title: "加入成功！",
-                text: `新增時段｜${selectedTargetValue}`,
-                icon: "success",
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: false,
-              }).then(() => {
-                removeSelectableTime();
-                // getFirstSelectableTime();
-              });
             });
-        }
-      });
+          }
+        })
+        .then(() => {
+          Swal.fire({
+            title: "加入成功！",
+            text: `新增時段｜${selectedTargetValue}`,
+            icon: "success",
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+          }).then(() => {
+            removeSelectableTime();
+          });
+        });
     }
   };
 
@@ -398,10 +373,15 @@ const TeacherCalendar = (props) => {
             setSelectedDate(date);
           }}
           onSelect={(date) => {
+            // 日期更改
             getExcludedTimes(date);
             setSelectedDate(setHours(setMinutes(new Date(date), 0), 0));
           }}
-          onMonthChange={(date) => getExcludedTimes(date)}
+          onMonthChange={(date) => {
+            // 月份更改
+            getExcludedTimes(date);
+            setSelectedDate(setHours(setMinutes(new Date(date), 0), 0));
+          }}
           monthsShown
           inline
           showTimeSelect={true}

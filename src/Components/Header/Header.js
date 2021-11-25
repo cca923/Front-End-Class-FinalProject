@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { getLiveStatus, startRunGuide } from "../../Redux/Action";
 import Swal from "sweetalert2";
-import video from "../../images/video-on.png";
 import Nav from "./Nav";
 import MobileNav from "./MobileNav";
 
@@ -14,8 +13,7 @@ const StyleHeader = styled.header`
   position: fixed;
   height: 100px;
   width: 100vw;
-  background-color: ${(props) =>
-    props.headerColor ? "rgb(255,255,255,0.8)" : "none"};
+  background-color: ${(props) => props.headercolor};
   z-index: 1000;
   transition: all 0.2s;
 
@@ -25,7 +23,7 @@ const StyleHeader = styled.header`
 `;
 
 const StyleLink = styled(Link)`
-  color: ${(props) => (props.headerColor ? "#7367f0" : "#fff")};
+  color: ${(props) => props.headercolor};
   line-height: 100px;
   padding: 0px 20px;
   font-size: 60px;
@@ -39,7 +37,7 @@ const StyleLink = styled(Link)`
 `;
 
 const StyleLogo = styled.div`
-  color: ${(props) => (props.headerColor ? "#7367f0" : "#fff")};
+  color: ${(props) => props.headercolor};
   line-height: 100px;
   padding: 0px 20px;
   font-size: 60px;
@@ -56,13 +54,10 @@ const StyleMenuOpen = styled.div`
   background-size: cover;
   background-position: center;
   cursor: pointer;
-  background-image: ${(props) =>
-    props.headerColor
-      ? "url('/images/menu-scroll.png')"
-      : "url('/images/menu-static.png')"};
+  background-image: ${(props) => props.headercolor};
 
   @media only screen and (max-width: 1020px) {
-    display: ${(props) => (props.layer ? "none" : "inline-block")};
+    display: ${(props) => props.layer};
   }
 `;
 
@@ -88,7 +83,7 @@ const StyleMenuClose = styled.div`
   }
 
   @media only screen and (max-width: 1020px) {
-    display: ${(props) => (props.layer ? "inline-block" : " none")};
+    display: ${(props) => props.layer};
   }
 `;
 
@@ -98,7 +93,7 @@ const StyleMenuLayer = styled.div`
   @media only screen and (max-width: 1020px) {
     display: block;
     width: 100vw;
-    height: ${(props) => (props.layer ? "40vh" : "0")};
+    height: ${(props) => props.layer};
     position: fixed;
     top: 0;
     /* right: 0; */
@@ -127,15 +122,12 @@ const StyleNoNotification = styled.div`
   width: 30px;
   height: 30px;
   line-height: 100px;
-  display: ${(props) => (props.invitationData ? "none" : "inline-block")};
+  display: ${(props) => props.invitationdata};
   align-content: center;
   background-size: cover;
   background-position: center;
   cursor: pointer;
-  background-image: ${(props) =>
-    props.headerColor
-      ? "url('/images/bell-scroll.png')"
-      : "url('/images/bell-static.png')"};
+  background-image: ${(props) => props.headercolor};
 `;
 
 const StyleNewNotification = styled.div`
@@ -145,7 +137,7 @@ const StyleNewNotification = styled.div`
   width: 30px;
   height: 30px;
   line-height: 100px;
-  display: ${(props) => (props.invitationData ? "inline-block" : "none")};
+  display: ${(props) => props.invitationdata};
   align-content: center;
   background-size: cover;
   background-position: center;
@@ -162,7 +154,7 @@ const StyleInvitation = styled.div`
   top: 65px;
   width: 30px;
   height: 30px;
-  color: red;
+  color: ${(props) => props.headercolor};
   font-size: 1rem;
 `;
 
@@ -178,17 +170,14 @@ const StylequestionArea = styled.div`
   background-size: cover;
   background-position: center;
   cursor: pointer;
-  background-image: ${(props) =>
-    props.headerColor
-      ? "url('/images/question-scroll.png')"
-      : "url('/images/question-static.png')"};
+  background-image: ${(props) => props.headercolor};
 
   @media only screen and (max-width: 1020px) {
     display: inline-block;
   }
 `;
 
-const Header = () => {
+const Header = (props) => {
   const identityData = useSelector((state) => state.identityData);
   const invitationData = identityData.invitation;
   const identity = useSelector((state) => state.identity);
@@ -214,20 +203,26 @@ const Header = () => {
   });
 
   return (
-    <StyleHeader headerColor={headerColor}>
+    <StyleHeader headercolor={headerColor ? "rgb(255,255,255,0.8)" : "none"}>
       {liveStatus ? (
-        <StyleLogo headerColor={headerColor} liveStatus={liveStatus}>
+        <StyleLogo
+          headercolor={headerColor ? "#7367f0" : "#fff"}
+          liveStatus={liveStatus}>
           Re-Live
         </StyleLogo>
       ) : (
-        <StyleLink headerColor={headerColor} to="/">
+        <StyleLink headercolor={headerColor ? "#7367f0" : "#fff"} to="/">
           Re-Live
         </StyleLink>
       )}
 
       {liveStatus ? (
         <StylequestionArea
-          headerColor={headerColor}
+          headercolor={
+            headerColor
+              ? "url('/images/question-scroll.png')"
+              : "url('/images/question-static.png')"
+          }
           liveStatus={liveStatus}
           onClick={() => {
             dispatch(startRunGuide(true)); // 開始操作導覽
@@ -236,9 +231,9 @@ const Header = () => {
       ) : (
         <>
           {identity === "student" ? (
-            <StyleInvitationArea headerColor={headerColor}>
+            <StyleInvitationArea>
               <StyleNewNotification
-                invitationData={invitationData}
+                invitationdata={invitationData ? "inline-block" : "none"}
                 onClick={() => {
                   if (invitationData) {
                     Swal.fire({
@@ -267,8 +262,12 @@ const Header = () => {
                 }}
               />
               <StyleNoNotification
-                invitationData={invitationData}
-                headerColor={headerColor}
+                invitationdata={invitationData ? "none" : "inline-block"}
+                headercolor={
+                  headerColor
+                    ? "url('/images/bell-scroll.png')"
+                    : "url('/images/bell-static.png')"
+                }
                 onClick={() => {
                   Swal.fire({
                     title: "沒有任何視訊邀請！",
@@ -278,25 +277,32 @@ const Header = () => {
                   });
                 }}
               />
-              {invitationData ? <StyleInvitation>New!</StyleInvitation> : null}
+              {invitationData ? (
+                <StyleInvitation headercolor={headerColor ? "red" : "#ffee32"}>
+                  New!
+                </StyleInvitation>
+              ) : null}
             </StyleInvitationArea>
           ) : null}
         </>
       )}
 
       <StyleMenuOpen
-        headerColor={headerColor}
-        layer={layer}
+        headercolor={
+          headerColor
+            ? "url('/images/menu-scroll.png')"
+            : "url('/images/menu-static.png')"
+        }
+        layer={layer ? "none" : "inline-block"}
         onClick={() => {
           setLayer(true);
         }}
       />
 
-      <StyleMenuLayer layer={layer}>
+      <StyleMenuLayer layer={layer ? "40vh" : "0"}>
         <StyleCloseArea>
           <StyleMenuClose
-            headerColor={headerColor}
-            layer={layer}
+            layer={layer ? "inline-block" : " none"}
             onClick={() => {
               setLayer(false);
             }}

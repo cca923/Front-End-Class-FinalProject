@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { compareAsc } from "date-fns";
 import Swal from "sweetalert2";
 import { nanoid } from "nanoid";
-import firebase from "../../../../utils/config/firebase-config";
+import firebase from "../../../../utils/firebase";
 
 const StyleCalender = styled.div`
   width: 100%;
