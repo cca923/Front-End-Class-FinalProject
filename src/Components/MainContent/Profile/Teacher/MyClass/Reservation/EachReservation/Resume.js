@@ -1,10 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
-import firebase from "../../../../../../utils/firebase";
-import { nanoid } from "nanoid";
-import noPhoto from "../../../../../../images/resume-noPhoto.png";
+import noPhoto from "../../../../../../../images/resume-noPhoto.png";
 
 const StyleResumeLayer = styled.div`
   width: 100vw;
@@ -134,36 +131,36 @@ const StyleReactQuillDisplay = styled.div`
   }
 `;
 
-const Resume = (props) => {
+const Resume = ({ setDisplayResume, eachStudentData }) => {
   return (
     <>
       <StyleResumeLayer
         onClick={() => {
-          props.setDisplayResume(false);
+          setDisplayResume(false);
         }}
       />
       <StyleResumeContainer>
         <StyleMyResume>
           <StyleAbout>
             <StyleImage
-              src={props.studentData.photo || noPhoto}
-              alt={props.studentData.name}
+              src={eachStudentData.photo || noPhoto}
+              alt={eachStudentData.name}
             />
             <StyleDetail>
               <StyleIdentityArea>
-                <StyleName>{props.studentData.name}</StyleName>
-                <StyleEmail>{props.studentData.email}</StyleEmail>
+                <StyleName>{eachStudentData.name}</StyleName>
+                <StyleEmail>{eachStudentData.email}</StyleEmail>
               </StyleIdentityArea>
               <StyleAreaTitle>About</StyleAreaTitle>
               <StyleCustomDisplay>
-                {props.studentData.resume?.about || "該用戶尚未編輯過履歷"}
+                {eachStudentData.resume?.about || "該用戶尚未編輯過履歷"}
               </StyleCustomDisplay>
             </StyleDetail>
           </StyleAbout>
           <StyleOthers>
             <StyleReactQuillDisplay>
               {ReactHtmlParser(
-                props.studentData.resume?.detail || "該用戶尚未編輯過履歷"
+                eachStudentData.resume?.detail || "該用戶尚未編輯過履歷"
               )}
             </StyleReactQuillDisplay>
           </StyleOthers>

@@ -43,7 +43,6 @@ function App() {
   // 判斷登錯身份，會登出 auth，但 Redux 沒有清空 (currentUser 無，identityData 有)！
 
   const [currentUser, setCurrentUser] = useState();
-  console.log("Auth 使用者", currentUser);
 
   useEffect(() => {
     onUserChanged(async (currentUser) => {

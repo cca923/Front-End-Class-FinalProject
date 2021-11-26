@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import firebase from "../../../utils/firebase";
+import { allTeachersData } from "../../../utils/firebase";
 import { nanoid } from "nanoid";
 import noPhoto from "../../../images/resume-noPhoto.png";
 import noResult from "../../../images/noResult.gif";
@@ -125,7 +125,6 @@ const StyleTagDisplayArea = styled.div`
 
   @media only screen and (max-width: 1020px) {
     width: 100%;
-    /* margin-top: 15px; */
   }
 
   @media only screen and (max-width: 780px) {
@@ -198,71 +197,62 @@ const StyleLoading = styled.img`
   object-fit: cover;
 `;
 
-const GroupTeachers = (props) => {
-  const db = firebase.firestore();
-  const teachersCollection = db.collection("teachers");
+const GroupTeachers = ({
+  selectIndustry,
+  setSelectIndustry,
+  selectTitle,
+  setSelectTitle,
+  selectLanguage,
+  setSelectLanguage,
+}) => {
   const [teachersData, setTeachersData] = useState();
-  // console.log("所有老師", teachersData);
 
   useEffect(() => {
-    teachersCollection
-      .get()
-      .then((collectionSnapShot) => {
-        const arrTeachers = [];
+    allTeachersData().then((docs) => {
+      const arrTeachers = [];
 
-        collectionSnapShot.forEach((doc) => {
-          if (
-            // 資料都有的老師再呈現在頁面上
-            doc.data().tag &&
-            doc.data().about &&
-            doc.data().talents &&
-            doc.data().experience &&
-            doc.data().time && // 有填寫可預約時間的
-            doc.data().time.length !== 0 && // 沒有被全部預約完讓 time = [ ] 的
-            doc
-              .data()
-              .time.map((data) => {
-                return new Date(data);
-              })
-              .filter((data) => {
-                return data > new Date();
-              }).length !== 0 // 不能出現 time 仍有時間，但都已經過期的老師
-          ) {
-            arrTeachers.push(doc.data());
-          }
-        });
-
-        setTeachersData(arrTeachers);
-      })
-      .catch((error) => {
-        console.log("無法讀取數據：", error);
+      docs.forEach((doc) => {
+        if (
+          // 資料都有的老師再呈現在頁面上
+          doc.data().tag &&
+          doc.data().about &&
+          doc.data().talents &&
+          doc.data().experience &&
+          doc.data().time && // 有填寫可預約時間的
+          doc.data().time.length !== 0 && // 沒有被全部預約完讓 time = [ ] 的
+          doc
+            .data()
+            .time.map((data) => {
+              return new Date(data);
+            })
+            .filter((data) => {
+              return data > new Date();
+            }).length !== 0 // 不能出現 time 仍有時間，但都已經過期的老師
+        ) {
+          arrTeachers.push(doc.data());
+        }
       });
+
+      setTeachersData(arrTeachers);
+    });
   }, []);
 
-  // 確認老師的 Tag 是否完全包含「選擇的 Tag」
-  const checker = (arr, targetTag) =>
+  const isSameTag = (arr, targetTag) =>
     targetTag.every((option) => arr.includes(option));
 
   const targetTag = [];
-  if (props.selectIndustry !== "") {
-    targetTag.push(props.selectIndustry.value);
+  if (selectIndustry !== "") {
+    targetTag.push(selectIndustry.value);
   }
-  if (props.selectTitle !== "") {
-    targetTag.push(props.selectTitle.value);
+  if (selectTitle !== "") {
+    targetTag.push(selectTitle.value);
   }
-  if (props.selectLanguage !== "") {
-    targetTag.push(props.selectLanguage.value);
+  if (selectLanguage !== "") {
+    targetTag.push(selectLanguage.value);
   }
-  // console.log(targetTag);
 
-  // 拿掉 teachersData initial state 從 [] 改成 undefined
-  // 因為一開始會 undefined，所以給 ? ，然後再進行判斷！
   const filterResult = teachersData?.filter((teacher) => {
-    if (
-      props.selectIndustry === "" &&
-      props.selectTitle === "" &&
-      props.selectLanguage === ""
-    ) {
+    if (selectIndustry === "" && selectTitle === "" && selectLanguage === "") {
       return teachersData;
     } else {
       const teacherTag = [];
@@ -270,7 +260,7 @@ const GroupTeachers = (props) => {
       teacherTag.push(teacher.tag.title);
       teacherTag.push(teacher.tag.language);
 
-      return checker(teacherTag, targetTag);
+      return isSameTag(teacherTag, targetTag);
     }
   });
 

@@ -74,7 +74,7 @@ const StyleLoading = styled.img`
   object-fit: cover;
 `;
 
-const Profile = (props) => {
+const Profile = () => {
   const identity = useSelector((state) => state.identity);
   const identityData = useSelector((state) => state.identityData);
 

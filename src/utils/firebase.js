@@ -26,6 +26,10 @@ const googleProvider = new firebase.auth.GoogleAuthProvider();
 const db = firebase.firestore();
 const storage = firebase.storage();
 
+const collectionRef = (collection) => {
+  return db.collection(collection);
+};
+
 const docRef = (collection, currentUserEmail) => {
   return db.collection(collection).doc(currentUserEmail);
 };
@@ -58,17 +62,34 @@ const studentSnapshot = (
   }
 };
 
-const teacherData = async (currentUserEmail) => {
+const teacherData = (email) => {
   try {
-    return await docRef("teachers", currentUserEmail).get();
+    return docRef("teachers", email).get();
   } catch (error) {
     console.log("資料讀取錯誤", error);
   }
 };
 
-const studentData = async (currentUserEmail) => {
+const studentData = (email) => {
   try {
-    return await docRef("students", currentUserEmail).get();
+    return docRef("students", email).get();
+  } catch (error) {
+    console.log("資料讀取錯誤", error);
+  }
+};
+
+const allTeachersData = async () => {
+  try {
+    const teachersData = await collectionRef("teachers").get();
+    return teachersData.docs;
+  } catch (error) {
+    console.log("資料讀取錯誤", error);
+  }
+};
+
+const findTeacherData = (params) => {
+  try {
+    return collectionRef("teachers").where("uid", "==", params).get();
   } catch (error) {
     console.log("資料讀取錯誤", error);
   }
@@ -137,11 +158,112 @@ const uploadProfileImage = async (value, currentUserEmail) => {
   }
 };
 
+const updateTeacherData = (email, data) => {
+  return docRef("teachers", email).update(data);
+};
+
+const updateStudentData = (email, data) => {
+  return docRef("students", email).update(data);
+};
+
+const arrayUnion = (data) => {
+  return firebase.firestore.FieldValue.arrayUnion(data);
+};
+
+const arrayRemove = (data) => {
+  return firebase.firestore.FieldValue.arrayRemove(data);
+};
+
+const deleteField = () => {
+  return firebase.firestore.FieldValue.delete();
+};
+
+const createOffer = async (pc, roomIdRef) => {
+  const callDoc = db.collection("calls").doc(); // create id
+  const offerCandidates = callDoc.collection("offerCandidates");
+  const answerCandidates = callDoc.collection("answerCandidates");
+
+  roomIdRef.current.textContent = callDoc.id;
+  console.log(roomIdRef.current.textContent);
+
+  // Get candidates for caller, save to db
+  pc.onicecandidate = (event) => {
+    event.candidate && offerCandidates.add(event.candidate.toJSON());
+  };
+
+  // Create offer
+  const offerDescription = await pc.createOffer();
+  await pc.setLocalDescription(offerDescription);
+
+  const offer = {
+    sdp: offerDescription.sdp,
+    type: offerDescription.type,
+  };
+
+  await callDoc.set({ offer });
+
+  // Listen for remote answer
+  callDoc.onSnapshot((snapshot) => {
+    const data = snapshot.data();
+    if (!pc.currentRemoteDescription && data?.answer) {
+      const answerDescription = new RTCSessionDescription(data.answer);
+      pc.setRemoteDescription(answerDescription);
+    }
+  });
+
+  // When answered, add candidate to peer connection
+  answerCandidates.onSnapshot((snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === "added") {
+        const candidate = new RTCIceCandidate(change.doc.data());
+        pc.addIceCandidate(candidate);
+      }
+    });
+  });
+};
+
+const answerCall = async (pc, joinRoomRef) => {
+  const callId = joinRoomRef.current.textContent;
+  const callDoc = db.collection("calls").doc(callId);
+  const offerCandidates = callDoc.collection("offerCandidates");
+  const answerCandidates = callDoc.collection("answerCandidates");
+
+  pc.onicecandidate = (event) => {
+    event.candidate && answerCandidates.add(event.candidate.toJSON());
+  };
+
+  const callData = (await callDoc.get()).data();
+  const offerDescription = callData.offer;
+  await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
+
+  const answerDescription = await pc.createAnswer();
+  await pc.setLocalDescription(answerDescription);
+
+  const answer = {
+    type: answerDescription.type,
+    sdp: answerDescription.sdp,
+  };
+
+  await callDoc.update({ answer });
+
+  offerCandidates.onSnapshot((snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      console.log(change);
+      if (change.type === "added") {
+        let data = change.doc.data();
+        pc.addIceCandidate(new RTCIceCandidate(data));
+      }
+    });
+  });
+};
+
 export {
   facebookProvider,
   googleProvider,
   docRef,
   onUserChanged,
+  allTeachersData,
+  findTeacherData,
   teacherData,
   studentData,
   teacherSnapshot,
@@ -152,4 +274,11 @@ export {
   signInWithPopup,
   userSignOut,
   uploadProfileImage,
+  updateTeacherData,
+  updateStudentData,
+  arrayUnion,
+  arrayRemove,
+  deleteField,
+  createOffer,
+  answerCall,
 };

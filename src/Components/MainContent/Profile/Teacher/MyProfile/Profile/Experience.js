@@ -3,8 +3,17 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
 import Select from "react-select";
-import Swal from "sweetalert2";
-import firebase from "../../../../../../utils/firebase";
+import {
+  updateTeacherData,
+  arrayUnion,
+  arrayRemove,
+} from "../../../../../../utils/firebase";
+import {
+  removeWarningAlert,
+  successAlert,
+  warningAlert,
+} from "../../../../../../utils/swal";
+import { StyleWhiteButton } from "../../../../../Common/button";
 
 const StyleTeacherExperience = styled.div`
   width: 100%;
@@ -105,27 +114,8 @@ const StyleExperienceLabel = styled.label`
   }
 `;
 
-const StyleTagSubmitButton = styled.div`
-  width: 150px;
-  outline: 0;
-  border: 0;
-  cursor: pointer;
-  color: rgb(72, 76, 122);
-  font-weight: 600;
-  font-size: 1rem;
-  text-align: center;
-  line-height: 38px;
-  margin: 20px auto 10px auto;
-  border-radius: 50px;
-  background-image: linear-gradient(180deg, #fff, #f5f5fa);
-  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
-    0 1px 3px 0 rgb(93 100 148 / 20%);
-  transition: all 0.2s ease-out;
-
-  :hover {
-    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
-      0 4px 6px 0 rgb(93 100 148 / 20%);
-  }
+const StyleTagSubmitButton = styled(StyleWhiteButton)`
+  margin: 20px auto 10px;
 `;
 
 const StyleSelect = styled(Select)`
@@ -206,10 +196,6 @@ const TeacherExperience = () => {
   const identityData = useSelector((state) => state.identityData);
   const experienceData = identityData.experience;
 
-  const db = firebase.firestore();
-  const user = firebase.auth().currentUser;
-  const teachersRef = db.collection("teachers").doc(user.email);
-
   const [company, setCompany] = useState("");
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -217,21 +203,13 @@ const TeacherExperience = () => {
   const startMaxDate = useRef();
   const endMaxDate = useRef();
 
-  const handleExperienceDisplay = () => {
+  const handleExperienceDisplay = async () => {
     if (
-      company.length === 0 ||
-      title.length === 0 ||
-      startDate.length === 0 ||
-      endDate.length === 0
+      company.length !== 0 &&
+      title.length !== 0 &&
+      startDate.length !== 0 &&
+      endDate.length !== 0
     ) {
-      Swal.fire({
-        title: "請輸入完整工作經歷！",
-        icon: "warning",
-        customClass: {
-          confirmButton: "confirm__button",
-        },
-      });
-    } else {
       const newExperience = {
         company,
         title,
@@ -239,63 +217,33 @@ const TeacherExperience = () => {
         endDate,
       };
 
-      teachersRef
-        .update({
-          experience: firebase.firestore.FieldValue.arrayUnion(newExperience),
-        })
-        .then(() => {
-          Swal.fire({
-            title: "新增成功！",
-            icon: "success",
-            timer: 1200,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-          setCompany("");
-          setTitle("");
-          setStartDate("");
-          setEndDate("");
-        });
+      await updateTeacherData(identityData.email, {
+        experience: arrayUnion(newExperience),
+      });
+      await successAlert("新增成功！");
+
+      setCompany("");
+      setTitle("");
+      setStartDate("");
+      setEndDate("");
+    } else {
+      await warningAlert("請輸入完整工作經歷！");
     }
   };
 
-  const handleExperienceDelete = (e) => {
+  const handleExperienceDelete = async (e) => {
     const removeTarget = e.target.previousSibling.childNodes[1].textContent;
+    const removeExperience = await removeWarningAlert("移除該項工作經歷？");
+    if (removeExperience.isConfirmed) {
+      const target = experienceData.filter((existDate) => {
+        return existDate.endDate.replace(/-/g, "/") === removeTarget;
+      });
 
-    Swal.fire({
-      title: "移除該項工作經歷？",
-      icon: "warning",
-      confirmButtonText: "Remove｜移除",
-      showLoaderOnConfirm: true,
-      showCancelButton: true,
-      cancelButtonText: "Cancel｜取消",
-      customClass: {
-        confirmButton: "confirm__button",
-        cancelButton: "cancel__button",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const removeExperience = experienceData.filter((existDate) => {
-          return existDate.endDate.replace(/-/g, "/") === removeTarget;
-        });
-
-        teachersRef
-          .update({
-            experience: firebase.firestore.FieldValue.arrayRemove(
-              ...removeExperience
-            ),
-          })
-          .then(() => {
-            Swal.fire({
-              title: "移除成功",
-              icon: "success",
-              timer: 1200,
-              timerProgressBar: true,
-              showConfirmButton: false,
-            });
-          });
-      }
-    });
+      await updateTeacherData(identityData.email, {
+        experience: arrayRemove(...target),
+      });
+      await successAlert("移除成功！");
+    }
   };
 
   const [selectTimeOrder, setSelectTimeOrder] = useState("");
@@ -303,6 +251,7 @@ const TeacherExperience = () => {
     { value: "新到舊", label: "新到舊" },
     { value: "舊到新", label: "舊到新" },
   ];
+
   const handleTimeOrder = (tag) => {
     setSelectTimeOrder(tag);
   };
@@ -373,7 +322,7 @@ const TeacherExperience = () => {
                 onChange={(e) => setCompany(e.target.value)}
                 type="text"
                 placeholder="請輸入公司名稱"
-                required></StyleInput>
+              />
             </StyleEachContainer>
             <StyleEachContainer>
               <StyleExperienceLabel>職業稱謂｜Title</StyleExperienceLabel>
@@ -382,7 +331,7 @@ const TeacherExperience = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 type="text"
                 placeholder="請輸入職稱"
-                required></StyleInput>
+              />
             </StyleEachContainer>
             <StyleEachContainer>
               <StyleExperienceLabel>起始日期｜Start Date</StyleExperienceLabel>
@@ -391,7 +340,6 @@ const TeacherExperience = () => {
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 type="date"
-                required
               />
             </StyleEachContainer>
             <StyleEachContainer>
@@ -401,7 +349,6 @@ const TeacherExperience = () => {
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 type="date"
-                required
               />
             </StyleEachContainer>
           </StyleData>

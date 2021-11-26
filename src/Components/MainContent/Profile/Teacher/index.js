@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { Switch, Route, Redirect } from "react-router-dom";
 import TeacherMyClass from "./MyClass/index";
 import TeacherMyProfile from "./MyProfile/index";
-import NoMatch from "../../../NoMatch";
 
 const StyleTeacherMainArea = styled.div`
   width: 100%;
@@ -12,7 +11,7 @@ const StyleTeacherMainArea = styled.div`
   margin-bottom: 50px;
 `;
 
-const TeacherMainArea = (props) => {
+const TeacherMainArea = () => {
   return (
     <StyleTeacherMainArea>
       <Switch>

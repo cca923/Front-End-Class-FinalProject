@@ -5,8 +5,12 @@ import "react-quill/dist/quill.snow.css";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
 import editIcon from "../../../../images/edit.png";
+import editIconHover from "../../../../images/edit-hover.png";
 import saveIcon from "../../../../images/save.png";
-import firebase from "../../../../utils/firebase";
+import saveIconHover from "../../../../images/save-hover.png";
+import { studentData, updateStudentData } from "../../../../utils/firebase";
+import { formats, modules } from "../../../../utils/quillEditor";
+import { StyleEditResumeButton } from "../../../Common/button";
 
 const StyleEditorArea = styled.div`
   display: flex;
@@ -39,83 +43,20 @@ const StyleReactQuillDisplay = styled.div`
   }
 `;
 
-const StyleEditButton = styled.img`
-  width: 50px;
-  padding: 8px;
-  background-size: 50%;
-  border-radius: 15px;
-  position: fixed;
-  position: absolute;
-  right: 0%;
-  bottom: 0%;
-  z-index: 1000;
+const StyleEditButton = styled(StyleEditResumeButton)`
   display: ${(props) => (props.hover ? "inline-block" : "none")};
-
-  outline: 0;
-  border: 0;
-  cursor: pointer;
-  background-image: linear-gradient(180deg, #7c8aff, #3c4fe0);
-  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
-    0 1px 3px 0 rgb(93 100 148 / 20%);
-  transition: all 0.2s ease-out;
-
-  :hover {
-    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
-      0 4px 6px 0 rgb(93 100 148 / 20%);
-  }
 `;
 
-const Editor = (props) => {
+const Editor = ({ hover }) => {
   const liveData = useSelector((state) => state.liveData);
-  const identityData = useSelector((state) => state.identityData);
-  const identity = useSelector((state) => state.identity);
-  console.log("目前的使用者", identity, identityData.email);
   const resumeData = liveData.resume;
-
-  const db = firebase.firestore();
-  const studentsRef = db.collection("students").doc(liveData.email);
-
   const [value, setValue] = useState();
+  const [onHover, setOnHover] = useState(false);
   const [edit, setEdit] = useState(false);
-  // console.log(value);
-
-  const formats = [
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "list",
-    "script",
-    "indent",
-    "direction",
-    "size",
-    "header",
-    "color",
-    "background",
-    "font",
-    "align",
-    "link",
-  ];
-
-  const toolbarOptions = [
-    ["bold", "italic", "underline", "strike"],
-    [{ size: ["small", false, "large", "huge"] }],
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-    ["link"],
-    [{ color: [] }, { background: [] }],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["clean"],
-  ];
-
-  const modules = {
-    toolbar: toolbarOptions,
-  };
 
   useEffect(() => {
-    // 初始狀態
     if (resumeData && resumeData?.detail) {
-      // 有過 Detail
-      studentsRef.get().then((doc) => {
+      studentData(liveData.email).then((doc) => {
         setValue(doc.data().resume.detail);
       });
     } else {
@@ -130,8 +71,7 @@ const Editor = (props) => {
           value={value}
           onChange={(value) => {
             setValue(value);
-            studentsRef.update({
-              // resume { about: " ", detail: " "}
+            updateStudentData(liveData.email, {
               resume: { ...liveData.resume, detail: value },
             });
           }}
@@ -145,8 +85,18 @@ const Editor = (props) => {
       )}
 
       <StyleEditButton
-        hover={props.hover}
-        src={edit ? saveIcon : editIcon}
+        hover={hover}
+        onMouseEnter={() => setOnHover(true)}
+        onMouseLeave={() => setOnHover(false)}
+        src={
+          edit
+            ? onHover
+              ? saveIconHover
+              : saveIcon
+            : onHover
+            ? editIconHover
+            : editIcon
+        }
         onClick={() => {
           edit ? setEdit(false) : setEdit(true);
         }}

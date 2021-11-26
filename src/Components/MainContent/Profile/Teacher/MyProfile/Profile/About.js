@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import Swal from "sweetalert2";
-import firebase from "../../../../../../utils/firebase";
+import { updateTeacherData } from "../../../../../../utils/firebase";
 import noPhoto from "../../../../../../images/no-photo.png";
+import { successAlert, warningAlert } from "../../../../../../utils/swal";
+import { StyleWhiteButton } from "../../../../../Common/button";
 
 const StyleTeacherAbout = styled.div`
   width: 100%;
@@ -276,72 +277,36 @@ const StyleAboutMeData = styled.div`
   }
 `;
 
-const StyleTagSubmitButton = styled.div`
-  width: 150px;
-  outline: 0;
-  border: 0;
-  cursor: pointer;
-  color: rgb(72, 76, 122);
-  font-weight: 600;
-  font-size: 1rem;
-  text-align: center;
-  line-height: 38px;
-  margin: 20px auto 10px auto;
-  border-radius: 50px;
-  background-image: linear-gradient(180deg, #fff, #f5f5fa);
-  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
-    0 1px 3px 0 rgb(93 100 148 / 20%);
-  transition: all 0.2s ease-out;
-
-  :hover {
-    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
-      0 4px 6px 0 rgb(93 100 148 / 20%);
-  }
+const StyleTagSubmitButton = styled(StyleWhiteButton)`
+  margin: 20px auto 10px;
 `;
 
-const TeacherAbout = (props) => {
+const TeacherAbout = () => {
   const identityData = useSelector((state) => state.identityData);
   const aboutData = identityData.about;
-
-  const db = firebase.firestore();
-  const user = firebase.auth().currentUser;
-  const teachersRef = db.collection("teachers").doc(user.email);
-
   const [presentCompany, setPresentCompany] = useState("");
   const [presentTitle, setPresentTitle] = useState("");
   const [introduction, setIntroduction] = useState("");
 
-  const handleAboutDisplay = () => {
+  const handleAboutDisplay = async () => {
     if (
-      presentCompany.length === 0 ||
-      presentTitle.length === 0 ||
-      introduction.length === 0
+      presentCompany.length !== 0 &&
+      presentTitle.length !== 0 &&
+      introduction.length !== 0
     ) {
-      Swal.fire({
-        title: "請輸入個人資料與介紹！",
-        icon: "warning",
-        customClass: {
-          confirmButton: "confirm__button",
-        },
-      });
-    } else {
       const about = {
         presentCompany: presentCompany,
         presentTitle: presentTitle,
         introduction: introduction,
       };
-      teachersRef.update({ about }).then(() => {
-        Swal.fire({
-          title: "更改成功！",
-          icon: "success",
-          timer: 1200,
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
-        setPresentCompany("");
-        setPresentTitle("");
-        setIntroduction("");
-      });
+      await updateTeacherData(identityData.email, { about });
+      await successAlert("更改成功！");
+
+      setPresentCompany("");
+      setPresentTitle("");
+      setIntroduction("");
+    } else {
+      await warningAlert("請輸入個人資料與介紹！");
     }
   };
 
@@ -383,7 +348,6 @@ const TeacherAbout = (props) => {
               onChange={(e) => setPresentCompany(e.target.value)}
               type="text"
               placeholder="請輸入公司名稱"
-              required
             />
           </StyleAboutContainer>
           <StyleAboutContainer>
@@ -393,7 +357,6 @@ const TeacherAbout = (props) => {
               onChange={(e) => setPresentTitle(e.target.value)}
               type="text"
               placeholder="請輸入職稱"
-              required
             />
           </StyleAboutContainer>
           <StyleAboutContainer>
@@ -404,7 +367,6 @@ const TeacherAbout = (props) => {
               type="textarea"
               maxLength="200"
               placeholder="請輸入個人介紹(限200字)"
-              required
             />
           </StyleAboutContainer>
           <StyleTagSubmitButton onClick={handleAboutDisplay}>

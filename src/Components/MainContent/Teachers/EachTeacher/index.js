@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import styled from "styled-components";
-import firebase from "../../../../utils/firebase";
+import { findTeacherData } from "../../../../utils/firebase";
 import Calender from "./Calender";
 import Comments from "./Comments/index";
-import Introduction from "./Introduction";
+import Introduction from "./Introduction/index";
 import loading from "../../../../images/loading.gif";
 
 const StyleEachTeacher = styled.div`
@@ -41,43 +41,34 @@ const StyleLoading = styled.img`
   object-fit: cover;
 `;
 
-const EachTeacher = (props) => {
+const EachTeacher = () => {
   const params = useParams();
   const history = useHistory();
-  const db = firebase.firestore();
-  const teachersCollection = db.collection("teachers");
-  const [teacherData, setTeacherData] = useState();
-  // console.log("該老師的資料！", teacherData);
+  const [eachTeacherData, setEachTeacherData] = useState();
 
   useEffect(() => {
-    teachersCollection
-      .where("uid", "==", params.teacherUid)
-      .get()
-      .then((querySnapshot) => {
-        if (querySnapshot.empty) {
-          history.push("/404");
-        } else {
-          querySnapshot.forEach((doc) => {
-            setTeacherData(doc.data());
-          });
-        }
-      })
-      .catch((error) => {
-        console.log("資料讀取錯誤", error);
-      });
+    findTeacherData(params.teacherUid).then((docs) => {
+      if (docs.empty) {
+        history.push("/404");
+      } else {
+        docs.forEach((doc) => {
+          setEachTeacherData(doc.data());
+        });
+      }
+    });
   }, []);
 
   return (
     <StyleEachTeacher>
       <StyleHeaderArea />
-      {teacherData ? (
+      {eachTeacherData ? (
         <>
           <StyleIntroductionArea>
-            <Introduction teacherData={teacherData} />
+            <Introduction eachTeacherData={eachTeacherData} />
           </StyleIntroductionArea>
-          <Comments teacherData={teacherData} />
+          <Comments eachTeacherData={eachTeacherData} />
           <StyleAvailableTimeArea>
-            <Calender teacherData={teacherData} />
+            <Calender eachTeacherData={eachTeacherData} />
           </StyleAvailableTimeArea>
         </>
       ) : (

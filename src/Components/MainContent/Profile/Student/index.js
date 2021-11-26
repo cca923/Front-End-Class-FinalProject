@@ -9,7 +9,7 @@ const StyleStudentMainArea = styled.div`
   margin-bottom: 50px;
 `;
 
-const StudentMainArea = (props) => {
+const StudentMainArea = () => {
   return (
     <StyleStudentMainArea>
       <Switch>

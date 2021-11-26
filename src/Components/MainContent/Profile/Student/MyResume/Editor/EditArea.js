@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import EasyEdit, { Types } from "react-easy-edit";
 import "../../../../../../css/edit.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-import firebase from "../../../../../../utils/firebase";
+import { updateStudentData } from "../../../../../../utils/firebase";
 
 const StyleCustomDisplay = styled.div`
   display: inline-block;
@@ -20,14 +20,8 @@ const EditArea = (props) => {
   const identityData = useSelector((state) => state.identityData);
   const resumeData = identityData.resume;
 
-  const user = firebase.auth().currentUser;
-  const db = firebase.firestore();
-  const studentsRef = db.collection("students").doc(user.email);
-
-  const [displayAbout, setDisplayAbout] = useState(false);
-
   const CustomDisplay = (props) => {
-    if (displayAbout) {
+    if (resumeData?.about) {
       // 有資料呈現出來
       return (
         <StyleCustomDisplay ref={props.sendEdit}>
@@ -43,44 +37,18 @@ const EditArea = (props) => {
     }
   };
 
-  useEffect(() => {
-    // 初始狀態
-    if (resumeData) {
-      // 有 resume 且有 about 才呈現 true
-      if (resumeData.about) {
-        setDisplayAbout(true);
-      }
-    }
-  }, [resumeData]);
-
-  return displayAbout ? (
+  return (
     <EasyEdit
       type={Types.TEXTAREA}
-      value={resumeData.about} // initial state
+      value={resumeData?.about || ""}
       placeholder="請輸入文字"
       saveButtonLabel={<FontAwesomeIcon icon={faCheck} color="green" />}
       cancelButtonLabel={<FontAwesomeIcon icon={faTimes} color="red" />}
       displayComponent={<CustomDisplay sendEdit={props.sendEdit} />}
       onSave={(value) => {
-        const resume = {
-          about: value,
-        };
-        studentsRef.set({ resume }, { merge: true }); // 已有 about
-      }}
-    />
-  ) : (
-    <EasyEdit
-      type={Types.TEXTAREA}
-      value={""} // initial state
-      placeholder="請輸入文字"
-      saveButtonLabel={<FontAwesomeIcon icon={faCheck} color="green" />}
-      cancelButtonLabel={<FontAwesomeIcon icon={faTimes} color="red" />}
-      displayComponent={<CustomDisplay sendEdit={props.sendEdit} />}
-      onSave={(value) => {
-        const resume = {
-          about: value,
-        };
-        studentsRef.set({ resume }, { merge: true }); // 沒有 about
+        updateStudentData(identityData.email, {
+          resume: { ...identityData.resume, about: value },
+        });
       }}
     />
   );

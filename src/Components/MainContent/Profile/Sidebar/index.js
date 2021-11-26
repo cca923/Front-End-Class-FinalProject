@@ -7,6 +7,7 @@ import {
   getTeacherData,
 } from "../../../../Redux/Action";
 import styled from "styled-components";
+import Link from "./Link";
 import MobileSidebar from "./MobileSidebar";
 import { userSignOut } from "../../../../utils/firebase";
 import {
@@ -15,8 +16,8 @@ import {
   userSignOutWithPopup,
   userSignOutSucceedAlert,
 } from "../../../../utils/swal";
+import { StylePurpleButton } from "../../../Common/button";
 import noPhoto from "../../../../images/no-photo.png";
-import Link from "./Link";
 
 const StyleSidebar = styled.div`
   width: 250px;
@@ -173,27 +174,8 @@ const StyleData = styled.span`
   }
 `;
 
-const StyleLogoutButton = styled.div`
-  width: 150px;
-  outline: 0;
-  border: 0;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 1rem;
-  color: #fff;
-  text-align: center;
-  line-height: 38px;
+const StyleLogoutButton = styled(StylePurpleButton)`
   margin: 0 auto 40px auto;
-  border-radius: 50px;
-  background-image: linear-gradient(180deg, #7c8aff, #3c4fe0);
-  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
-    0 1px 3px 0 rgb(93 100 148 / 20%);
-  transition: all 0.2s ease-out;
-
-  :hover {
-    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
-      0 4px 6px 0 rgb(93 100 148 / 20%);
-  }
 
   @media only screen and (max-width: 1300px) {
     margin: auto 20px;
@@ -203,7 +185,7 @@ const StyleLogoutButton = styled.div`
     width: 100px;
     margin: auto;
     line-height: 33px;
-    margin: 10px auto 5px auto;
+    margin: 10px auto 5px;
   }
 `;
 

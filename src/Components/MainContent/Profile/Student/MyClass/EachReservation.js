@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import firebase from "../../../../../utils/firebase";
+import { teacherData } from "../../../../../utils/firebase";
 import noPhoto from "../../../../../images/resume-noPhoto.png";
 
 const StyleEachTeacher = styled.div`
@@ -70,55 +70,44 @@ const StyleLabel = styled.div`
 
 const StyleData = styled.span``;
 
-const EachReservation = (props) => {
-  const db = firebase.firestore();
-  const teachersCollection = db.collection("teachers");
-  const [teacherData, setTeacherData] = useState([]);
-  // console.log("該老師的資料", teacherData);
+const EachReservation = ({ eachReservation }) => {
+  const [eachTeacherData, setEachTeacherData] = useState([]);
 
   useEffect(() => {
-    teachersCollection
-      .where("email", "==", props.eachReservation.email)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          setTeacherData(doc.data());
-        });
-      })
-      .catch((error) => {
-        console.log("資料讀取錯誤", error);
-      });
+    teacherData(eachReservation.email).then((doc) => {
+      setEachTeacherData(doc.data());
+    });
   }, []);
 
   return (
     <StyleEachTeacher>
       <StyleOrderNumber>
         預定編號：
-        <span>{props.eachReservation.time}</span>
+        <span>{eachReservation.time}</span>
       </StyleOrderNumber>
-      <StyleImage alt={teacherData.name} src={teacherData.photo || noPhoto} />
+      <StyleImage
+        alt={eachTeacherData.name}
+        src={eachTeacherData.photo || noPhoto}
+      />
       <StyleDetail>
         <StyleEachDetail>
           <StyleLabel>姓名</StyleLabel>
-          <StyleData>{teacherData.name}</StyleData>
+          <StyleData>{eachTeacherData.name}</StyleData>
         </StyleEachDetail>
         <StyleEachDetail>
           <StyleLabel>Email </StyleLabel>
-          <StyleData>{props.eachReservation.email}</StyleData>
+          <StyleData>{eachReservation.email}</StyleData>
         </StyleEachDetail>
         <StyleEachDetail>
           <StyleLabel>日期</StyleLabel>
           <StyleData>
-            {new Date(props.eachReservation.time).toLocaleString(
-              navigator.language,
-              {
-                year: "numeric",
-                month: "numeric",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            )}
+            {new Date(eachReservation.time).toLocaleString(navigator.language, {
+              year: "numeric",
+              month: "numeric",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </StyleData>
         </StyleEachDetail>
       </StyleDetail>

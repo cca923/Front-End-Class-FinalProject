@@ -1,13 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import firebase from "../../../../../utils/firebase";
+import { studentData } from "../../../../../utils/firebase";
 import noPhoto from "../../../../../images/no-photo.png";
 
 const StyleEachComment = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
-  height: 100%;
   background-color: #fff;
   border-radius: 20px;
   box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 5px;
@@ -16,9 +14,9 @@ const StyleEachComment = styled.div`
 const StyleComment = styled.div`
   padding: 20px 20px 10px;
   min-height: 5vmin;
-  font-size: 1.1rem;
+  font-size: ${(props) => (props.more ? "1.3rem" : "1.1rem")};
   font-weight: 500;
-  line-height: 1.8rem;
+  line-height: ${(props) => (props.more ? "2rem" : "1.8rem")};
 
   @media only screen and (max-width: 1000px) {
     font-size: 1rem;
@@ -61,34 +59,26 @@ const StyleTime = styled.div`
   font-size: 0.8rem;
 `;
 
-const EachComment = (props) => {
-  const db = firebase.firestore();
-  const studentsCollection = db.collection("students");
-  const [studentData, setStudentData] = useState([]);
-  // console.log("該學生的資料！", studentData);
+const EachComment = ({ eachComment, more }) => {
+  const [eachStudentData, setEachStudentData] = useState([]);
 
   useEffect(() => {
-    studentsCollection
-      .where("email", "==", props.eachComment.email)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          setStudentData(doc.data());
-        });
-      })
-      .catch((error) => {
-        console.log("資料讀取錯誤", error);
-      });
+    studentData(eachComment.email).then((doc) => {
+      setEachStudentData(doc.data());
+    });
   }, []);
 
   return (
     <StyleEachComment>
-      <StyleComment>"{props.eachComment.comment}"</StyleComment>
+      <StyleComment more={more}>"{eachComment.comment}"</StyleComment>
       <StyleDetail>
-        <StyleImage src={studentData.photo || noPhoto} alt={studentData.name} />
-        <StyleName>學生｜{studentData.name}</StyleName>
+        <StyleImage
+          src={eachStudentData.photo || noPhoto}
+          alt={eachStudentData.name}
+        />
+        <StyleName>學生｜{eachStudentData.name}</StyleName>
         <StyleTime>
-          {new Date(props.eachComment.time).toLocaleString(navigator.language, {
+          {new Date(eachComment.time).toLocaleString(navigator.language, {
             year: "numeric",
             month: "numeric",
             day: "numeric",

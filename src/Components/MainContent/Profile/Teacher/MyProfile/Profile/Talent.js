@@ -3,7 +3,9 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
 import Swal from "sweetalert2";
-import firebase from "../../../../../../utils/firebase";
+import firebase, { updateTeacherData } from "../../../../../../utils/firebase";
+import { successAlert, warningAlert } from "../../../../../../utils/swal";
+import { StyleWhiteButton } from "../../../../../Common/button";
 
 const StyleTeacherTalent = styled.div`
   width: 100%;
@@ -162,36 +164,13 @@ const StyleTalentDisplayText = styled.div`
   }
 `;
 
-const StyleTagSubmitButton = styled.div`
-  width: 150px;
-  outline: 0;
-  border: 0;
-  cursor: pointer;
-  color: rgb(72, 76, 122);
-  font-weight: 600;
-  font-size: 1rem;
-  text-align: center;
-  line-height: 38px;
-  margin: 20px auto 10px auto;
-  border-radius: 50px;
-  background-image: linear-gradient(180deg, #fff, #f5f5fa);
-  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
-    0 1px 3px 0 rgb(93 100 148 / 20%);
-  transition: all 0.2s ease-out;
-
-  :hover {
-    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
-      0 4px 6px 0 rgb(93 100 148 / 20%);
-  }
+const StyleTagSubmitButton = styled(StyleWhiteButton)`
+  margin: 20px auto 10px;
 `;
 
 const TeacherTalent = () => {
   const identityData = useSelector((state) => state.identityData);
   const talentsData = identityData.talents;
-
-  const db = firebase.firestore();
-  const user = firebase.auth().currentUser;
-  const teachersRef = db.collection("teachers").doc(user.email);
 
   const [talent1Title, setTalent1Title] = useState("");
   const [talent1Description, setTalent1Description] = useState("");
@@ -200,43 +179,31 @@ const TeacherTalent = () => {
   const [talent3Title, setTalent3Title] = useState("");
   const [talent3Description, setTalent3Description] = useState("");
 
-  const handleTalentDisplay = () => {
+  const handleTalentDisplay = async () => {
     if (
-      talent1Title.length === 0 ||
-      talent1Description.length === 0 ||
-      talent2Title.length === 0 ||
-      talent2Description.length === 0 ||
-      talent3Title.length === 0 ||
-      talent3Description.length === 0
+      talent1Title.length !== 0 &&
+      talent1Description.length !== 0 &&
+      talent2Title.length !== 0 &&
+      talent2Description.length !== 0 &&
+      talent3Title.length !== 0 &&
+      talent3Description.length !== 0
     ) {
-      Swal.fire({
-        title: "請輸入完整三項技能！",
-        icon: "warning",
-        customClass: {
-          confirmButton: "confirm__button",
-        },
-      });
-    } else {
       const talents = [
         { title: talent1Title, description: talent1Description },
         { title: talent2Title, description: talent2Description },
         { title: talent3Title, description: talent3Description },
       ];
-      teachersRef.update({ talents }).then(() => {
-        Swal.fire({
-          title: "更改成功！",
-          icon: "success",
-          timer: 1200,
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
-        setTalent1Title("");
-        setTalent1Description("");
-        setTalent2Title("");
-        setTalent2Description("");
-        setTalent3Title("");
-        setTalent3Description("");
-      });
+      await updateTeacherData(identityData.email, { talents });
+      await successAlert("更改成功！");
+
+      setTalent1Title("");
+      setTalent1Description("");
+      setTalent2Title("");
+      setTalent2Description("");
+      setTalent3Title("");
+      setTalent3Description("");
+    } else {
+      await warningAlert("請輸入完整三項技能！");
     }
   };
 
@@ -276,7 +243,6 @@ const TeacherTalent = () => {
                 type="text"
                 placeholder="請輸入技能名稱(限5字)"
                 maxLength="5"
-                required
               />
 
               <StyleLabelSubtitle>技能介紹</StyleLabelSubtitle>
@@ -286,7 +252,6 @@ const TeacherTalent = () => {
                 type="textarea"
                 placeholder="請輸入技能簡介(限100字)"
                 maxLength="100"
-                required
               />
             </StyleTalentContainer>
 
@@ -300,7 +265,6 @@ const TeacherTalent = () => {
                 type="text"
                 placeholder="請輸入技能名稱(限5字)"
                 maxLength="5"
-                required
               />
               <StyleLabelSubtitle>技能介紹</StyleLabelSubtitle>
               <StyleDescriptionInput
@@ -309,7 +273,6 @@ const TeacherTalent = () => {
                 type="textarea"
                 placeholder="請輸入技能簡介(限100字)"
                 maxLength="100"
-                required
               />
             </StyleTalentContainer>
 
@@ -323,7 +286,6 @@ const TeacherTalent = () => {
                 type="text"
                 placeholder="請輸入技能名稱(限5字)"
                 maxLength="5"
-                required
               />
               <StyleLabelSubtitle>技能介紹</StyleLabelSubtitle>
               <StyleDescriptionInput
@@ -332,7 +294,6 @@ const TeacherTalent = () => {
                 type="textarea"
                 placeholder="請輸入技能簡介(限100字)"
                 maxLength="100"
-                required
               />
             </StyleTalentContainer>
           </StyleTalentArea>

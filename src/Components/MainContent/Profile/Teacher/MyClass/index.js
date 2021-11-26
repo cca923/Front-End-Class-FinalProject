@@ -1,8 +1,7 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import TeacherCalendar from "./Calendar";
-import TeacherReservation from "./Reservation";
+import TeacherSchedule from "./Schedule/index";
+import TeacherReservation from "./Reservation/index";
 
 const StyleMyClass = styled.div`
   width: 100%;
@@ -18,11 +17,11 @@ const StyleTitle = styled.div`
   background-color: #f3f3f3;
 `;
 
-const TeacherMyClass = (props) => {
+const TeacherMyClass = () => {
   return (
     <StyleMyClass>
       <StyleTitle>Schedule</StyleTitle>
-      <TeacherCalendar />
+      <TeacherSchedule />
       <TeacherReservation />
     </StyleMyClass>
   );

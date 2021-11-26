@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { nanoid } from "nanoid";
 import EachComment from "./EachComment";
-import MoreComments from "./MoreComments";
 
 const StyleTitle = styled.div`
   display: ${(props) => (props.teacherComments ? "block" : "none")};
@@ -97,8 +96,8 @@ const StyleMoreCommentsWrap = styled.div`
   }
 `;
 
-const Comments = (props) => {
-  const teacherComments = props.teacherData.comments;
+const Comments = ({ eachTeacherData }) => {
+  const teacherComments = eachTeacherData.comments;
   const [more, setMore] = useState(false);
 
   return (
@@ -120,7 +119,11 @@ const Comments = (props) => {
                 <StyleMoreCommentsWrap>
                   {teacherComments.map((eachComment) => {
                     return (
-                      <MoreComments key={nanoid()} eachComment={eachComment} />
+                      <EachComment
+                        key={nanoid()}
+                        eachComment={eachComment}
+                        more={more}
+                      />
                     );
                   })}
                 </StyleMoreCommentsWrap>

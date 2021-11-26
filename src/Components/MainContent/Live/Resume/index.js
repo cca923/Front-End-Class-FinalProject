@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Editor from "./Editor";
@@ -112,7 +112,7 @@ const StyleReactQuillDisplay = styled.div`
   }
 `;
 
-const Resume = (props) => {
+const Resume = () => {
   const identity = useSelector((state) => state.identity);
   const identityData = useSelector((state) => state.identityData);
   const liveData = useSelector((state) => state.liveData);

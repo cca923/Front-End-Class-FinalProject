@@ -106,7 +106,7 @@ const StyleTeachersContainer = styled.div`
   }
 `;
 
-const Teachers = (props) => {
+const Teachers = () => {
   const [selectIndustry, setSelectIndustry] = useState("");
   const [selectTitle, setSelectTitle] = useState("");
   const [selectLanguage, setSelectLanguage] = useState("");
@@ -131,8 +131,6 @@ const Teachers = (props) => {
           setSelectTitle={setSelectTitle}
           selectLanguage={selectLanguage}
           setSelectLanguage={setSelectLanguage}
-          displayTag={displayTag}
-          setDisplayTag={setDisplayTag}
         />
         <GroupTeachers
           selectIndustry={selectIndustry}
@@ -141,8 +139,6 @@ const Teachers = (props) => {
           setSelectTitle={setSelectTitle}
           selectLanguage={selectLanguage}
           setSelectLanguage={setSelectLanguage}
-          displayTag={displayTag}
-          setDisplayTag={setDisplayTag}
         />
       </StyleTeachersContainer>
     </>

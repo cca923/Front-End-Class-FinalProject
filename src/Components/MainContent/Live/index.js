@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Resume from "./Resume/index";
 import Video from "./Video";
-import Swal from "sweetalert2";
 
 const StyleHeaderArea = styled.div`
   width: 100%;
@@ -73,7 +72,6 @@ const StyleImage = styled.div`
   }
 
   @media only screen and (max-width: 1000px) {
-    /* width: 60vmin; */
     height: 40vmin;
   }
 `;

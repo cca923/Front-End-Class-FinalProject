@@ -1,7 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Select from "react-select";
 import slider from "../../../images/slider.png";
+import {
+  industryOptions,
+  languageOptions,
+  titleOptions,
+} from "../../../utils/tagOptions";
 
 const StyleSidebar = styled.div`
   width: 300px;
@@ -194,68 +199,15 @@ const StyleRemove = styled.div`
   }
 `;
 
-const Sidebar = (props) => {
+const Sidebar = ({
+  selectIndustry,
+  setSelectIndustry,
+  selectTitle,
+  setSelectTitle,
+  selectLanguage,
+  setSelectLanguage,
+}) => {
   const [layer, setLayer] = useState(false);
-
-  const industryOptions = [
-    { value: "農、林、漁、牧業", label: "農、林、漁、牧業" },
-    { value: "礦業及土石採取業", label: "礦業及土石採取業" },
-    { value: "製造業", label: "製造業" },
-    { value: "電力及燃氣供應業", label: "電力及燃氣供應業" },
-    { value: "用水供應及污染整治業", label: "用水供應及污染整治業" },
-    { value: "營建工程業", label: "營建工程業" },
-    { value: "批發及零售業", label: "批發及零售業" },
-    { value: "運輸及倉儲業", label: "運輸及倉儲業" },
-    { value: "住宿及餐飲業", label: "住宿及餐飲業" },
-    { value: "出版影音及資通訊業", label: "出版影音及資通訊業" },
-    { value: "金融及保險業", label: "金融及保險業" },
-    { value: "不動產業", label: "不動產業" },
-    { value: "專業、科學及技術服務業", label: "專業、科學及技術服務業" },
-    { value: "支援服務業", label: "支援服務業" },
-    {
-      value: "公共行政及國防、強制性社會安全",
-      label: "公共行政及國防、強制性社會安全",
-    },
-    { value: "教育業", label: "教育業" },
-    { value: "醫療保健及社會工作服務業", label: "醫療保健及社會工作服務業" },
-    { value: "藝術、娛樂及休閒服務業", label: "藝術、娛樂及休閒服務業" },
-    { value: "其他服務業", label: "其他服務業" },
-  ];
-
-  const titleOptions = [
-    { value: "實習生", label: "實習生" },
-    { value: "初階", label: "初階" },
-    { value: "中高階", label: "中高階" },
-    { value: "經理/主管", label: "經理/主管" },
-    { value: "董事/高階主管", label: "董事/高階主管" },
-  ];
-
-  const languageOptions = [
-    { value: "中文", label: "中文" },
-    { value: "英文", label: "英文" },
-    { value: "其他", label: "其他" },
-  ];
-
-  const handleIndustryChange = (tag) => {
-    props.setSelectIndustry(tag);
-    props.setDisplayTag(true);
-  };
-  const handleTitleChange = (tag) => {
-    props.setSelectTitle(tag);
-    props.setDisplayTag(true);
-  };
-  const handleLanguageChange = (tag) => {
-    props.setSelectLanguage(tag);
-    props.setDisplayTag(true);
-  };
-
-  if (
-    props.selectIndustry === "" &&
-    props.selectTitle === "" &&
-    props.selectLanguage === ""
-  ) {
-    props.setDisplayTag(false);
-  }
 
   return (
     <StyleSidebar>
@@ -275,36 +227,26 @@ const Sidebar = (props) => {
           <StyleFilterIcon src={slider} alt={"篩選條件"} />
         </StyleFilterTilte>
 
-        {props.displayTag ? (
+        {selectIndustry !== "" ||
+        selectTitle !== "" ||
+        selectLanguage !== "" ? (
           <StyleTagDisplayArea layer={layer}>
-            {props.selectIndustry !== "" ? (
+            {selectIndustry !== "" ? (
               <StyleTag>
-                <StyleValue>{props.selectIndustry.value}</StyleValue>
-                <StyleRemove
-                  onClick={() => {
-                    props.setSelectIndustry("");
-                  }}
-                />
+                <StyleValue>{selectIndustry.value}</StyleValue>
+                <StyleRemove onClick={() => setSelectIndustry("")} />
               </StyleTag>
             ) : null}
-            {props.selectTitle !== "" ? (
+            {selectTitle !== "" ? (
               <StyleTag>
-                <StyleValue>{props.selectTitle.value}</StyleValue>
-                <StyleRemove
-                  onClick={() => {
-                    props.setSelectTitle("");
-                  }}
-                />
+                <StyleValue>{selectTitle.value}</StyleValue>
+                <StyleRemove onClick={() => setSelectTitle("")} />
               </StyleTag>
             ) : null}
-            {props.selectLanguage !== "" ? (
+            {selectLanguage !== "" ? (
               <StyleTag>
-                <StyleValue>{props.selectLanguage.value}</StyleValue>
-                <StyleRemove
-                  onClick={() => {
-                    props.setSelectLanguage("");
-                  }}
-                />
+                <StyleValue>{selectLanguage.value}</StyleValue>
+                <StyleRemove onClick={() => setSelectLanguage("")} />
               </StyleTag>
             ) : null}
           </StyleTagDisplayArea>
@@ -315,8 +257,8 @@ const Sidebar = (props) => {
             <StyleTagContainer>
               <StyleLabel>產業｜Industry</StyleLabel>
               <StyleSelect
-                value={props.selectIndustry}
-                onChange={handleIndustryChange}
+                value={selectIndustry}
+                onChange={(tag) => setSelectIndustry(tag)}
                 options={industryOptions}
                 placeholder={"請選擇產業別"}
               />
@@ -325,8 +267,8 @@ const Sidebar = (props) => {
             <StyleTagContainer>
               <StyleLabel>職業稱謂｜Title</StyleLabel>
               <StyleSelect
-                value={props.selectTitle}
-                onChange={handleTitleChange}
+                value={selectTitle}
+                onChange={(tag) => setSelectTitle(tag)}
                 options={titleOptions}
                 placeholder={"請選擇職業稱謂"}
               />
@@ -335,8 +277,8 @@ const Sidebar = (props) => {
             <StyleTagContainer>
               <StyleLabel>履歷批改語言｜Language</StyleLabel>
               <StyleSelect
-                value={props.selectLanguage}
-                onChange={handleLanguageChange}
+                value={selectLanguage}
+                onChange={(tag) => setSelectLanguage(tag)}
                 options={languageOptions}
                 placeholder={"請選擇履歷批改語言"}
               />

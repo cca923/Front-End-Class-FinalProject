@@ -1,6 +1,6 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import styled from "styled-components";
+import { StylePurpleButton, StyleWhiteButton } from "../../Common/button";
 
 const TooltipBody = styled.div`
   height: fit-content;
@@ -40,51 +40,23 @@ const StyleSkipButton = styled.span`
   color: #999999;
   height: fit-content;
   font-size: 0.9rem;
-`;
-
-const StylePrimaryButton = styled.button`
-  width: 120px;
-  outline: 0;
-  border: 0;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: #fff;
-  text-align: center;
-  border-radius: 50px;
-  background-image: linear-gradient(180deg, #7c8aff, #3c4fe0);
-  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
-    0 1px 3px 0 rgb(93 100 148 / 20%);
-  transition: all 0.2s ease-out;
-  padding: 8px;
-  margin-left: 10px;
 
   &:hover {
-    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
-      0 4px 6px 0 rgb(93 100 148 / 20%);
+    color: #e63946;
   }
 `;
 
-const StyleBackButton = styled.button`
+const StylePrimaryButton = styled(StylePurpleButton)`
   width: 120px;
-  outline: 0;
-  border: 0;
-  cursor: pointer;
-  color: rgb(72, 76, 122);
-  font-weight: 600;
   font-size: 0.9rem;
-  text-align: center;
-  border-radius: 50px;
-  background-image: linear-gradient(180deg, #fff, #f5f5fa);
-  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
-    0 1px 3px 0 rgb(93 100 148 / 20%);
-  transition: all 0.2s ease-out;
-  padding: 8px;
+  margin-left: 10px;
+  height: 36px;
+`;
 
-  :hover {
-    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
-      0 4px 6px 0 rgb(93 100 148 / 20%);
-  }
+const StyleBackButton = styled(StyleWhiteButton)`
+  width: 120px;
+  font-size: 0.9rem;
+  height: 36px;
 `;
 
 const StyleCloseButton = styled.div`

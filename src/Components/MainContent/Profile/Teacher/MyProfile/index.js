@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import TeacherTag from "./TeacherTag";
-import TeacherDetail from "./TeacherDetail/index";
+import TeacherDetail from "./Profile/index";
 
 const StyleTeacherMyProfile = styled.div`
   width: 100%;
@@ -20,11 +19,10 @@ const StyleTitle = styled.div`
   background-color: #f3f3f3;
 `;
 
-const TeacherMyProfile = (props) => {
+const TeacherMyProfile = () => {
   return (
     <StyleTeacherMyProfile>
       <StyleTitle>Profile</StyleTitle>
-      <TeacherTag />
       <TeacherDetail />
     </StyleTeacherMyProfile>
   );

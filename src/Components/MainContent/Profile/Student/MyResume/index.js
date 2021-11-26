@@ -6,6 +6,7 @@ import Editor from "./Editor/Editor";
 import noPhoto from "../../../../../images/resume-noPhoto.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint } from "@fortawesome/free-solid-svg-icons";
+import { StyleWhiteButton } from "../../../../Common/button";
 
 const StyleMyResume = styled.div`
   width: 100%;
@@ -74,28 +75,10 @@ const StyleAreaTitle = styled.h1`
   margin: 20px 0 0px 0;
 `;
 
-const StylePrintButton = styled.div`
+const StylePrintButton = styled(StyleWhiteButton)`
   position: absolute;
   right: 20px;
   width: 120px;
-  outline: 0;
-  border: 0;
-  cursor: pointer;
-  color: rgb(72, 76, 122);
-  font-weight: 600;
-  font-size: 1rem;
-  text-align: center;
-  line-height: 38px;
-  border-radius: 50px;
-  background-image: linear-gradient(180deg, #fff, #f5f5fa);
-  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
-    0 1px 3px 0 rgb(93 100 148 / 20%);
-  transition: all 0.2s ease-out;
-
-  :hover {
-    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
-      0 4px 6px 0 rgb(93 100 148 / 20%);
-  }
 
   @media only screen and (max-width: 500px) {
     width: 90px;
@@ -113,7 +96,7 @@ const StylePrintIcon = styled(FontAwesomeIcon)`
   cursor: pointer;
 `;
 
-const StudentMyResume = (props) => {
+const StudentMyResume = () => {
   const identityData = useSelector((state) => state.identityData);
   const sendEdit = useRef();
   const [hover, setHover] = useState(false);
