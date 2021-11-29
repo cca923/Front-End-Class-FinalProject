@@ -1,6 +1,26 @@
 import Swal from "sweetalert2";
 import { uploadProfileImage } from "./firebase";
 
+const successAlert = (successText) => {
+  return Swal.fire({
+    title: successText,
+    icon: "success",
+    timer: 1200,
+    timerProgressBar: true,
+    showConfirmButton: false,
+  });
+};
+
+const warningAlert = (warningText) => {
+  return Swal.fire({
+    title: warningText,
+    icon: "warning",
+    customClass: {
+      confirmButton: "confirm__button",
+    },
+  });
+};
+
 const wrongIdentitySigninAlert = (identity) => {
   return Swal.fire({
     title: `此 Email 註冊為${identity}`,
@@ -64,7 +84,7 @@ const userSignOutWithPopup = (currentUserEmail) => {
       confirmButton: "confirm__button",
       cancelButton: "cancel__button",
     },
-    imageUrl: "/images/theme/theme-13.png",
+    imageUrl: "/images/theme/theme-7.png",
     imageWidth: 130,
     imageAlt: "theme image",
   });
@@ -78,26 +98,6 @@ const userSignOutSucceedAlert = (currentUserEmail) => {
     title: "登出成功，將回到首頁！",
     text: `登出 Email｜${currentUserEmail}`,
     icon: "success",
-  });
-};
-
-const successAlert = (successText) => {
-  return Swal.fire({
-    title: successText,
-    icon: "success",
-    timer: 1200,
-    timerProgressBar: true,
-    showConfirmButton: false,
-  });
-};
-
-const warningAlert = (warningText) => {
-  return Swal.fire({
-    title: warningText,
-    icon: "warning",
-    customClass: {
-      confirmButton: "confirm__button",
-    },
   });
 };
 
@@ -115,9 +115,9 @@ const removeWarningAlert = (warningText) => {
   });
 };
 
-const handleConfirmedWithPopup = (time, text, confirmButtonText, imageURL) => {
+const handleConfirmedWithPopup = (title, text, confirmButtonText, imageURL) => {
   return Swal.fire({
-    title: time,
+    title: title,
     html: `<h3>${text}</h3>`,
     confirmButtonText: confirmButtonText,
     showCancelButton: true,
@@ -153,6 +153,20 @@ const reserveTimeSucceedAlert = (time) => {
       confirmButton: "confirm__button",
     },
     allowOutsideClick: false,
+  });
+};
+
+const sendInvitationSucceedAlert = (name) => {
+  return Swal.fire({
+    title: `已發送邀請通知，請稍候！`,
+    html: `<h3>發送對象｜${name}</h3>`,
+    showCloseButton: true,
+    customClass: {
+      confirmButton: "confirm__button",
+    },
+    imageUrl: "/images/theme/theme-4.png",
+    imageWidth: 130,
+    imageAlt: "theme image",
   });
 };
 
@@ -199,17 +213,18 @@ const commentWithPopup = (name) => {
 };
 
 export {
-  wrongIdentitySigninAlert,
-  uploadProfileImageWithPopup,
-  uploadProfileImageSucceedAlert,
-  userSignOutWithPopup,
-  userSignOutSucceedAlert,
   successAlert,
   warningAlert,
+  wrongIdentitySigninAlert,
+  userSignOutWithPopup,
+  userSignOutSucceedAlert,
+  uploadProfileImageWithPopup,
+  uploadProfileImageSucceedAlert,
   removeWarningAlert,
   handleConfirmedWithPopup,
   handleScheduleSucceedAlert,
   reserveTimeSucceedAlert,
+  sendInvitationSucceedAlert,
   deleteInvitationWarningAlert,
   commentWithPopup,
 };

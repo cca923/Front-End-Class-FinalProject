@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
-import Swal from "sweetalert2";
-import firebase, { updateTeacherData } from "../../../../../../utils/firebase";
+
+import { updateTeacherData } from "../../../../../../utils/firebase";
 import { successAlert, warningAlert } from "../../../../../../utils/swal";
 import { StyleWhiteButton } from "../../../../../Common/button";
+import { StyleSubtitle } from "../../../../../Common/title";
 
 const StyleTeacherTalent = styled.div`
   width: 100%;
@@ -20,25 +21,6 @@ const StyleEachDetail = styled.div`
   width: 100%;
   position: relative;
   padding: 28px 0;
-`;
-
-const StyleSubtitle = styled.div`
-  position: absolute;
-  background-color: #9092db;
-  box-shadow: rgba(0, 0, 225, 0.35) 0px -50px 36px -28px inset;
-  padding: 15px;
-  border-radius: 25px;
-  top: 5px;
-  left: 30px;
-  width: 250px;
-  font-size: 1.2rem;
-  text-align: center;
-  color: #fff;
-
-  @media only screen and (max-width: 600px) {
-    width: 200px;
-    font-size: 1.1rem;
-  }
 `;
 
 const StyleContainer = styled.div`
@@ -59,6 +41,7 @@ const StyleTalentArea = styled.div`
   @media only screen and (max-width: 1000px) {
     grid-template-columns: repeat(1, 1fr);
     grid-gap: 20px 0px;
+    padding: 0px;
   }
 `;
 

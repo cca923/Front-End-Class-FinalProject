@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+
+import headerImage from "../../../images/theme/theme-10.png";
+
 import Sidebar from "./Sidebar";
 import GroupTeachers from "./GroupTeachers";
-import headerImage from "../../../images/theme/theme-16.png";
 
 const StyleHeaderArea = styled.div`
   display: flex;
@@ -110,7 +112,6 @@ const Teachers = () => {
   const [selectIndustry, setSelectIndustry] = useState("");
   const [selectTitle, setSelectTitle] = useState("");
   const [selectLanguage, setSelectLanguage] = useState("");
-  const [displayTag, setDisplayTag] = useState(false);
 
   return (
     <>

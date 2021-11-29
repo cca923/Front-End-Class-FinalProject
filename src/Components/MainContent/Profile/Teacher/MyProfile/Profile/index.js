@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+
 import TeacherTag from "./Tag";
 import TeacherAbout from "./About";
 import TeacherTalent from "./Talent";

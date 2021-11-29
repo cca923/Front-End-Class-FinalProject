@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import Select from "react-select";
-import slider from "../../../images/slider.png";
+
 import {
   industryOptions,
   languageOptions,
   titleOptions,
 } from "../../../utils/tagOptions";
+
+import slider from "../../../images/slider.png";
 
 const StyleSidebar = styled.div`
   width: 300px;

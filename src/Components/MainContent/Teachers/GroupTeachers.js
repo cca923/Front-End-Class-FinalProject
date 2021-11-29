@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { allTeachersData } from "../../../utils/firebase";
 import { nanoid } from "nanoid";
-import noPhoto from "../../../images/resume-noPhoto.png";
+
+import { fetchAllTeachersData } from "../../../utils/firebase";
+
+import noPhoto from "../../../images/no-photo-square.png";
 import noResult from "../../../images/noResult.gif";
 import loading from "../../../images/loading.gif";
 
@@ -197,29 +199,21 @@ const StyleLoading = styled.img`
   object-fit: cover;
 `;
 
-const GroupTeachers = ({
-  selectIndustry,
-  setSelectIndustry,
-  selectTitle,
-  setSelectTitle,
-  selectLanguage,
-  setSelectLanguage,
-}) => {
+const GroupTeachers = ({ selectIndustry, selectTitle, selectLanguage }) => {
   const [teachersData, setTeachersData] = useState();
 
   useEffect(() => {
-    allTeachersData().then((docs) => {
+    fetchAllTeachersData().then((docs) => {
       const arrTeachers = [];
 
       docs.forEach((doc) => {
         if (
-          // 資料都有的老師再呈現在頁面上
           doc.data().tag &&
           doc.data().about &&
           doc.data().talents &&
           doc.data().experience &&
-          doc.data().time && // 有填寫可預約時間的
-          doc.data().time.length !== 0 && // 沒有被全部預約完讓 time = [ ] 的
+          doc.data().time &&
+          doc.data().time.length !== 0 &&
           doc
             .data()
             .time.map((data) => {
@@ -227,7 +221,7 @@ const GroupTeachers = ({
             })
             .filter((data) => {
               return data > new Date();
-            }).length !== 0 // 不能出現 time 仍有時間，但都已經過期的老師
+            }).length !== 0 // cause doc.data().time might remain expiration time
         ) {
           arrTeachers.push(doc.data());
         }

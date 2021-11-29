@@ -2,15 +2,11 @@ import React from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { compareAsc } from "date-fns";
-import "react-datepicker/dist/react-datepicker.css";
-import "../../../../../../css/calendar.css";
 import { nanoid } from "nanoid";
-import {
-  updateTeacherData,
-  arrayRemove,
-} from "../../../../../../utils/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+
+import { removeData } from "../../../../../../utils/firebase";
 import {
   handleScheduleSucceedAlert,
   handleConfirmedWithPopup,
@@ -112,17 +108,19 @@ const AvailableTime = ({ timeDataConvert }) => {
       `移除時段｜${deleteTargetValue}`,
       "是否要從我的可預約時段中移除？",
       "Remove｜移除",
-      "/images/theme/theme-12.png"
+      "/images/theme/theme-6.png"
     );
     if (removeTime.isConfirmed) {
       const existDate = timeDataConvert.filter((existDate) => {
         return String(existDate) === deleteTargetDate;
       });
 
-      // 從 firestore 中刪除，會自動恢復成可以被選取的狀態
-      await updateTeacherData(identityData.email, {
-        time: arrayRemove(existDate[0].getTime()),
-      });
+      await removeData(
+        "teachers",
+        identityData.email,
+        "time",
+        existDate[0].getTime()
+      );
 
       await handleScheduleSucceedAlert(
         "移除成功！",

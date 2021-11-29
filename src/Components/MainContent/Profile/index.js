@@ -1,9 +1,11 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
+
+import loading from "../../../images/loading.gif";
+
 import Sidebar from "./Sidebar/index";
 import MainArea from "./MainArea";
-import loading from "../../../images/loading.gif";
 
 const StyleProfile = styled.div`
   position: relative;

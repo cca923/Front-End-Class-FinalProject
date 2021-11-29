@@ -3,17 +3,15 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
 import Select from "react-select";
-import {
-  updateTeacherData,
-  arrayUnion,
-  arrayRemove,
-} from "../../../../../../utils/firebase";
+
+import { addData, removeData } from "../../../../../../utils/firebase";
 import {
   removeWarningAlert,
   successAlert,
   warningAlert,
 } from "../../../../../../utils/swal";
 import { StyleWhiteButton } from "../../../../../Common/button";
+import { StyleSubtitle } from "../../../../../Common/title";
 
 const StyleTeacherExperience = styled.div`
   width: 100%;
@@ -28,25 +26,6 @@ const StyleEachDetail = styled.div`
   width: 100%;
   position: relative;
   padding: 28px 0;
-`;
-
-const StyleSubtitle = styled.div`
-  position: absolute;
-  background-color: #9092db;
-  box-shadow: rgba(0, 0, 225, 0.35) 0px -50px 36px -28px inset;
-  padding: 15px;
-  border-radius: 25px;
-  top: 5px;
-  left: 30px;
-  width: 250px;
-  font-size: 1.2rem;
-  text-align: center;
-  color: #fff;
-
-  @media only screen and (max-width: 600px) {
-    width: 200px;
-    font-size: 1.1rem;
-  }
 `;
 
 const StyleContainer = styled.div`
@@ -196,12 +175,18 @@ const TeacherExperience = () => {
   const identityData = useSelector((state) => state.identityData);
   const experienceData = identityData.experience;
 
+  const startMaxDate = useRef();
+  const endMaxDate = useRef();
   const [company, setCompany] = useState("");
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const startMaxDate = useRef();
-  const endMaxDate = useRef();
+  const [selectTimeOrder, setSelectTimeOrder] = useState("");
+
+  const timeRange = [
+    { value: "新到舊", label: "新到舊" },
+    { value: "舊到新", label: "舊到新" },
+  ];
 
   const handleExperienceDisplay = async () => {
     if (
@@ -216,10 +201,13 @@ const TeacherExperience = () => {
         startDate,
         endDate,
       };
+      await addData(
+        "teachers",
+        identityData.email,
+        "experience",
+        newExperience
+      );
 
-      await updateTeacherData(identityData.email, {
-        experience: arrayUnion(newExperience),
-      });
       await successAlert("新增成功！");
 
       setCompany("");
@@ -234,26 +222,15 @@ const TeacherExperience = () => {
   const handleExperienceDelete = async (e) => {
     const removeTarget = e.target.previousSibling.childNodes[1].textContent;
     const removeExperience = await removeWarningAlert("移除該項工作經歷？");
+
     if (removeExperience.isConfirmed) {
       const target = experienceData.filter((existDate) => {
         return existDate.endDate.replace(/-/g, "/") === removeTarget;
       });
 
-      await updateTeacherData(identityData.email, {
-        experience: arrayRemove(...target),
-      });
+      await removeData("teachers", identityData.email, "experience", ...target);
       await successAlert("移除成功！");
     }
-  };
-
-  const [selectTimeOrder, setSelectTimeOrder] = useState("");
-  const timeRange = [
-    { value: "新到舊", label: "新到舊" },
-    { value: "舊到新", label: "舊到新" },
-  ];
-
-  const handleTimeOrder = (tag) => {
-    setSelectTimeOrder(tag);
   };
 
   useEffect(() => {
@@ -270,7 +247,7 @@ const TeacherExperience = () => {
             <StyleDisplay>
               <StyleSelect
                 value={selectTimeOrder}
-                onChange={handleTimeOrder}
+                onChange={(tag) => setSelectTimeOrder(tag)}
                 options={timeRange}
                 placeholder={"時間排序預設：新到舊"}
               />

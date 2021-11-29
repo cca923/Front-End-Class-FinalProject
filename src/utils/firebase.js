@@ -18,8 +18,6 @@ if (!firebase.apps.length) {
   firebase.app();
 }
 
-export default firebase;
-
 const facebookProvider = new firebase.auth.FacebookAuthProvider();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
@@ -62,23 +60,7 @@ const studentSnapshot = (
   }
 };
 
-const teacherData = (email) => {
-  try {
-    return docRef("teachers", email).get();
-  } catch (error) {
-    console.log("資料讀取錯誤", error);
-  }
-};
-
-const studentData = (email) => {
-  try {
-    return docRef("students", email).get();
-  } catch (error) {
-    console.log("資料讀取錯誤", error);
-  }
-};
-
-const allTeachersData = async () => {
+const fetchAllTeachersData = async () => {
   try {
     const teachersData = await collectionRef("teachers").get();
     return teachersData.docs;
@@ -87,9 +69,25 @@ const allTeachersData = async () => {
   }
 };
 
-const findTeacherData = (params) => {
+const fetchTeacherDataByUid = (params) => {
   try {
     return collectionRef("teachers").where("uid", "==", params).get();
+  } catch (error) {
+    console.log("資料讀取錯誤", error);
+  }
+};
+
+const fetchTeacherData = (email) => {
+  try {
+    return docRef("teachers", email).get();
+  } catch (error) {
+    console.log("資料讀取錯誤", error);
+  }
+};
+
+const fetchStudentData = (email) => {
+  try {
+    return docRef("students", email).get();
   } catch (error) {
     console.log("資料讀取錯誤", error);
   }
@@ -140,14 +138,14 @@ const uploadProfileImage = async (value, currentUserEmail) => {
     await fileRef.put(value, metadata);
     const imageURL = await fileRef.getDownloadURL();
 
-    const teacherDoc = await teacherData(currentUserEmail);
+    const teacherDoc = await fetchTeacherData(currentUserEmail);
     if (teacherDoc.exists) {
       docRef("teachers", currentUserEmail).update({
         photo: imageURL,
       });
     }
 
-    const studentDoc = await studentData(currentUserEmail);
+    const studentDoc = await fetchStudentData(currentUserEmail);
     if (studentDoc.exists) {
       docRef("students", currentUserEmail).update({
         photo: imageURL,
@@ -166,16 +164,22 @@ const updateStudentData = (email, data) => {
   return docRef("students", email).update(data);
 };
 
-const arrayUnion = (data) => {
-  return firebase.firestore.FieldValue.arrayUnion(data);
+const addData = (identity, email, key, data) => {
+  return docRef(identity, email).update({
+    [key]: firebase.firestore.FieldValue.arrayUnion(data),
+  });
 };
 
-const arrayRemove = (data) => {
-  return firebase.firestore.FieldValue.arrayRemove(data);
+const removeData = (identity, email, key, data) => {
+  return docRef(identity, email).update({
+    [key]: firebase.firestore.FieldValue.arrayRemove(data),
+  });
 };
 
-const deleteField = () => {
-  return firebase.firestore.FieldValue.delete();
+const deleteInvitation = (identity, email, key) => {
+  return docRef(identity, email).update({
+    [key]: firebase.firestore.FieldValue.delete(),
+  });
 };
 
 const createOffer = async (pc, roomIdRef) => {
@@ -262,10 +266,10 @@ export {
   googleProvider,
   docRef,
   onUserChanged,
-  allTeachersData,
-  findTeacherData,
-  teacherData,
-  studentData,
+  fetchAllTeachersData,
+  fetchTeacherDataByUid,
+  fetchTeacherData,
+  fetchStudentData,
   teacherSnapshot,
   studentSnapshot,
   nativeUserSignup,
@@ -276,9 +280,9 @@ export {
   uploadProfileImage,
   updateTeacherData,
   updateStudentData,
-  arrayUnion,
-  arrayRemove,
-  deleteField,
+  addData,
+  removeData,
+  deleteInvitation,
   createOffer,
   answerCall,
 };

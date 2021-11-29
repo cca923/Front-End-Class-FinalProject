@@ -1,22 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
-import Header from "../../Header/Header";
-import Introduction from "./Introduction";
+
 import video from "../../../images/home-video.mp4";
 
-const StyleHome = styled.div``;
+import Introduction from "./Introduction";
 
-const StyleImageTeacherArea = styled.div`
-  width: 50%;
-  height: 100vh;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-position: 100%;
-  background-size: cover;
-  display: inline-block;
-  vertical-align: bottom;
-  background-image: url("/images/home-teacher.png");
-`;
+const StyleHome = styled.div``;
 
 const StyleVideoArea = styled.video`
   object-fit: cover;
@@ -28,7 +17,6 @@ const StyleVideoArea = styled.video`
   z-index: -100;
   opacity: 0.8;
   background-color: #9092db;
-  visibility: ${(props) => (props.videoReady ? "visible" : "hidden")};
 `;
 
 const StyleTextArea = styled.div`
@@ -68,10 +56,12 @@ const StyleTextSlogan = styled.div`
 `;
 
 const StyleScrollIcon = styled.div`
+  width: 50px;
   bottom: 30px;
+  left: 50%;
+  margin-left: -25px;
   color: #fff;
   font-size: 1.1rem;
-  left: 50%;
   line-height: 1.3rem;
   position: absolute;
   text-align: center;
@@ -109,20 +99,10 @@ const StyleScrollIcon = styled.div`
 
 const Home = () => {
   const target = useRef();
-  const [videoReady, setVideoReady] = useState(false);
 
   return (
     <StyleHome>
-      <StyleVideoArea
-        videoReady={videoReady}
-        src={video}
-        autoPlay
-        loop
-        muted
-        onCanPlay={() => {
-          setVideoReady(true);
-        }}
-      />
+      <StyleVideoArea src={video} autoPlay loop muted />
       <StyleTextArea>
         <StyleTextTitle>Re-Live</StyleTextTitle>
         <StyleTextSlogan>Resume Your Life</StyleTextSlogan>

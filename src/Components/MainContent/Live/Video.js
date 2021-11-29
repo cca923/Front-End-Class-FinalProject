@@ -1,29 +1,34 @@
 import React, { useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import styled from "styled-components";
+import Joyride, { STATUS } from "react-joyride";
+
 import {
   getLiveData,
   getLiveStatus,
   startRunGuide,
 } from "../../../Redux/Action";
-import styled from "styled-components";
-import Swal from "sweetalert2";
-import firebase, {
+import {
+  addData,
   answerCall,
   createOffer,
-  deleteField,
+  deleteInvitation,
   updateStudentData,
 } from "../../../utils/firebase";
-import videoOn from "../../../images/video-on.png";
-import exit from "../../../images/exit.png";
-import Joyride, { STATUS } from "react-joyride";
-import Tooltip from "./Tooltip";
-import { studentSteps, teacherSteps } from "../../../utils/joyrideSteps";
-import { StyleWhiteButton } from "../../Common/button";
 import {
   deleteInvitationWarningAlert,
   commentWithPopup,
+  successAlert,
+  sendInvitationSucceedAlert,
 } from "../../../utils/swal";
+import { studentSteps, teacherSteps } from "../../../utils/joyrideSteps";
+import { StyleWhiteButton } from "../../Common/button";
+
+import videoOn from "../../../images/video-on.png";
+import exit from "../../../images/exit.png";
+
+import Tooltip from "./Tooltip";
 
 const StyleVideo = styled.div`
   display: flex;
@@ -181,18 +186,13 @@ const StyleInvitationArea = styled.div`
   flex-direction: column;
 `;
 
-const Video = (props) => {
-  const identityData = useSelector((state) => state.identityData); // 目前的使用者
-  const identity = useSelector((state) => state.identity); // 目前的使用者身份
-  const liveData = useSelector((state) => state.liveData); // 要視訊的對象
-  const runGuide = useSelector((state) => state.runGuide); // 導覽顯示狀態
-
+const Video = () => {
+  const identityData = useSelector((state) => state.identityData);
+  const identity = useSelector((state) => state.identity);
+  const liveData = useSelector((state) => state.liveData);
+  const runGuide = useSelector((state) => state.runGuide);
   const history = useHistory();
   const dispatch = useDispatch();
-
-  const db = firebase.firestore();
-  const studentsCollection = db.collection("students");
-  const teachersCollection = db.collection("teachers");
 
   const servers = {
     iceServers: [
@@ -269,13 +269,13 @@ const Video = (props) => {
         // 沒開鏡頭時...
         history.push("/profile/myclass");
         dispatch(getLiveData(null));
-        dispatch(getLiveStatus(false)); // 視訊室狀態
+        dispatch(getLiveStatus(false));
       } else {
         // 有開鏡頭時...
         closeStream();
-        history.push("/profile/myclass"); // 導回 profile
+        history.push("/profile/myclass");
         dispatch(getLiveData(null));
-        dispatch(getLiveStatus(false)); // 視訊室狀態
+        dispatch(getLiveStatus(false));
       }
     } else if (identity === "student") {
       if (!localVideo.current.srcObject?.active) {
@@ -286,85 +286,47 @@ const Video = (props) => {
         if (leaveLive.isConfirmed) {
           history.push("/");
           dispatch(getLiveStatus(false));
-
-          await updateStudentData(identityData.email, {
-            invitation: deleteField(),
-          });
+          await deleteInvitation("students", identityData.email, "invitation");
         }
       } else {
         // 有開鏡頭時...
-        const comment = await commentWithPopup(identityData.invitation.name);
-
-        if (comment.isDenied) {
+        const addComment = await commentWithPopup(identityData.invitation.name);
+        if (addComment.isDenied) {
           closeStream();
-          history.push("/"); // 導回首頁
-          dispatch(getLiveStatus(false)); // 視訊室狀態
-
-          // 從學生 firebase 中移除 invitation
-          studentsCollection.doc(identityData.email).update({
-            invitation: firebase.firestore.FieldValue.delete(),
-          });
-        } else if (comment.isConfirmed) {
+          history.push("/");
+          dispatch(getLiveStatus(false));
+          await deleteInvitation("students", identityData.email, "invitation");
+        } else if (addComment.isConfirmed) {
           closeStream();
-
-          // 學生把留言加到老師 comments []
           const comments = {
             email: identityData.email,
-            comment: comment.value,
+            comment: addComment.value,
             time: new Date().getTime(),
           };
-          teachersCollection
-            .doc(identityData.invitation.email)
-            .update({
-              comments: firebase.firestore.FieldValue.arrayUnion(comments),
-            })
-            .then(() => {
-              Swal.fire({
-                title: "評論成功，自動跳轉至首頁",
-                icon: "success",
-                timer: 1200,
-                timerProgressBar: true,
-                showConfirmButton: false,
-              })
-                .then(() => {
-                  history.push("/"); // 導回首頁
-                  dispatch(getLiveStatus(false)); // 視訊室狀態
-                })
-                .then(() => {
-                  // 從學生 firebase 中移除 invitation
-                  studentsCollection.doc(identityData.email).update({
-                    invitation: firebase.firestore.FieldValue.delete(),
-                  });
-                });
-            });
+
+          await addData(
+            "teachers",
+            identityData.invitation.email,
+            "comments",
+            comments
+          );
+          await successAlert("評論成功，自動跳轉至首頁");
+          history.push("/");
+          dispatch(getLiveStatus(false));
+          await deleteInvitation("students", identityData.email, "invitation");
         }
       }
     }
   };
 
-  const handleInvitation = () => {
+  const handleInvitation = async () => {
     const invitation = {
       email: identityData.email,
       name: identityData.name,
       roomId: roomIdRef.current.textContent,
     };
-    // 加入 firebase 學生邀請
-    studentsCollection
-      .doc(liveData.email)
-      .update({ invitation })
-      .then(() => {
-        Swal.fire({
-          title: `已發送邀請通知，請稍候！`,
-          html: `<h3>發送對象｜${liveData.name}</h3>`,
-          showCloseButton: true,
-          customClass: {
-            confirmButton: "confirm__button",
-          },
-          imageUrl: "/images/theme/theme-9.png",
-          imageWidth: 130,
-          imageAlt: "theme image",
-        });
-      });
+    await updateStudentData(liveData.email, { invitation });
+    await sendInvitationSucceedAlert(liveData.name);
   };
 
   const handleJoyrideCallback = (data) => {

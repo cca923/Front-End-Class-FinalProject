@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
+import styled from "styled-components";
+
 import {
   getIdentity,
   getStudentData,
   getTeacherData,
 } from "../../../../Redux/Action";
-import styled from "styled-components";
-import Link from "./Link";
-import MobileSidebar from "./MobileSidebar";
 import { userSignOut } from "../../../../utils/firebase";
 import {
   uploadProfileImageSucceedAlert,
@@ -17,7 +16,11 @@ import {
   userSignOutSucceedAlert,
 } from "../../../../utils/swal";
 import { StylePurpleButton } from "../../../Common/button";
+
 import noPhoto from "../../../../images/no-photo.png";
+
+import Link from "./Link";
+import MobileSidebar from "./MobileSidebar";
 
 const StyleSidebar = styled.div`
   width: 250px;
@@ -164,12 +167,19 @@ const StyleData = styled.span`
   text-align: center;
   font-weight: 600;
   padding: 10px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 210px;
 
   @media only screen and (max-width: 1300px) {
     padding: 0;
+    max-width: 150px;
   }
 
   @media only screen and (max-width: 700px) {
+    max-width: 120px;
     font-size: 1rem;
   }
 `;
@@ -178,7 +188,7 @@ const StyleLogoutButton = styled(StylePurpleButton)`
   margin: 0 auto 40px auto;
 
   @media only screen and (max-width: 1300px) {
-    margin: auto 20px;
+    margin: auto 0 auto 20px;
   }
 
   @media only screen and (max-width: 700px) {
@@ -213,6 +223,7 @@ const Sidebar = () => {
   const identityData = useSelector((state) => state.identityData);
   const dispatch = useDispatch();
   const history = useHistory();
+  
   const [layer, setLayer] = useState(false);
 
   return (

@@ -1,32 +1,23 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { compareAsc } from "date-fns";
 import { nanoid } from "nanoid";
-import {
-  arrayRemove,
-  arrayUnion,
-  updateStudentData,
-  updateTeacherData,
-} from "../../../../utils/firebase";
+
+import { addData, removeData } from "../../../../utils/firebase";
 import {
   handleConfirmedWithPopup,
   reserveTimeSucceedAlert,
 } from "../../../../utils/swal";
+import { StyleSubtitle } from "../../../Common/title";
 
-const StyleSubtitle = styled.div`
-  position: absolute;
-  background-color: #9092db;
-  box-shadow: rgba(0, 0, 225, 0.35) 0px -50px 36px -28px inset;
-  padding: 15px;
-  border-radius: 25px;
-  top: 5px;
-  left: 30px;
+const StyleAvailableTimeTitle = styled(StyleSubtitle)`
   width: 300px;
-  font-size: 1.2rem;
-  text-align: center;
-  color: #fff;
+
+  @media only screen and (max-width: 600px) {
+    width: 250px;
+  }
 `;
 
 const StyleContainer = styled.div`
@@ -48,18 +39,29 @@ const StyleAvailableTimeContainer = styled.div`
   padding: 20px;
   background-color: #f3f3f3;
   margin: 20px;
-  border-radius: 20px;
+  border-radius: 10px;
+  overflow-y: scroll;
+  height: 250px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px -20px 25px -26px inset;
+
+  @media only screen and (max-width: 600px) {
+    margin: 20px 0;
+  }
 `;
 
 const StyleEachAvailableTime = styled.div`
   background-color: white;
   width: 90%;
   padding: 10px;
-  margin: 0 auto 20px auto;
+  margin: 0 auto 20px;
   border-radius: 3px;
   display: flex;
   box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 5px;
   cursor: pointer;
+
+  @media only screen and (max-width: 600px) {
+    width: 100%;
+  }
 `;
 
 const StyleAvailableTime = styled.div`
@@ -69,11 +71,11 @@ const StyleAvailableTime = styled.div`
 `;
 
 const Calender = ({ eachTeacherData }) => {
-  const history = useHistory();
   const identityData = useSelector((state) => state.identityData);
+  const history = useHistory();
 
   const handleReserve = async (e) => {
-    const targetDateId = e.target.id; // 時間
+    const targetDateId = e.target.id;
     const targetDate = eachTeacherData.time.filter((date) => {
       return String(new Date(date)) === targetDateId;
     });
@@ -92,28 +94,36 @@ const Calender = ({ eachTeacherData }) => {
       `預約時段｜${targetDateValue}`,
       `預約對象｜${eachTeacherData.name}`,
       "Confirm｜確認",
-      "/images/theme/theme-14.png"
+      "/images/theme/theme-8.png"
     );
     if (reserveTime.isConfirmed) {
       const teacherReservation = {
         email: identityData.email,
         time: targetDate[0],
       };
-      await updateTeacherData(eachTeacherData.email, {
-        reservation: arrayUnion(teacherReservation),
-      });
-
-      await updateTeacherData(eachTeacherData.email, {
-        time: arrayRemove(targetDate[0]),
-      });
+      await addData(
+        "teachers",
+        eachTeacherData.email,
+        "reservation",
+        teacherReservation
+      );
+      await removeData(
+        "teachers",
+        eachTeacherData.email,
+        "time",
+        targetDate[0]
+      );
 
       const studentReservation = {
         email: eachTeacherData.email,
         time: targetDate[0],
       };
-      await updateStudentData(identityData.email, {
-        reservation: arrayUnion(studentReservation),
-      });
+      await addData(
+        "students",
+        identityData.email,
+        "reservation",
+        studentReservation
+      );
 
       reserveTimeSucceedAlert(targetDateValue).then(() => {
         history.push("/profile/myclass");
@@ -123,7 +133,9 @@ const Calender = ({ eachTeacherData }) => {
 
   return (
     <StyleEachDetail>
-      <StyleSubtitle>可預約時間｜Available Time</StyleSubtitle>
+      <StyleAvailableTimeTitle>
+        可預約時間｜Available Time
+      </StyleAvailableTimeTitle>
       <StyleContainer>
         <StyleAvailableTimeContainer>
           {eachTeacherData.time

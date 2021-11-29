@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import ReactQuill from "react-quill"; // ES6
-import "react-quill/dist/quill.snow.css";
 import styled from "styled-components";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import ReactHtmlParser from "react-html-parser";
+
+import {
+  fetchStudentData,
+  updateStudentData,
+} from "../../../../utils/firebase";
+import { formats, modules } from "../../../../utils/quillEditor";
+import { StyleEditResumeButton } from "../../../Common/button";
+
 import editIcon from "../../../../images/edit.png";
 import editIconHover from "../../../../images/edit-hover.png";
 import saveIcon from "../../../../images/save.png";
 import saveIconHover from "../../../../images/save-hover.png";
-import { studentData, updateStudentData } from "../../../../utils/firebase";
-import { formats, modules } from "../../../../utils/quillEditor";
-import { StyleEditResumeButton } from "../../../Common/button";
 
 const StyleEditorArea = styled.div`
   display: flex;
@@ -41,6 +46,10 @@ const StyleReactQuillDisplay = styled.div`
   h1 {
     line-height: 2.5rem;
   }
+
+  @media only screen and (max-width: 650px) {
+    padding: 0;
+  }
 `;
 
 const StyleEditButton = styled(StyleEditResumeButton)`
@@ -50,13 +59,14 @@ const StyleEditButton = styled(StyleEditResumeButton)`
 const Editor = ({ hover }) => {
   const liveData = useSelector((state) => state.liveData);
   const resumeData = liveData.resume;
+
   const [value, setValue] = useState();
   const [onHover, setOnHover] = useState(false);
   const [edit, setEdit] = useState(false);
 
   useEffect(() => {
     if (resumeData && resumeData?.detail) {
-      studentData(liveData.email).then((doc) => {
+      fetchStudentData(liveData.email).then((doc) => {
         setValue(doc.data().resume.detail);
       });
     } else {

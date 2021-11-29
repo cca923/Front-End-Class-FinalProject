@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import styled from "styled-components";
+
 import {
   changeSignLoading,
   changeSignPage,
@@ -9,16 +11,17 @@ import {
 import {
   setNewUserData,
   signInWithPopup,
-  studentData,
-  teacherData,
+  fetchStudentData,
+  fetchTeacherData,
   userSignOut,
 } from "../../../utils/firebase";
-import styled from "styled-components";
+import { wrongIdentitySigninAlert } from "../../../utils/swal";
+
+import loading from "../../../images/loading.gif";
+
+import Identity from "./Identity";
 import Signin from "./Signin";
 import Signup from "./Signup";
-import Identity from "./Identity";
-import loading from "../../../images/loading.gif";
-import { wrongIdentitySigninAlert } from "../../../utils/swal";
 
 const StyleSignLayer = styled.div`
   width: 100%;
@@ -122,29 +125,29 @@ const StyleLoading = styled.img`
   object-fit: cover;
 `;
 
-const Sign = (props) => {
+const Sign = () => {
   const identity = useSelector((state) => state.identity);
   const signLoading = useSelector((state) => state.signLoading);
-
   const dispatch = useDispatch();
   const history = useHistory();
+
   const [signin, setSignin] = useState(true);
   const [signup, setSignup] = useState(false);
   const [thirdPartyErrorMessage, setThirdPartyErrorMessage] = useState("");
 
   const closeSignFeature = () => {
-    dispatch(changeSignLoading(false)); // 關掉 loading
-    dispatch(changeSignPage(false)); // 關掉 sign 視窗
+    dispatch(changeSignLoading(false));
+    dispatch(changeSignPage(false));
   };
 
   const handleThirdPartySign = async (provider) => {
-    dispatch(changeSignLoading(true)); // 開啟 loading
+    dispatch(changeSignLoading(true));
 
     try {
       const userData = await signInWithPopup(provider);
 
       if (identity === "student") {
-        const teacherDoc = await teacherData(userData.user.email);
+        const teacherDoc = await fetchTeacherData(userData.user.email);
         if (teacherDoc.exists) {
           await userSignOut();
           closeSignFeature();
@@ -161,11 +164,11 @@ const Sign = (props) => {
             history.push("/profile/myresume");
           } else {
             closeSignFeature();
-            history.push("/profile/myresume"); // 導向會員頁面
+            history.push("/profile/myresume");
           }
         }
       } else if (identity === "teacher") {
-        const studentDoc = await studentData(userData.user.email);
+        const studentDoc = await fetchStudentData(userData.user.email);
         if (studentDoc.exists) {
           await userSignOut();
           closeSignFeature();
@@ -182,7 +185,7 @@ const Sign = (props) => {
             history.push("/profile/myprofile");
           } else {
             closeSignFeature();
-            history.push("/profile/myprofile"); // 導向會員頁面
+            history.push("/profile/myprofile");
           }
         }
       }

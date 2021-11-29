@@ -1,7 +1,8 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getIdentity } from "../../../Redux/Action";
 import styled from "styled-components";
+
+import { getIdentity } from "../../../Redux/Action";
 
 const StyleIdentity = styled.div`
   display: flex;
@@ -46,7 +47,7 @@ const StyleStudentSelect = styled.div`
   width: 70%;
   height: 30%;
   border-radius: 15px;
-  background-image: url(/images/home-student.png);
+  background-image: url(/images/identity-student.png);
   background-repeat: no-repeat;
   background-size: cover;
   text-align: center;
@@ -75,7 +76,7 @@ const StyleTeacherSelect = styled.div`
   width: 70%;
   height: 30%;
   border-radius: 15px;
-  background-image: url(/images/home-teacher.png);
+  background-image: url(/images/identity-teacher.png);
   background-repeat: no-repeat;
   background-size: cover;
   text-align: center;

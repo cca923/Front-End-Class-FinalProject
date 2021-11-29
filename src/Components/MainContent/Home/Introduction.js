@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+
+import { StyleSubtitle } from "../../Common/title";
+
 import edit from "../../../images/edit-hover.png";
 import select from "../../../images/home-choose.png";
 import video from "../../../images/home-video.png";
@@ -7,8 +10,9 @@ import video from "../../../images/home-video.png";
 const StyleIntroduction = styled.div`
   background: #ecedfd;
   position: relative;
-  padding: 5rem;
+  padding: 2rem;
   height: calc(100vh - 100px);
+  height: fit-content;
   margin-top: 100vh;
 
   @media only screen and (max-width: 1000px) {
@@ -45,7 +49,7 @@ const StyleTitle = styled.div`
   }
 `;
 
-const StyleSubtitle = styled.div`
+const StyleCaption = styled.div`
   font-size: 1.8rem;
   font-weight: 600;
   color: #7367f0;
@@ -200,18 +204,11 @@ const StyleStepContent = styled.div`
   }
 `;
 
-const StyleStepContentTitle = styled.div`
-  position: absolute;
-  background-color: #9092db;
-  box-shadow: rgba(0, 0, 225, 0.35) 0px -50px 36px -28px inset;
-  padding: 15px;
-  border-radius: 25px;
+const StyleStepContentTitle = styled(StyleSubtitle)`
   top: -25px;
   left: 30px;
   width: 350px;
   font-size: 1.6rem;
-  text-align: center;
-  color: #fff;
 
   @media only screen and (max-width: 1350px) {
     font-size: 1.2rem;
@@ -219,7 +216,16 @@ const StyleStepContentTitle = styled.div`
   }
 
   @media only screen and (max-width: 1000px) {
+    top: -23px;
     width: 220px;
+    line-height: 1rem;
+  }
+
+  @media only screen and (max-width: 600px) {
+    font-size: 1rem;
+    width: 200px;
+    padding: 13px;
+    top: -20px;
   }
 `;
 
@@ -239,6 +245,10 @@ const StyleStepContentText = styled.div`
   @media only screen and (max-width: 1350px) {
     font-size: 1rem;
     line-height: 1.8rem;
+  }
+
+  @media only screen and (max-width: 600px) {
+    padding: 0 0 0 10px;
   }
 `;
 
@@ -312,7 +322,7 @@ const Introduction = (props) => {
     <StyleIntroduction ref={props.target}>
       <StyleTitleWrap>
         <StyleTitle>職涯大哉問，一對一視訊，讓前輩來 Carry !</StyleTitle>
-        <StyleSubtitle>簡單的預約流程，約到不簡單的人</StyleSubtitle>
+        <StyleCaption>簡單的預約流程，約到不簡單的人</StyleCaption>
       </StyleTitleWrap>
       <StyleStepWrap>
         <StyleLine />

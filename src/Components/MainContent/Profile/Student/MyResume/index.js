@@ -1,12 +1,15 @@
 import React, { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import EditArea from "./Editor/EditArea";
-import Editor from "./Editor/Editor";
-import noPhoto from "../../../../../images/resume-noPhoto.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint } from "@fortawesome/free-solid-svg-icons";
+
 import { StyleWhiteButton } from "../../../../Common/button";
+
+import noPhoto from "../../../../../images/no-photo-square.png";
+
+import EditArea from "./Editor/EditArea";
+import Editor from "./Editor/Editor";
 
 const StyleMyResume = styled.div`
   width: 100%;
@@ -99,6 +102,7 @@ const StylePrintIcon = styled(FontAwesomeIcon)`
 const StudentMyResume = () => {
   const identityData = useSelector((state) => state.identityData);
   const sendEdit = useRef();
+
   const [hover, setHover] = useState(false);
 
   return (

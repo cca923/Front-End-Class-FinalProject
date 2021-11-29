@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { studentData } from "../../../../../utils/firebase";
+
+import { fetchStudentData } from "../../../../../utils/firebase";
+
 import noPhoto from "../../../../../images/no-photo.png";
 
 const StyleEachComment = styled.div`
@@ -63,7 +65,7 @@ const EachComment = ({ eachComment, more }) => {
   const [eachStudentData, setEachStudentData] = useState([]);
 
   useEffect(() => {
-    studentData(eachComment.email).then((doc) => {
+    fetchStudentData(eachComment.email).then((doc) => {
       setEachStudentData(doc.data());
     });
   }, []);

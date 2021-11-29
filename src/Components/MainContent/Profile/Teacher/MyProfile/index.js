@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+
 import TeacherDetail from "./Profile/index";
 
 const StyleTeacherMyProfile = styled.div`

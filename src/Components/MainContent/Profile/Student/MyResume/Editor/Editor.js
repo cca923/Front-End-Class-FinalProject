@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import styled from "styled-components";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
+
+import { updateStudentData } from "../../../../../../utils/firebase";
+import { formats, modules } from "../../../../../../utils/quillEditor";
+import { StyleEditResumeButton } from "../../../../../Common/button";
+
 import editIcon from "../../../../../../images/edit.png";
 import editIconHover from "../../../../../../images/edit-hover.png";
 import saveIcon from "../../../../../../images/save.png";
 import saveIconHover from "../../../../../../images/save-hover.png";
-import { updateStudentData } from "../../../../../../utils/firebase";
-import { formats, modules } from "../../../../../../utils/quillEditor";
-import { StyleEditResumeButton } from "../../../../../Common/button";
 
 const StyleEditorArea = styled.div`
   display: flex;
@@ -41,6 +43,10 @@ const StyleReactQuillDisplay = styled.div`
   h1 {
     line-height: 2.5rem;
   }
+
+  @media only screen and (max-width: 700px) {
+    padding: 0;
+  }
 `;
 
 const StyleEditButton = styled(StyleEditResumeButton)`
@@ -50,8 +56,9 @@ const StyleEditButton = styled(StyleEditResumeButton)`
 const Editor = ({ hover }) => {
   const identityData = useSelector((state) => state.identityData);
   const resumeData = identityData.resume;
+  // resume: { about: " ", detail: " " }
 
-  const [value, setValue] = useState(); // 設定初始值，是 detail 還是 firebase 資料
+  const [value, setValue] = useState();
   const [edit, setEdit] = useState(false);
   const [onHover, setOnHover] = useState(false);
   const [displayDetail, setDisplayDetail] = useState(false);
@@ -66,7 +73,6 @@ const Editor = ({ hover }) => {
     if (!resumeData) {
       setValue(detail);
     } else if (resumeData && !resumeData.detail) {
-      // 沒有過 Detail 會立刻幫他補上，就瞬間 update 成有過 Detail
       updateStudentData(identityData.email, {
         resume: { ...identityData.resume, detail },
       }).then(() => {
@@ -74,7 +80,6 @@ const Editor = ({ hover }) => {
         setDisplayDetail(true);
       });
     } else if (resumeData && resumeData.detail) {
-      // 有過 Detail
       setValue(resumeData.detail);
       setDisplayDetail(true);
     }
@@ -83,7 +88,6 @@ const Editor = ({ hover }) => {
   return (
     <StyleEditorArea>
       {edit ? (
-        // 依照 firebase 是否有 resume.detail 來判斷
         displayDetail ? (
           <StyleReactQuill
             placeholder="開始編輯履歷吧！"

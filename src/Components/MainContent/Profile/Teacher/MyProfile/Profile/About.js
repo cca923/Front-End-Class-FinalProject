@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
+
 import { updateTeacherData } from "../../../../../../utils/firebase";
-import noPhoto from "../../../../../../images/no-photo.png";
 import { successAlert, warningAlert } from "../../../../../../utils/swal";
 import { StyleWhiteButton } from "../../../../../Common/button";
+import { StyleSubtitle } from "../../../../../Common/title";
+
+import noPhoto from "../../../../../../images/no-photo.png";
 
 const StyleTeacherAbout = styled.div`
   width: 100%;
@@ -19,25 +22,6 @@ const StyleEachDetail = styled.div`
   width: 100%;
   position: relative;
   padding: 28px 0;
-`;
-
-const StyleSubtitle = styled.div`
-  position: absolute;
-  background-color: #9092db;
-  box-shadow: rgba(0, 0, 225, 0.35) 0px -50px 36px -28px inset;
-  padding: 15px;
-  border-radius: 25px;
-  top: 5px;
-  left: 30px;
-  width: 250px;
-  font-size: 1.2rem;
-  text-align: center;
-  color: #fff;
-
-  @media only screen and (max-width: 600px) {
-    width: 200px;
-    font-size: 1.1rem;
-  }
 `;
 
 const StyleContainer = styled.div`
@@ -57,10 +41,6 @@ const StyleAboutContainer = styled.div`
 const StyleExperienceLabel = styled.label`
   font-size: 1.2rem;
   padding: 10px 3px 5px;
-
-  @media only screen and (max-width: 1020px) {
-    width: 300px;
-  }
 
   @media only screen and (max-width: 600px) {
     font-size: 1rem;
@@ -215,7 +195,6 @@ const StyleCompany = styled.div`
 `;
 
 const StyleAboutLabel = styled.div`
-  width: 300px;
   padding: 5px 0;
   color: #898292;
   font-size: 1.5rem;
@@ -284,6 +263,7 @@ const StyleTagSubmitButton = styled(StyleWhiteButton)`
 const TeacherAbout = () => {
   const identityData = useSelector((state) => state.identityData);
   const aboutData = identityData.about;
+
   const [presentCompany, setPresentCompany] = useState("");
   const [presentTitle, setPresentTitle] = useState("");
   const [introduction, setIntroduction] = useState("");

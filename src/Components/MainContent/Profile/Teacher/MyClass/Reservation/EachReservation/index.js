@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import styled from "styled-components";
+
 import {
   getLiveData,
   getLiveStatus,
   startRunGuide,
 } from "../../../../../../../Redux/Action";
-import styled from "styled-components";
-import { studentData } from "../../../../../../../utils/firebase";
+import { fetchStudentData } from "../../../../../../../utils/firebase";
+import { handleConfirmedWithPopup } from "../../../../../../../utils/swal";
 import {
   StylePurpleButton,
   StyleWhiteButton,
 } from "../../../../../../Common/button";
-import { handleConfirmedWithPopup } from "../../../../../../../utils/swal";
+
+import noPhoto from "../../../../../../../images/no-photo-square.png";
+
 import Resume from "./Resume";
-import noPhoto from "../../../../../../../images/resume-noPhoto.png";
 
 const StyleEachStudent = styled.div`
   width: 100%;
@@ -101,11 +104,12 @@ const StyleLive = styled(StylePurpleButton)`
 const EachReservation = ({ eachReservation }) => {
   const dispatch = useDispatch();
   const history = useHistory();
+
   const [eachStudentData, setEachStudentData] = useState([]);
   const [displayResume, setDisplayResume] = useState(false);
 
   useEffect(() => {
-    studentData(eachReservation.email).then((doc) => {
+    fetchStudentData(eachReservation.email).then((doc) => {
       setEachStudentData(doc.data());
     });
   }, []);
@@ -152,16 +156,13 @@ const EachReservation = ({ eachReservation }) => {
                 `預約時間｜${time}`,
                 `預約姓名｜${eachStudentData.name}`,
                 "Go｜前往",
-                "/images/theme/theme-3.png"
+                "/images/theme/theme-1.png"
               );
               if (goLive.isConfirmed) {
                 dispatch(getLiveData(eachStudentData));
-                dispatch(getLiveStatus(true)); // 視訊室狀態
+                dispatch(getLiveStatus(true));
                 history.push("/live");
-                dispatch(startRunGuide(true)); // 開始操作導覽
-              } else if (goLive.isDenied) {
-                dispatch(getLiveData(null));
-                dispatch(getLiveStatus(false)); // 視訊室狀態
+                dispatch(startRunGuide(true));
               }
             }}>
             前往視訊

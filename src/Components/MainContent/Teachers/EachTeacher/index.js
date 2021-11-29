@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import styled from "styled-components";
-import { findTeacherData } from "../../../../utils/firebase";
+
+import { fetchTeacherDataByUid } from "../../../../utils/firebase";
+
+import loading from "../../../../images/loading.gif";
+
 import Calender from "./Calender";
 import Comments from "./Comments/index";
 import Introduction from "./Introduction/index";
-import loading from "../../../../images/loading.gif";
 
 const StyleEachTeacher = styled.div`
   width: 100%;
@@ -44,10 +47,11 @@ const StyleLoading = styled.img`
 const EachTeacher = () => {
   const params = useParams();
   const history = useHistory();
+  
   const [eachTeacherData, setEachTeacherData] = useState();
 
   useEffect(() => {
-    findTeacherData(params.teacherUid).then((docs) => {
+    fetchTeacherDataByUid(params.teacherUid).then((docs) => {
       if (docs.empty) {
         history.push("/404");
       } else {

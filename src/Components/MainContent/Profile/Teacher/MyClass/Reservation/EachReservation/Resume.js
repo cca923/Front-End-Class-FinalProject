@@ -1,7 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
-import noPhoto from "../../../../../../../images/resume-noPhoto.png";
+
+import noPhoto from "../../../../../../../images/no-photo-square.png";
 
 const StyleResumeLayer = styled.div`
   width: 100vw;
@@ -18,28 +19,23 @@ const StyleResumeLayer = styled.div`
 const StyleResumeContainer = styled.div`
   display: flex;
   flex-direction: column;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 96vmin;
-  height: 80vmin;
-  margin-left: -48vmin;
-  margin-top: -40vmin;
   background-color: #fff;
   z-index: 20000;
   overflow-y: scroll;
+  width: calc(100vw - 200px);
+  height: calc(100vh - 160px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 80px 100px;
 
-  @media only screen and (max-width: 600px) {
-    top: 15vh;
-    left: 50%;
-    height: 70vmin;
-    min-height: 550px;
-    margin-top: 0;
+  @media only screen and (max-width: 1100px) {
+    margin: 80px 20px;
+    width: calc(100vw - 40px);
   }
 `;
 
 const StyleMyResume = styled.div`
-  width: 100%;
   background-color: white;
 `;
 
@@ -60,7 +56,7 @@ const StyleImage = styled.img`
   background-color: #f2f2f2;
   object-fit: cover;
 
-  @media only screen and (max-width: 1100px) {
+  @media only screen and (max-width: 800px) {
     display: none;
   }
 `;
@@ -71,9 +67,9 @@ const StyleDetail = styled.div`
   flex-direction: column;
   width: calc(100% - 150px);
 
-  @media only screen and (max-width: 1100px) {
+  @media only screen and (max-width: 800px) {
+    padding: 0;
     width: 100%;
-    padding: 30px 30px 0px 30px;
   }
 `;
 const StyleIdentityArea = styled.div`
@@ -86,7 +82,7 @@ const StyleName = styled.h1`
   font-weight: 500;
   margin-right: 20px;
 
-  @media only screen and (max-width: 600px) {
+  @media only screen and (max-width: 800px) {
     font-size: 1.5rem;
   }
 `;
@@ -95,7 +91,7 @@ const StyleEmail = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
 
-  @media only screen and (max-width: 600px) {
+  @media only screen and (max-width: 800px) {
     font-size: 1.2rem;
     line-height: 1.5rem;
   }
@@ -111,10 +107,11 @@ const StyleCustomDisplay = styled.div`
   max-width: 100%;
   resize: none;
   margin: 10px 0px;
+  line-height: 1.3rem;
 `;
 
 const StyleReactQuillDisplay = styled.div`
-  max-width: 100%;
+  min-width: 100%;
   width: 100%;
   height: fit-content;
   z-index: 1000;
@@ -128,6 +125,10 @@ const StyleReactQuillDisplay = styled.div`
 
   h1 {
     line-height: 2.5rem;
+  }
+
+  @media only screen and (max-width: 1100px) {
+    padding: 0 10px;
   }
 `;
 

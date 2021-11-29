@@ -5,10 +5,8 @@ import DatePicker from "react-datepicker";
 import { setHours, setMinutes } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../../../css/calendar.css";
-import {
-  updateTeacherData,
-  arrayUnion,
-} from "../../../../../../utils/firebase";
+
+import { addData } from "../../../../../../utils/firebase";
 import {
   handleConfirmedWithPopup,
   handleScheduleSucceedAlert,
@@ -69,12 +67,15 @@ const Calendar = ({
         `加入時段｜${selectedTargetValue}`,
         "是否加入我的可預約時段中？",
         "Yes｜加入",
-        "/images/theme/theme-11.png"
+        "/images/theme/theme-5.png"
       );
       if (addTime.isConfirmed) {
-        await updateTeacherData(identityData.email, {
-          time: arrayUnion(selectedDate.getTime()),
-        });
+        await addData(
+          "teachers",
+          identityData.email,
+          "time",
+          selectedDate.getTime()
+        );
         await handleScheduleSucceedAlert(
           "加入成功！",
           `新增時段｜${selectedTargetValue}`
@@ -108,7 +109,6 @@ const Calendar = ({
     });
   };
 
-  // 日曆上過濾過期的時間
   const filterPassedTime = (time) => {
     const currentDate = new Date();
     const selectedDate = new Date(time);
@@ -122,12 +122,12 @@ const Calendar = ({
         selected={selectedDate}
         onChange={(date) => setSelectedDate(date)}
         onSelect={(date) => {
-          // 日期更改
+          // Day Change
           getExcludedTimes(date);
           setSelectedDate(setHours(setMinutes(new Date(date), 0), 0));
         }}
         onMonthChange={(date) => {
-          // 月份更改
+          // Month Change
           getExcludedTimes(date);
           setSelectedDate(setHours(setMinutes(new Date(date), 0), 0));
         }}

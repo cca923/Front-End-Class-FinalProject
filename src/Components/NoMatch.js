@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
-import { withRouter } from "react-router-dom";
+
 import noResult from "../images/noResult.gif";
 
 const StyleHeaderArea = styled.div`

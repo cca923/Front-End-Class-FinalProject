@@ -1,26 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
-import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
+import styled from "styled-components";
+
 import { getIdentity, getStudentData, getTeacherData } from "./Redux/Action";
 import {
   onUserChanged,
-  teacherData,
-  studentData,
+  fetchTeacherData,
+  fetchStudentData,
   teacherSnapshot,
   docRef,
   studentSnapshot,
 } from "./utils/firebase";
+
+import loading from "./images/loading.gif";
+
 import Sign from "./Components/MainContent/Sign/Sign";
 import Home from "./Components/MainContent/Home";
 import Live from "./Components/MainContent/Live/index";
-import Header from "./Components/Header/Header";
+import Header from "./Components/Header/index";
 import Profile from "./Components/MainContent/Profile";
 import Teachers from "./Components/MainContent/Teachers";
 import EachTeacher from "./Components/MainContent/Teachers/EachTeacher/index";
 import ScrollToTop from "./Components/ScrollToTop";
 import NoMatch from "./Components/NoMatch";
-import loading from "./images/loading.gif";
 
 const StyleStateWrap = styled.div`
   display: flex;
@@ -35,12 +38,8 @@ const StyleLoading = styled.img`
 `;
 
 function App() {
-  const identityData = useSelector((state) => state.identityData);
-  const identity = useSelector((state) => state.identity);
   const signPage = useSelector((state) => state.signPage);
   const dispatch = useDispatch();
-  console.log("目前使用者身份：", identity, "Redux: Email", identityData.email);
-  // 判斷登錯身份，會登出 auth，但 Redux 沒有清空 (currentUser 無，identityData 有)！
 
   const [currentUser, setCurrentUser] = useState();
 
@@ -49,11 +48,11 @@ function App() {
       setCurrentUser(currentUser);
 
       if (currentUser) {
-        const teacherDoc = await teacherData(currentUser.email);
+        const teacherDoc = await fetchTeacherData(currentUser.email);
         if (teacherDoc.exists) {
           dispatch(getIdentity("teacher"));
 
-          teacherSnapshot(
+          let unsubscribe = teacherSnapshot(
             docRef("teachers", currentUser.email),
             currentUser.email,
             teacherDoc,
@@ -61,13 +60,15 @@ function App() {
               dispatch(getTeacherData(data));
             }
           );
+
+          return () => unsubscribe();
         }
 
-        const studentDoc = await studentData(currentUser.email);
+        const studentDoc = await fetchStudentData(currentUser.email);
         if (studentDoc.exists) {
           dispatch(getIdentity("student"));
 
-          studentSnapshot(
+          let unsubscribe = studentSnapshot(
             docRef("students", currentUser.email),
             currentUser.email,
             studentDoc,
@@ -75,14 +76,15 @@ function App() {
               dispatch(getStudentData(data));
             }
           );
+          return () => unsubscribe();
         }
       }
     });
-  }, []); // 不可以放 currentUser，Redux 裝的資料會判斷錯誤！
+  }, []);
 
   return (
     <>
-      <Header />
+      <Header currentUser={currentUser} />
       {signPage ? <Sign /> : null}
 
       <ScrollToTop>

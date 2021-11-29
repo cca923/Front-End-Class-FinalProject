@@ -1,27 +1,15 @@
 import React, { useState } from "react";
-import { nanoid } from "nanoid";
 import styled from "styled-components";
+import { nanoid } from "nanoid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
+
+import { StyleSubtitle } from "../../../../Common/title";
 
 const StyleEachDetail = styled.div`
   width: 100%;
   position: relative;
   padding: 30px 0 40px;
-`;
-
-const StyleSubtitle = styled.div`
-  position: absolute;
-  background-color: #9092db;
-  box-shadow: rgba(0, 0, 225, 0.35) 0px -50px 36px -28px inset;
-  padding: 15px;
-  border-radius: 25px;
-  top: 5px;
-  left: 30px;
-  width: 250px;
-  font-size: 1.2rem;
-  text-align: center;
-  color: #fff;
 `;
 
 const StyleContainer = styled.div`
@@ -46,6 +34,11 @@ const StyleJob = styled.div`
 
   @media only screen and (max-width: 1200px) {
     flex-direction: column;
+  }
+
+  @media only screen and (max-width: 600px) {
+    flex-direction: column;
+    margin: 20px 0;
   }
 `;
 

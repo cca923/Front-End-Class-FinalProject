@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+
 import About from "./About";
 import Talent from "./Talent";
 import Experience from "./Experience";

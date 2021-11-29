@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+
 import { StylePurpleButton, StyleWhiteButton } from "../../Common/button";
 
 const TooltipBody = styled.div`
@@ -18,6 +19,10 @@ const TooltipTitle = styled.div`
   border-bottom: 2px solid #7367f0;
   padding-bottom: 8px;
   color: #343434;
+
+  @media only screen and (max-width: 600px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const TooltipContent = styled.div`
@@ -25,12 +30,22 @@ const TooltipContent = styled.div`
   text-align: center;
   padding: 20px;
   font-size: 1.2rem;
+
+  @media only screen and (max-width: 600px) {
+    font-size: 1rem;
+    min-height: 80px;
+    padding: 15px;
+  }
 `;
 
 const TooltipFooter = styled.div`
   margin-top: auto;
   display: flex;
   min-width: 400px;
+
+  @media only screen and (max-width: 600px) {
+    min-width: 300px;
+  }
 `;
 
 const StyleSkipButton = styled.span`
@@ -51,12 +66,28 @@ const StylePrimaryButton = styled(StylePurpleButton)`
   font-size: 0.9rem;
   margin-left: 10px;
   height: 36px;
+
+  @media only screen and (max-width: 600px) {
+    font-size: 0.8rem;
+    width: 100px;
+    height: 30px;
+    margin-top: auto;
+    line-height: 32px;
+  }
 `;
 
 const StyleBackButton = styled(StyleWhiteButton)`
   width: 120px;
   font-size: 0.9rem;
   height: 36px;
+
+  @media only screen and (max-width: 600px) {
+    font-size: 0.8rem;
+    width: 100px;
+    height: 30px;
+    margin-top: auto;
+    line-height: 32px;
+  }
 `;
 
 const StyleCloseButton = styled.div`

@@ -1,18 +1,26 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { changeSignLoading, getIdentity } from "../../../Redux/Action";
 import styled from "styled-components";
+
+import { changeSignLoading, getIdentity } from "../../../Redux/Action";
 import {
+  facebookProvider,
+  googleProvider,
   nativeUserSignin,
-  studentData,
-  teacherData,
+  fetchStudentData,
+  fetchTeacherData,
   userSignOut,
 } from "../../../utils/firebase";
-import { facebookProvider, googleProvider } from "../../../utils/firebase";
+import { wrongIdentitySigninAlert } from "../../../utils/swal";
+import {
+  StyleFacebookLoginButton,
+  StyleGoogleLoginButton,
+  StylePurpleButton,
+} from "../../Common/button";
+
 import facebook from "../../../images/facebook.png";
 import google from "../../../images/google.png";
-import { wrongIdentitySigninAlert } from "../../../utils/swal";
 
 const StyleSignin = styled.div`
   font-size: 1.5rem;
@@ -47,30 +55,16 @@ const StyleInput = styled.input`
   }
 `;
 
-const StyleButton = styled.button`
+const StyleButton = styled(StylePurpleButton)`
+  width: 100%;
   margin-top: 15px;
-  padding: 10px;
-  outline: 0;
-  border: 0;
-  cursor: pointer;
   font-size: 1.5rem;
-  color: #fff;
-  text-align: center;
-  border-radius: 50px;
-  background-image: linear-gradient(180deg, #7c8aff, #3c4fe0);
-  box-shadow: 0 4px 11px 0 rgb(37 44 97 / 15%),
-    0 1px 3px 0 rgb(93 100 148 / 20%);
-  transition: all 0.2s ease-out;
-
-  :hover {
-    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
-      0 4px 6px 0 rgb(93 100 148 / 20%);
-  }
+  line-height: 60px;
 
   @media only screen and (max-width: 1000px) {
-    padding: 10px;
-    border-radius: 20px;
+    margin-top: 10px;
     font-size: 1rem;
+    line-height: 38px;
   }
 `;
 
@@ -118,29 +112,6 @@ const StyleSeperator = styled.div`
   }
 `;
 
-const StyleFacebookLogin = styled.div`
-  background-color: #4267b2;
-  background-image: linear-gradient(180deg, #7192d5, #345087);
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border-radius: 50px;
-  color: white;
-  cursor: pointer;
-  margin-bottom: 10px;
-  transition: all 0.2s ease-out;
-
-  :hover {
-    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
-      0 4px 6px 0 rgb(93 100 148 / 20%);
-  }
-
-  @media only screen and (max-width: 1000px) {
-    border-radius: 20px;
-    font-size: 1rem;
-  }
-`;
-
 const StyleIconContainer = styled.div`
   display: flex;
   margin: 0px 25px;
@@ -157,28 +128,6 @@ const StyleFacebookIcon = styled.img`
 
 const StyleType = styled.div`
   margin-left: 20px;
-`;
-
-const StyleGoogleLogin = styled.div`
-  background-color: #e65f5c;
-  background-image: linear-gradient(180deg, #e65f5c, #a94340);
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border-radius: 50px;
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s ease-out;
-
-  :hover {
-    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
-      0 4px 6px 0 rgb(93 100 148 / 20%);
-  }
-
-  @media only screen and (max-width: 1000px) {
-    border-radius: 20px;
-    font-size: 1rem;
-  }
 `;
 
 const StyleSubtitle = styled.div`
@@ -210,6 +159,7 @@ const Signin = ({
   const identity = useSelector((state) => state.identity);
   const dispatch = useDispatch();
   const history = useHistory();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -221,7 +171,7 @@ const Signin = ({
       await nativeUserSignin(email, password);
 
       if (identity === "student") {
-        const teacherDoc = await teacherData(email);
+        const teacherDoc = await fetchTeacherData(email);
         if (teacherDoc.exists) {
           await userSignOut();
           closeSignFeature();
@@ -232,7 +182,7 @@ const Signin = ({
           history.push("/profile/myresume");
         }
       } else if (identity === "teacher") {
-        const studentDoc = await studentData(email);
+        const studentDoc = await fetchStudentData(email);
         if (studentDoc.exists) {
           await userSignOut();
           closeSignFeature();
@@ -289,20 +239,21 @@ const Signin = ({
 
       <StyleSeperator>或</StyleSeperator>
 
-      <StyleFacebookLogin
+      <StyleFacebookLoginButton
         onClick={() => handleThirdPartySign(facebookProvider)}>
         <StyleIconContainer>
           <StyleFacebookIcon src={facebook} alt="facebook" />
         </StyleIconContainer>
         <StyleType>使用 Facebook 登入</StyleType>
-      </StyleFacebookLogin>
+      </StyleFacebookLoginButton>
 
-      <StyleGoogleLogin onClick={() => handleThirdPartySign(googleProvider)}>
+      <StyleGoogleLoginButton
+        onClick={() => handleThirdPartySign(googleProvider)}>
         <StyleIconContainer>
           <StyleFacebookIcon src={google} alt="google" />
         </StyleIconContainer>
         <StyleType>使用 Google 登入</StyleType>
-      </StyleGoogleLogin>
+      </StyleGoogleLoginButton>
     </StyleSignin>
   );
 };

@@ -54,7 +54,6 @@ const StyleEditResumeButton = styled.img`
   right: 0%;
   bottom: 0%;
   z-index: 1000;
-
   outline: 0;
   border: 0;
   cursor: pointer;
@@ -69,4 +68,55 @@ const StyleEditResumeButton = styled.img`
   }
 `;
 
-export { StylePurpleButton, StyleWhiteButton, StyleEditResumeButton };
+const StyleFacebookLoginButton = styled.div`
+  background-color: #4267b2;
+  background-image: linear-gradient(180deg, #7192d5, #345087);
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 50px;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: all 0.2s ease-out;
+
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
+  }
+
+  @media only screen and (max-width: 1000px) {
+    border-radius: 20px;
+    font-size: 1rem;
+  }
+`;
+
+const StyleGoogleLoginButton = styled.div`
+  background-color: #e65f5c;
+  background-image: linear-gradient(180deg, #e65f5c, #a94340);
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 50px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+
+  :hover {
+    box-shadow: 0 8px 22px 0 rgb(37 44 97 / 15%),
+      0 4px 6px 0 rgb(93 100 148 / 20%);
+  }
+
+  @media only screen and (max-width: 1000px) {
+    border-radius: 20px;
+    font-size: 1rem;
+  }
+`;
+
+export {
+  StylePurpleButton,
+  StyleWhiteButton,
+  StyleEditResumeButton,
+  StyleFacebookLoginButton,
+  StyleGoogleLoginButton,
+};

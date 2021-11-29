@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
+
 import Resume from "./Resume/index";
 import Video from "./Video";
 
@@ -59,7 +60,7 @@ const StyleSubtitle = styled.div`
 const StyleImage = styled.div`
   width: 70vmin;
   height: 40vmin;
-  background-image: url(/images/theme/theme-5.png);
+  background-image: url(/images/theme/theme-2.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -78,9 +79,7 @@ const StyleImage = styled.div`
 
 const Live = () => {
   const identity = useSelector((state) => state.identity);
-  const liveData = useSelector((state) => state.liveData); // 要視訊的對象
-  const liveStatus = useSelector((state) => state.liveStatus); // 視訊室狀態
-  console.log("視訊的對象:", liveData, "狀態:", liveStatus);
+  const liveStatus = useSelector((state) => state.liveStatus);
 
   return (
     <>

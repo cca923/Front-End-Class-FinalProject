@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { nanoid } from "nanoid";
+
 import EachComment from "./EachComment";
 
 const StyleTitle = styled.div`
@@ -93,6 +94,8 @@ const StyleMoreCommentsWrap = styled.div`
   @media only screen and (max-width: 1000px) {
     grid-template-columns: repeat(1, 1fr);
     grid-gap: 30px;
+    margin: 80px 20px;
+    width: calc(100vw - 40px);
   }
 `;
 

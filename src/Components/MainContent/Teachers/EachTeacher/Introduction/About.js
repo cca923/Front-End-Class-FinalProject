@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+
 import noPhoto from "../../../../../images/no-photo.png";
 
 const StyleEachDetail = styled.div`
@@ -104,7 +105,6 @@ const StyleCompany = styled.div`
 `;
 
 const StyleAboutLabel = styled.div`
-  width: 300px;
   padding: 5px 0;
   color: #898292;
   font-size: 1.5rem;

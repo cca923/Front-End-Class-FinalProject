@@ -5,6 +5,7 @@ import EasyEdit, { Types } from "react-easy-edit";
 import "../../../../../../css/edit.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+
 import { updateStudentData } from "../../../../../../utils/firebase";
 
 const StyleCustomDisplay = styled.div`
@@ -22,14 +23,12 @@ const EditArea = (props) => {
 
   const CustomDisplay = (props) => {
     if (resumeData?.about) {
-      // 有資料呈現出來
       return (
         <StyleCustomDisplay ref={props.sendEdit}>
           {resumeData.about}
         </StyleCustomDisplay>
       );
     } else {
-      // 沒有資料讓使用者輸入！
       const val = props.value || "點擊以編輯文字！";
       return (
         <StyleCustomDisplay ref={props.sendEdit}>{val}</StyleCustomDisplay>

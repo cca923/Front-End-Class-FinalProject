@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { nanoid } from "nanoid";
 import Select from "react-select";
+
 import EachReservation from "./EachReservation";
 
 const StyleMyClass = styled.div`
@@ -128,20 +129,13 @@ const StudentMyClass = () => {
   const reservation = identityData.reservation;
   const history = useHistory();
 
-  const [selectPreviousTimeOrder, setSelectPreviousTimeOrder] = useState("");
   const [selectUpcomingTimeOrder, setSelectUpcomingTimeOrder] = useState("");
+  const [selectPreviousTimeOrder, setSelectPreviousTimeOrder] = useState("");
 
   const timeRange = [
     { value: "新到舊", label: "新到舊" },
     { value: "舊到新", label: "舊到新" },
   ];
-  const handleUpcomingTimeOrder = (tag) => {
-    setSelectUpcomingTimeOrder(tag);
-  };
-
-  const handlePreviousTimeOrder = (tag) => {
-    setSelectPreviousTimeOrder(tag);
-  };
 
   return (
     <StyleMyClass>
@@ -155,7 +149,7 @@ const StudentMyClass = () => {
               <StyleOderArea>
                 <StyleSelect
                   value={selectUpcomingTimeOrder}
-                  onChange={handleUpcomingTimeOrder}
+                  onChange={(tag) => setSelectUpcomingTimeOrder(tag)}
                   options={timeRange}
                   placeholder={"時間排序預設：舊到新"}
                 />
@@ -219,7 +213,7 @@ const StudentMyClass = () => {
               <StyleOderArea>
                 <StyleSelect
                   value={selectPreviousTimeOrder}
-                  onChange={handlePreviousTimeOrder}
+                  onChange={(tag) => setSelectPreviousTimeOrder(tag)}
                   options={timeRange}
                   placeholder={"時間排序預設：新到舊"}
                 />

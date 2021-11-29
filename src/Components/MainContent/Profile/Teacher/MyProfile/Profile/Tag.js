@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Select from "react-select";
+
 import { updateTeacherData } from "../../../../../../utils/firebase";
 import {
   industryOptions,
@@ -104,6 +105,7 @@ const StyleValue = styled.div`
 const TeacherTag = () => {
   const identityData = useSelector((state) => state.identityData);
   const tag = identityData.tag;
+
   const [selectIndustry, setSelectIndustry] = useState("");
   const [selectTitle, setSelectTitle] = useState("");
   const [selectLanguage, setSelectLanguage] = useState("");

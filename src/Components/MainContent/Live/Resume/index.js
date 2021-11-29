@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import Editor from "./Editor";
 import ReactHtmlParser from "react-html-parser";
-import noPhoto from "../../../../images/resume-noPhoto.png";
+
+import noPhoto from "../../../../images/no-photo-square.png";
+
+import Editor from "./Editor";
 
 const StyleResume = styled.div`
   width: 100%;
@@ -33,6 +35,10 @@ const StyleOthers = styled.div`
   display: flex;
   height: calc(100vh - 380px);
   overflow-y: scroll;
+
+  @media only screen and (max-width: 1000px) {
+    height: fit-content;
+  }
 `;
 
 const StyleImage = styled.img`
@@ -110,12 +116,17 @@ const StyleReactQuillDisplay = styled.div`
   h1 {
     line-height: 2.5rem;
   }
+
+  @media only screen and (max-width: 650px) {
+    padding: 0;
+  }
 `;
 
 const Resume = () => {
   const identity = useSelector((state) => state.identity);
   const identityData = useSelector((state) => state.identityData);
   const liveData = useSelector((state) => state.liveData);
+
   const [hover, setHover] = useState(false);
 
   return (

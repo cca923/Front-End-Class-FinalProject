@@ -1,6 +1,7 @@
 import React from "react";
-import styled from "styled-components";
 import { Switch, Route, Redirect } from "react-router-dom";
+import styled from "styled-components";
+
 import TeacherMyClass from "./MyClass/index";
 import TeacherMyProfile from "./MyProfile/index";
 

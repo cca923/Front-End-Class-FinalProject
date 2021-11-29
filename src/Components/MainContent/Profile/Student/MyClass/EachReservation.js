@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { teacherData } from "../../../../../utils/firebase";
-import noPhoto from "../../../../../images/resume-noPhoto.png";
+
+import { fetchTeacherData } from "../../../../../utils/firebase";
+
+import noPhoto from "../../../../../images/no-photo-square.png";
 
 const StyleEachTeacher = styled.div`
   width: 100%;
@@ -74,7 +76,7 @@ const EachReservation = ({ eachReservation }) => {
   const [eachTeacherData, setEachTeacherData] = useState([]);
 
   useEffect(() => {
-    teacherData(eachReservation.email).then((doc) => {
+    fetchTeacherData(eachReservation.email).then((doc) => {
       setEachTeacherData(doc.data());
     });
   }, []);
