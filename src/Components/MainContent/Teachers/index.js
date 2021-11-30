@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-import headerImage from "../../../images/theme/theme-10.png";
+import headerImage from "../../../images/theme/theme-9.png";
 
 import Sidebar from "./Sidebar";
 import GroupTeachers from "./GroupTeachers";
