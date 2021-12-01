@@ -1,70 +1,91 @@
-# Introduction
+<h1 style="text-align:center">Re-Live</h1>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Introduction
 
-## Available Scripts
+#### Re-Live is an online resume editor and real-time video chat website with two user roles.
 
-In the project directory, you can run:
+> As a teacher
 
-### `npm start`
+- You can create your personal profile and manage calendar grid to schedule each appointment.
+- Launching a 1-to-1 video chat with students, discussing and revising their resumes at the same time.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+> As a student
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- You can create a customized resume and print it out.
+- Browsing or filtering the teacher lists by industry that you're interested in.
+- Making appointments and video conferencing with teachers for enhancing resume writing and interviewing skills.
 
-### `npm test`
+## Demo Link
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+> #### [Re-Live Website](https://re-live-resume-your-life.web.app/)
 
-### `npm run build`
+Please choose your roles and signin with your account for full experiences.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Technologies
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### Front-End
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- React / Redux / React Router
+- styled-components
+- Firebase service
+  - Authentication
+  - Firestore Database
+  - Storage
+  - Hosting
+  - Function
+- WebRTC API
 
-### `npm run eject`
+#### Miscellaneous
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- react-quill
+- react-html-parser
+- react-easy-edit
+- react-datepicker
+- react-joyride
+- react-select
+- sweetalert2
+- nanoid
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Flow Chart
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+![userflow](media/userflow.png)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Features
 
-## Learn More
+> As a teacher
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- #### Edit your personal profile.
+  ![teacherProfile](media/teacher-profile.gif)
+- #### Handle schedule by adding or removing available time to calendar grid.
+  ![teacherSchedule](media/teacher-schedule.gif)
+- #### Check each student's reservation and their resume.
+  ![teacherReservation](media/teacher-reservation.gif)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+> As a student
 
-### Code Splitting
+- #### Create a customized resume and print it out.
+  ![studentResume](media/student-resume.gif)
+- #### Can't find the teachers that you're interested in? Filter them out!
+  ![studentBrowse](media/student-browse.gif)
+- #### Browse through the comments and make an appointment.
+  ![studentReserve](media/student-reserve.gif)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+> Live Room
 
-### Analyzing the Bundle Size
+- #### Teacher ｜ It's time for video chat! Send invitation to student!
+  ![teacherLive](media/teacher-live.gif)
+- #### Student ｜ Notification received, join room!
+  ![studentLive](media/student-live.gif)
+- #### Discussing and revising resumes at the same time.
+<div style="display:flex">
+   <img src="./media/teacher-live-edit.gif" alt="teacher edit resume">
+   <img src="./media/student-live-display.gif" alt="student's resume">
+</div>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+<!-- ![share](media/teacher-live-edit.gif) -->
 
-### Making a Progressive Web App
+<!-- - #### Contribute your recipe to the community. -->
+  <!-- ![share](media/student-live-display.gif) -->
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- #### Student ｜ Let teacher knows what's on your mind!
+  ![studentComment](media/student-comment.gif)
