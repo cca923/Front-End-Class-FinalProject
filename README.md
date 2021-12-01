@@ -1,4 +1,4 @@
-<h1 style="text-align:center">Re-Live</h1>
+<h1 align="center">Re-Live</h1>
 
 ## Introduction
 
@@ -78,8 +78,8 @@ Please choose your roles and signin with your account for full experiences.
   ![studentLive](media/student-live.gif)
 - #### Discussing and revising resumes at the same time.
 <div style="display:flex">
-   <img src="./media/teacher-live-edit.gif" alt="teacher edit resume">
-   <img src="./media/student-live-display.gif" alt="student's resume">
+   <img src="./media/teacher-live-edit.gif" alt="teacher edit resume" width="50%">
+   <img src="./media/student-live-display.gif" alt="student's resume" width="50%">
 </div>
 
 <!-- ![share](media/teacher-live-edit.gif) -->
