@@ -78,7 +78,7 @@ Please choose your roles and signin with your account for full experiences.
   ![studentLive](media/student-live.gif)
 - #### Discussing and revising resumes at the same time.
 
-<div style="display:flex; unicode-bidi: embed;" >
+<div>
    <img src="./media/teacher-live-edit.gif" alt="teacher edit resume" width="50%">
    <img src="./media/student-live-display.gif" alt="student's resume" width="50%">
 </div>
