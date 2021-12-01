@@ -77,12 +77,12 @@ Please choose your roles and signin with your account for full experiences.
 - #### Student ｜ Notification received, join room!
   ![studentLive](media/student-live.gif)
 - #### Discussing and revising resumes at the same time.
-
-<div>
-   <img align=top src="./media/teacher-live-edit.gif" alt="teacher edit resume" width="50%">
-   <img align=top src="./media/student-live-display.gif" alt="student's resume" width="50%">
-</div>
-
+<table>
+  <tr>
+    <td valign="top"><img src="./media/teacher-live-edit.gif" alt="teacher edit resume"/></td>
+    <td valign="top"><img src="./media/student-live-display.gif" alt="student's resume"/></td>
+  </tr>
+</table>
 <!-- ![share](media/teacher-live-edit.gif) -->
 
 <!-- - #### Contribute your recipe to the community. -->
