@@ -1,4 +1,4 @@
-<div align="center" ><img width="100px" src="/media/re-live.png"/></div>
+<div align="center" ><img width="150px" src="/media/re-live.png"/></div>
 
 ## Introduction
 
