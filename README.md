@@ -1,5 +1,4 @@
 <div align="center" ><img width="100px" src="/media/re-live.png"/></div>
-<h1 align="center">Re-Live</h1>
 
 ## Introduction
 
@@ -14,13 +13,24 @@
 
 - You can create a customized resume and print it out.
 - Browse or filter the teacher list by industry that you're interested in.
-- Make appointments and video conferencing with teachers for enhancing resume writing and interviewing skills.
+- Make appointments and video conferencing with teachers to enhance resume writing and interviewing skills.
 
 ## Demo Link
 
 > ### [Re-Live Website](https://re-live-resume-your-life.web.app/)
 
-Please choose your role and signin with your account for full experiences.
+#### Please choose your role and signin with your account for full experiences.
+
+#### Test account is also availible below.
+
+- #### Teacher
+
+  - Account: teacher_relive@relive.com
+  - Password: relive
+
+- #### Student
+  - Account: student_relive@relive.com
+  - Password: relive
 
 ## Technologies
 
@@ -74,4 +84,18 @@ Please choose your role and signin with your account for full experiences.
 - #### Student ｜ Notification received, join room!
   ![studentLive](media/student-live.gif)
 - #### Now you can discuss and revise resume in real time.
-  ![share](media/teacher-live-edit.gif)
+  ![teacherEdit](media/teacher-live-edit.gif)
+
+## Future Features
+
+- Provide more resume templates and design feature for better customized editing experience.
+- Add classification feature to manage each reservation.
+- Raise the built-in live stream service from a maximum of 10 people to 50 people temporarily.
+- Create real-time chat room for easier communicating with other users.
+
+## Contact Me
+
+If you got any problem or suggestion with Re-Live, please feel free to contact with me via email.
+
+Author: CHEN-AN, CHOU
+Email: anna85923@gmail.com
