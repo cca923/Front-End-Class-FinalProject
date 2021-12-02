@@ -112,6 +112,7 @@ const StyleToggle = styled.div`
 `;
 
 const StyleOpenWebCam = styled.img`
+  cursor: pointer;
   margin: auto;
   width: 40px;
   height: 40px;
@@ -132,6 +133,7 @@ const StyleOpenWebCam = styled.img`
 `;
 
 const StyleExit = styled.img`
+  cursor: pointer;
   margin: auto;
   width: 40px;
   height: 40px;
