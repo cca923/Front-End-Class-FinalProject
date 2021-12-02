@@ -330,16 +330,12 @@ const Video = () => {
   };
 
   const handleJoyrideCallback = (data) => {
-    const { status, type } = data;
+    const { status } = data;
     const finishedStatuses = [STATUS.FINISHED, STATUS.SKIPPED];
 
     if (finishedStatuses.includes(status)) {
       dispatch(startRunGuide(false));
     }
-
-    console.groupCollapsed(type);
-    console.log(data);
-    console.groupEnd();
   };
 
   return (

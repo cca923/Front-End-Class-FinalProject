@@ -52,7 +52,7 @@ function App() {
         if (teacherDoc.exists) {
           dispatch(getIdentity("teacher"));
 
-          let unsubscribe = teacherSnapshot(
+          teacherSnapshot(
             docRef("teachers", currentUser.email),
             currentUser.email,
             teacherDoc,
@@ -60,15 +60,13 @@ function App() {
               dispatch(getTeacherData(data));
             }
           );
-
-          return () => unsubscribe();
         }
 
         const studentDoc = await fetchStudentData(currentUser.email);
         if (studentDoc.exists) {
           dispatch(getIdentity("student"));
 
-          let unsubscribe = studentSnapshot(
+          studentSnapshot(
             docRef("students", currentUser.email),
             currentUser.email,
             studentDoc,
@@ -76,7 +74,6 @@ function App() {
               dispatch(getStudentData(data));
             }
           );
-          return () => unsubscribe();
         }
       }
     });

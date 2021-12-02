@@ -183,12 +183,12 @@ const deleteInvitation = (identity, email, key) => {
 };
 
 const createOffer = async (pc, roomIdRef) => {
-  const callDoc = db.collection("calls").doc(); // create id
+  const callDoc = db.collection("calls").doc();
   const offerCandidates = callDoc.collection("offerCandidates");
   const answerCandidates = callDoc.collection("answerCandidates");
 
+  // Room id
   roomIdRef.current.textContent = callDoc.id;
-  console.log(roomIdRef.current.textContent);
 
   // Get candidates for caller, save to db
   pc.onicecandidate = (event) => {

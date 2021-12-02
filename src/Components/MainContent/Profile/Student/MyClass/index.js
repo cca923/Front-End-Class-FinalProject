@@ -139,7 +139,7 @@ const StudentMyClass = () => {
 
   return (
     <StyleMyClass>
-      <StyleTitle>Reservation</StyleTitle>
+      <StyleTitle>Upcoming Reservations</StyleTitle>
       {reservation ? (
         <>
           {reservation.filter((eachReservation) => {
@@ -203,7 +203,7 @@ const StudentMyClass = () => {
         </StyleNoData>
       )}
 
-      <StyleTitle>Previous Reservation | Done or Expired</StyleTitle>
+      <StyleTitle>Previous Reservations | Done or Expired</StyleTitle>
       {reservation ? (
         <>
           {reservation.filter((eachReservation) => {

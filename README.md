@@ -1,3 +1,4 @@
+<div align="center" ><img width="100px" src="/media/re-live.png"/></div>
 <h1 align="center">Re-Live</h1>
 
 ## Introduction
@@ -6,20 +7,20 @@
 
 > ### As a teacher
 
-- You can create your personal profile and manage calendar grid to schedule each appointment.
-- Launching a 1-to-1 video chat with students, discussing and revising their resumes at the same time.
+- You can create your personal profile and manage calendar grid for each appointment.
+- Launch a 1-to-1 video chat with student to discuss and revise their resumes online immediately.
 
 > ### As a student
 
 - You can create a customized resume and print it out.
-- Browsing or filtering the teacher lists by industry that you're interested in.
-- Making appointments and video conferencing with teachers for enhancing resume writing and interviewing skills.
+- Browse or filter the teacher list by industry that you're interested in.
+- Make appointments and video conferencing with teachers for enhancing resume writing and interviewing skills.
 
 ## Demo Link
 
 > ### [Re-Live Website](https://re-live-resume-your-life.web.app/)
 
-Please choose your roles and signin with your account for full experiences.
+Please choose your role and signin with your account for full experiences.
 
 ## Technologies
 
@@ -72,5 +73,5 @@ Please choose your roles and signin with your account for full experiences.
   ![teacherLive](media/teacher-live.gif)
 - #### Student ｜ Notification received, join room!
   ![studentLive](media/student-live.gif)
-- #### Discussing and revising resumes at the same time.
+- #### Now you can discuss and revise resume in real time.
   ![share](media/teacher-live-edit.gif)
