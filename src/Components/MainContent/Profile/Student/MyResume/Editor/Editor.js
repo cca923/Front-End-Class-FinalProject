@@ -17,6 +17,7 @@ const StyleEditorArea = styled.div`
   height: fit-content;
   width: 100%;
   position: relative;
+  margin-top: 20px;
 `;
 
 const StyleReactQuill = styled(ReactQuill)`
@@ -30,7 +31,7 @@ const StyleReactQuillDisplay = styled.div`
   height: fit-content;
   z-index: 1000;
   line-height: 1.6rem;
-  padding: 50px 30px 30px;
+  padding: 0 30px 30px;
   word-wrap: break-word;
 
   a {
@@ -43,24 +44,27 @@ const StyleReactQuillDisplay = styled.div`
   }
 
   @media only screen and (max-width: 700px) {
-    padding: 50px 0px 0px;
+    padding: 0;
+  }
+`;
+
+const StyleEditButtonArea = styled.div`
+  width: 100%;
+  height: fit-content;
+
+  @media print {
+    display: none;
   }
 `;
 
 const StyleEditButton = styled(StylePurpleButton)`
-  position: absolute;
-  right: 0px;
-  top: ${(props) => (props.edit ? "-43px" : "0")};
   width: 120px;
   line-height: 37px;
-  z-index: 1000;
+  z-index: 800;
+  margin-left: auto;
 
   @media only screen and (max-width: 500px) {
     width: 90px;
-  }
-
-  @media print {
-    display: none;
   }
 `;
 
@@ -78,12 +82,13 @@ const StyleSaveIcon = styled(FontAwesomeIcon)`
   cursor: pointer;
 `;
 
-const Editor = ({ edit, setEdit }) => {
+const Editor = () => {
   const identityData = useSelector((state) => state.identityData);
   const resumeData = identityData.resume;
   // resume: { about: " ", detail: " " }
 
   const [value, setValue] = useState();
+  const [edit, setEdit] = useState(false);
   const [displayDetail, setDisplayDetail] = useState(false);
 
   const detail = `
@@ -109,58 +114,62 @@ const Editor = ({ edit, setEdit }) => {
   }, [resumeData]);
 
   return (
-    <StyleEditorArea>
-      {edit ? (
-        displayDetail ? (
-          <StyleReactQuill
-            placeholder="開始編輯履歷吧！"
-            value={value} // value = firebase data
-            onChange={(value) => setValue(value)}
-            modules={modules}
-            formats={formats}
-          />
-        ) : (
-          <StyleReactQuill
-            placeholder="開始編輯履歷吧！"
-            value={value} // value = detail
-            onChange={(value) => setValue(value)}
-            modules={modules}
-            formats={formats}
-          />
-        )
-      ) : displayDetail ? (
-        <StyleReactQuillDisplay>
-          {ReactHtmlParser(resumeData.detail)}
-        </StyleReactQuillDisplay>
-      ) : (
-        <StyleReactQuillDisplay>
-          {ReactHtmlParser(value)}
-        </StyleReactQuillDisplay>
-      )}
+    <>
+      <StyleEditButtonArea>
+        <StyleEditButton
+          edit={edit}
+          onClick={() => {
+            if (edit) {
+              updateStudentData(identityData.email, {
+                resume: { ...identityData.resume, detail: value },
+              });
+            }
+            edit ? setEdit(false) : setEdit(true);
+          }}>
+          {edit ? (
+            <>
+              <StyleSaveIcon icon={faSave} color="#fff" />
+              儲存
+            </>
+          ) : (
+            <>
+              <StyleEditIcon icon={faEdit} color="#fff" />
+              編輯
+            </>
+          )}
+        </StyleEditButton>
+      </StyleEditButtonArea>
 
-      <StyleEditButton
-        edit={edit}
-        onClick={() => {
-          if (edit) {
-            updateStudentData(identityData.email, {
-              resume: { ...identityData.resume, detail: value },
-            });
-          }
-          edit ? setEdit(false) : setEdit(true);
-        }}>
+      <StyleEditorArea>
         {edit ? (
-          <>
-            <StyleSaveIcon icon={faSave} color="#fff" />
-            儲存
-          </>
+          displayDetail ? (
+            <StyleReactQuill
+              placeholder="開始編輯履歷吧！"
+              value={value} // value = firebase data
+              onChange={(value) => setValue(value)}
+              modules={modules}
+              formats={formats}
+            />
+          ) : (
+            <StyleReactQuill
+              placeholder="開始編輯履歷吧！"
+              value={value} // value = detail
+              onChange={(value) => setValue(value)}
+              modules={modules}
+              formats={formats}
+            />
+          )
+        ) : displayDetail ? (
+          <StyleReactQuillDisplay>
+            {ReactHtmlParser(resumeData.detail)}
+          </StyleReactQuillDisplay>
         ) : (
-          <>
-            <StyleEditIcon icon={faEdit} color="#fff" />
-            編輯
-          </>
+          <StyleReactQuillDisplay>
+            {ReactHtmlParser(value)}
+          </StyleReactQuillDisplay>
         )}
-      </StyleEditButton>
-    </StyleEditorArea>
+      </StyleEditorArea>
+    </>
   );
 };
 

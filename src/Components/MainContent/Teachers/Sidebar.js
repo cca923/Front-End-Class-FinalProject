@@ -38,15 +38,13 @@ const StyleForm = styled.form`
   background-color: #f3f3f3;
 
   @media only screen and (max-width: 1020px) {
-    display: ${(props) => (props.layer ? "flex" : "none")};
-    /* Display 和 transition 有衝突 */
     visibility: ${(props) => (props.layer ? "visible" : "hidden")};
     opacity: ${(props) => (props.layer ? "1" : "0")};
-    height: ${(props) => (props.layer ? "58vh" : "0")};
+    height: ${(props) => (props.layer ? "430px" : "0")};
     width: 100%;
-    padding: 10px 40px 20px 40px;
+    padding: ${(props) => (props.layer ? "10px 40px 20px 40px" : "0")};
     top: 0;
-    transition: 0.5s;
+    transition: 0.3s;
     overflow-x: hidden;
   }
 `;
@@ -114,7 +112,7 @@ const StyleTagContainer = styled.div`
   flex-direction: column;
 
   @media only screen and (max-width: 1020px) {
-    padding: 5px 0;
+    padding: 3px 0;
   }
 `;
 
@@ -122,8 +120,9 @@ const StyleLabel = styled.label`
   font-size: 1.2rem;
   padding: 10px 3px;
 
-  @media only screen and (max-width: 900px) {
+  @media only screen and (max-width: 600px) {
     font-size: 1rem;
+    padding: 8px 3px;
   }
 `;
 

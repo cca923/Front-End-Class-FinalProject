@@ -17,9 +17,10 @@ import { StylePurpleButton } from "../../../Common/button";
 const StyleEditorArea = styled.div`
   display: flex;
   flex-direction: column;
-  height: fit-content;
   width: 100%;
+  height: fit-content;
   position: relative;
+  margin-top: 20px;
 `;
 
 const StyleReactQuill = styled(ReactQuill)`
@@ -33,7 +34,7 @@ const StyleReactQuillDisplay = styled.div`
   height: fit-content;
   z-index: 50;
   line-height: 1.6rem;
-  padding: 50px 20px 0px;
+  padding: 0 30px 30px;
   word-wrap: break-word;
 
   a {
@@ -46,17 +47,20 @@ const StyleReactQuillDisplay = styled.div`
   }
 
   @media only screen and (max-width: 650px) {
-    padding: 50px 0px 0px;
+    padding: 0;
   }
 `;
 
+const StyleEditButtonArea = styled.div`
+  width: 100%;
+  height: fit-content;
+`;
+
 const StyleEditButton = styled(StylePurpleButton)`
-  position: absolute;
-  right: 0px;
-  top: ${(props) => (props.edit ? "-43px" : "0")};
   width: 120px;
   line-height: 37px;
-  z-index: 1000;
+  z-index: 800;
+  margin-left: auto;
 
   @media only screen and (max-width: 500px) {
     width: 90px;
@@ -77,11 +81,12 @@ const StyleSaveIcon = styled(FontAwesomeIcon)`
   cursor: pointer;
 `;
 
-const Editor = ({ edit, setEdit }) => {
+const Editor = () => {
   const liveData = useSelector((state) => state.liveData);
   const resumeData = liveData.resume;
 
   const [value, setValue] = useState();
+  const [edit, setEdit] = useState(false);
 
   useEffect(() => {
     if (resumeData && resumeData?.detail) {
@@ -94,43 +99,46 @@ const Editor = ({ edit, setEdit }) => {
   }, [resumeData, resumeData?.detail]);
 
   return (
-    <StyleEditorArea>
-      {edit ? (
-        <StyleReactQuill
-          value={value}
-          onChange={(value) => {
-            setValue(value);
-            updateStudentData(liveData.email, {
-              resume: { ...liveData.resume, detail: value },
-            });
-          }}
-          modules={modules}
-          formats={formats}
-        />
-      ) : (
-        <StyleReactQuillDisplay>
-          {ReactHtmlParser(value)}
-        </StyleReactQuillDisplay>
-      )}
+    <>
+      <StyleEditButtonArea>
+        <StyleEditButton
+          onClick={() => {
+            edit ? setEdit(false) : setEdit(true);
+          }}>
+          {edit ? (
+            <>
+              <StyleSaveIcon icon={faSave} color="#fff" />
+              儲存
+            </>
+          ) : (
+            <>
+              <StyleEditIcon icon={faEdit} color="#fff" />
+              編輯
+            </>
+          )}
+        </StyleEditButton>
+      </StyleEditButtonArea>
 
-      <StyleEditButton
-        edit={edit}
-        onClick={() => {
-          edit ? setEdit(false) : setEdit(true);
-        }}>
+      <StyleEditorArea>
         {edit ? (
-          <>
-            <StyleSaveIcon icon={faSave} color="#fff" />
-            儲存
-          </>
+          <StyleReactQuill
+            value={value}
+            onChange={(value) => {
+              setValue(value);
+              updateStudentData(liveData.email, {
+                resume: { ...liveData.resume, detail: value },
+              });
+            }}
+            modules={modules}
+            formats={formats}
+          />
         ) : (
-          <>
-            <StyleEditIcon icon={faEdit} color="#fff" />
-            編輯
-          </>
+          <StyleReactQuillDisplay>
+            {ReactHtmlParser(value)}
+          </StyleReactQuillDisplay>
         )}
-      </StyleEditButton>
-    </StyleEditorArea>
+      </StyleEditorArea>
+    </>
   );
 };
 

@@ -81,6 +81,7 @@ const StyleName = styled.h1`
   font-size: 2rem;
   font-weight: 500;
   margin-right: 20px;
+  letter-spacing: 1.2px;
 
   @media only screen and (max-width: 800px) {
     font-size: 1.5rem;
@@ -90,6 +91,7 @@ const StyleName = styled.h1`
 const StyleEmail = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
+  font-weight: 600;
 
   @media only screen and (max-width: 800px) {
     font-size: 1.2rem;

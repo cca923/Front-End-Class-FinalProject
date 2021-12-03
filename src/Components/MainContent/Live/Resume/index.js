@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import ReactHtmlParser from "react-html-parser";
@@ -31,9 +31,10 @@ const StyleAbout = styled.div`
 `;
 
 const StyleOthers = styled.div`
-  padding: ${(props) => (props.edit ? "50px 20px 20px" : " 20px")};
-  display: flex;
   height: calc(100vh - 370px);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
   overflow-y: scroll;
 
   @media only screen and (max-width: 950px) {
@@ -71,6 +72,7 @@ const StyleName = styled.h1`
   font-size: 2rem;
   font-weight: 500;
   margin-right: 20px;
+  letter-spacing: 1.2px;
 
   @media only screen and (max-width: 1120px) {
     font-size: 1.5rem;
@@ -80,6 +82,7 @@ const StyleName = styled.h1`
 const StyleEmail = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
+  font-weight: 600;
 
   @media only screen and (max-width: 1120px) {
     font-size: 1.2rem;
@@ -128,8 +131,6 @@ const Resume = () => {
   const identityData = useSelector((state) => state.identityData);
   const liveData = useSelector((state) => state.liveData);
 
-  const [edit, setEdit] = useState(false);
-
   return (
     <StyleResume>
       {identity === "teacher" ? (
@@ -148,8 +149,8 @@ const Resume = () => {
             </StyleDetail>
           </StyleAbout>
 
-          <StyleOthers edit={edit}>
-            <Editor edit={edit} setEdit={setEdit} />
+          <StyleOthers>
+            <Editor />
           </StyleOthers>
         </StyleMyResume>
       ) : (
