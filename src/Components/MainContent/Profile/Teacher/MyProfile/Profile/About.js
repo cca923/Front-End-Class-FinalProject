@@ -56,7 +56,7 @@ const StyleAboutMeInput = styled.input`
   border-radius: 8px;
 `;
 
-const StyleAboutMeIntroduction = styled.input`
+const StyleAboutMeIntroduction = styled.textarea`
   font-size: 1rem;
   padding: 5px;
   width: 100%;
@@ -64,6 +64,7 @@ const StyleAboutMeIntroduction = styled.input`
   border: 2px solid #e4e5e1;
   border-radius: 8px;
   word-wrap: break-word;
+  resize: none;
 `;
 
 const StyleDisplay = styled.div`
@@ -344,7 +345,6 @@ const TeacherAbout = () => {
             <StyleAboutMeIntroduction
               value={introduction}
               onChange={(e) => setIntroduction(e.target.value)}
-              type="textarea"
               maxLength="200"
               placeholder="請輸入個人介紹(限200字)"
             />

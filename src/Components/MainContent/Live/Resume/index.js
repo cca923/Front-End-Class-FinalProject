@@ -8,7 +8,7 @@ import noPhoto from "../../../../images/no-photo-square.png";
 import Editor from "./Editor";
 
 const StyleResume = styled.div`
-  width: 100%;
+  width: calc(100vw - 410px);
   margin: 20px;
   background-color: #fff;
 
@@ -31,12 +31,12 @@ const StyleAbout = styled.div`
 `;
 
 const StyleOthers = styled.div`
-  padding: 20px;
+  padding: ${(props) => (props.edit ? "50px 20px 20px" : " 20px")};
   display: flex;
-  height: calc(100vh - 380px);
+  height: calc(100vh - 370px);
   overflow-y: scroll;
 
-  @media only screen and (max-width: 1000px) {
+  @media only screen and (max-width: 950px) {
     height: fit-content;
   }
 `;
@@ -107,6 +107,7 @@ const StyleReactQuillDisplay = styled.div`
   z-index: 1000;
   line-height: 1.6rem;
   padding: 10px;
+  word-wrap: break-word;
 
   a {
     text-decoration: underline;
@@ -127,7 +128,7 @@ const Resume = () => {
   const identityData = useSelector((state) => state.identityData);
   const liveData = useSelector((state) => state.liveData);
 
-  const [hover, setHover] = useState(false);
+  const [edit, setEdit] = useState(false);
 
   return (
     <StyleResume>
@@ -147,10 +148,8 @@ const Resume = () => {
             </StyleDetail>
           </StyleAbout>
 
-          <StyleOthers
-            onMouseOver={() => setHover(true)}
-            onMouseOut={() => setHover(false)}>
-            <Editor hover={hover} />
+          <StyleOthers edit={edit}>
+            <Editor edit={edit} setEdit={setEdit} />
           </StyleOthers>
         </StyleMyResume>
       ) : (

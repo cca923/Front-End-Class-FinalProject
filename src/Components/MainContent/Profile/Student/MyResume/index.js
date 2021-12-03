@@ -24,8 +24,12 @@ const StyleAbout = styled.div`
 `;
 
 const StyleOthers = styled.div`
-  padding: 20px;
+  padding: ${(props) => (props.edit ? "50px 20px 20px" : " 20px")};
   display: flex;
+
+  @media print {
+    padding: 10px 0 0;
+  }
 `;
 
 const StyleImage = styled.img`
@@ -82,6 +86,7 @@ const StylePrintButton = styled(StyleWhiteButton)`
   position: absolute;
   right: 20px;
   width: 120px;
+  line-height: 37px;
 
   @media only screen and (max-width: 500px) {
     width: 90px;
@@ -103,7 +108,7 @@ const StudentMyResume = () => {
   const identityData = useSelector((state) => state.identityData);
   const sendEdit = useRef();
 
-  const [hover, setHover] = useState(false);
+  const [edit, setEdit] = useState(false);
 
   return (
     <StyleMyResume>
@@ -128,10 +133,8 @@ const StudentMyResume = () => {
           列印
         </StylePrintButton>
       </StyleAbout>
-      <StyleOthers
-        onMouseOver={() => setHover(true)}
-        onMouseOut={() => setHover(false)}>
-        <Editor hover={hover} />
+      <StyleOthers edit={edit}>
+        <Editor edit={edit} setEdit={setEdit} />
       </StyleOthers>
     </StyleMyResume>
   );

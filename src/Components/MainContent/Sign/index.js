@@ -209,7 +209,7 @@ const Sign = () => {
           setThirdPartyErrorMessage("密碼錯誤");
           break;
         case "auth/account-exists-with-different-credential":
-          setThirdPartyErrorMessage("信箱相同但使用不同登入方式的帳戶已經存在");
+          setThirdPartyErrorMessage("信箱相同但用不同登入方式的帳戶已存在");
           break;
 
         default:

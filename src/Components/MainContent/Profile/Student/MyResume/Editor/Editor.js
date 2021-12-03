@@ -4,15 +4,12 @@ import styled from "styled-components";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ReactHtmlParser from "react-html-parser";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faSave } from "@fortawesome/free-solid-svg-icons";
 
 import { updateStudentData } from "../../../../../../utils/firebase";
 import { formats, modules } from "../../../../../../utils/quillEditor";
-import { StyleEditResumeButton } from "../../../../../Common/button";
-
-import editIcon from "../../../../../../images/edit.png";
-import editIconHover from "../../../../../../images/edit-hover.png";
-import saveIcon from "../../../../../../images/save.png";
-import saveIconHover from "../../../../../../images/save-hover.png";
+import { StylePurpleButton } from "../../../../../Common/button";
 
 const StyleEditorArea = styled.div`
   display: flex;
@@ -33,7 +30,8 @@ const StyleReactQuillDisplay = styled.div`
   height: fit-content;
   z-index: 1000;
   line-height: 1.6rem;
-  padding: 10px 30px;
+  padding: 50px 30px 30px;
+  word-wrap: break-word;
 
   a {
     text-decoration: underline;
@@ -45,22 +43,47 @@ const StyleReactQuillDisplay = styled.div`
   }
 
   @media only screen and (max-width: 700px) {
-    padding: 0;
+    padding: 50px 0px 0px;
   }
 `;
 
-const StyleEditButton = styled(StyleEditResumeButton)`
-  display: ${(props) => (props.hover ? "inline-block" : "none")};
+const StyleEditButton = styled(StylePurpleButton)`
+  position: absolute;
+  right: 0px;
+  top: ${(props) => (props.edit ? "-43px" : "0")};
+  width: 120px;
+  line-height: 37px;
+  z-index: 1000;
+
+  @media only screen and (max-width: 500px) {
+    width: 90px;
+  }
+
+  @media print {
+    display: none;
+  }
 `;
 
-const Editor = ({ hover }) => {
+const StyleEditIcon = styled(FontAwesomeIcon)`
+  display: inline-block;
+  font-size: 15px;
+  margin-right: 8px;
+  cursor: pointer;
+`;
+
+const StyleSaveIcon = styled(FontAwesomeIcon)`
+  display: inline-block;
+  font-size: 15px;
+  margin-right: 8px;
+  cursor: pointer;
+`;
+
+const Editor = ({ edit, setEdit }) => {
   const identityData = useSelector((state) => state.identityData);
   const resumeData = identityData.resume;
   // resume: { about: " ", detail: " " }
 
   const [value, setValue] = useState();
-  const [edit, setEdit] = useState(false);
-  const [onHover, setOnHover] = useState(false);
   const [displayDetail, setDisplayDetail] = useState(false);
 
   const detail = `
@@ -116,18 +139,7 @@ const Editor = ({ hover }) => {
       )}
 
       <StyleEditButton
-        hover={hover}
-        onMouseEnter={() => setOnHover(true)}
-        onMouseLeave={() => setOnHover(false)}
-        src={
-          edit
-            ? onHover
-              ? saveIconHover
-              : saveIcon
-            : onHover
-            ? editIconHover
-            : editIcon
-        }
+        edit={edit}
         onClick={() => {
           if (edit) {
             updateStudentData(identityData.email, {
@@ -135,8 +147,19 @@ const Editor = ({ hover }) => {
             });
           }
           edit ? setEdit(false) : setEdit(true);
-        }}
-      />
+        }}>
+        {edit ? (
+          <>
+            <StyleSaveIcon icon={faSave} color="#fff" />
+            儲存
+          </>
+        ) : (
+          <>
+            <StyleEditIcon icon={faEdit} color="#fff" />
+            編輯
+          </>
+        )}
+      </StyleEditButton>
     </StyleEditorArea>
   );
 };

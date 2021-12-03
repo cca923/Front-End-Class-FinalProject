@@ -93,12 +93,13 @@ const StyleInput = styled.input`
   border-radius: 8px;
 `;
 
-const StyleDescriptionInput = styled.input`
+const StyleDescriptionInput = styled.textarea`
   font-size: 1rem;
   padding: 5px;
   height: 100px;
   border: 2px solid #e4e5e1;
   border-radius: 8px;
+  resize: none;
 
   @media only screen and (max-width: 1000px) {
     height: 60px;
@@ -232,7 +233,6 @@ const TeacherTalent = () => {
               <StyleDescriptionInput
                 value={talent1Description}
                 onChange={(e) => setTalent1Description(e.target.value)}
-                type="textarea"
                 placeholder="請輸入技能簡介(限100字)"
                 maxLength="100"
               />
@@ -253,7 +253,6 @@ const TeacherTalent = () => {
               <StyleDescriptionInput
                 value={talent2Description}
                 onChange={(e) => setTalent2Description(e.target.value)}
-                type="textarea"
                 placeholder="請輸入技能簡介(限100字)"
                 maxLength="100"
               />
@@ -274,7 +273,6 @@ const TeacherTalent = () => {
               <StyleDescriptionInput
                 value={talent3Description}
                 onChange={(e) => setTalent3Description(e.target.value)}
-                type="textarea"
                 placeholder="請輸入技能簡介(限100字)"
                 maxLength="100"
               />

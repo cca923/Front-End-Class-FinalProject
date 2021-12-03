@@ -117,6 +117,7 @@ const StyleReactQuillDisplay = styled.div`
   z-index: 1000;
   line-height: 1.6rem;
   padding: 10px 30px;
+  word-wrap: break-word;
 
   a {
     text-decoration: underline;
