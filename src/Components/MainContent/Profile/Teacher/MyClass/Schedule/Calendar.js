@@ -29,6 +29,34 @@ const StyleDatePickerButton = styled(StyleWhiteButton)`
   margin: 0px auto 40px;
 `;
 
+export const getExcludedTimes = (
+  date,
+  timeDataConvert,
+  reservationTimeDataConvert
+) => {
+  const arrExcludeTimes = [];
+
+  // Calendar should excludes available time
+  timeDataConvert.forEach((existDate) => {
+    if (existDate.getMonth() === date.getMonth()) {
+      if (existDate.getDate() === date.getDate()) {
+        arrExcludeTimes.push(existDate);
+      }
+    }
+  });
+
+  // Calendar should excludes reservation time
+  reservationTimeDataConvert.forEach((existDate) => {
+    if (existDate.getMonth() === date.getMonth()) {
+      if (existDate.getDate() === date.getDate()) {
+        arrExcludeTimes.push(existDate);
+      }
+    }
+  });
+
+  return arrExcludeTimes;
+};
+
 const Calendar = ({
   selectedDate,
   setSelectedDate,
@@ -86,29 +114,6 @@ const Calendar = ({
     }
   };
 
-  // 依照 time(available) & reservation.time(reserved) 判斷要從日曆上排除的時間
-  const getExcludedTimes = (daytime) => {
-    const arrExcludeTimes = [];
-
-    timeDataConvert.forEach((existDate) => {
-      if (existDate.getMonth() === daytime.getMonth()) {
-        if (existDate.getDate() === daytime.getDate()) {
-          arrExcludeTimes.push(existDate);
-        }
-      }
-
-      reservationTimeDataConvert.forEach((existDate) => {
-        if (existDate.getMonth() === selectedDate.getMonth()) {
-          if (existDate.getDate() === selectedDate.getDate()) {
-            arrExcludeTimes.push(existDate);
-          }
-        }
-      });
-
-      setExcludeTimes(arrExcludeTimes);
-    });
-  };
-
   const filterPassedTime = (time) => {
     const currentDate = new Date();
     const selectedDate = new Date(time);
@@ -123,12 +128,24 @@ const Calendar = ({
         onChange={(date) => setSelectedDate(date)}
         onSelect={(date) => {
           // Day Change
-          getExcludedTimes(date);
+          const timeToExclude = getExcludedTimes(
+            date,
+            timeDataConvert,
+            reservationTimeDataConvert
+          );
+          setExcludeTimes(timeToExclude);
+
           setSelectedDate(setHours(setMinutes(new Date(date), 0), 0));
         }}
         onMonthChange={(date) => {
           // Month Change
-          getExcludedTimes(date);
+          const timeToExclude = getExcludedTimes(
+            date,
+            timeDataConvert,
+            reservationTimeDataConvert
+          );
+          setExcludeTimes(timeToExclude);
+
           setSelectedDate(setHours(setMinutes(new Date(date), 0), 0));
         }}
         monthsShown

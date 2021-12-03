@@ -24,7 +24,7 @@ const StyleLink = styled(NavLink)`
   font-size: 1.5rem;
   font-weight: 400;
   color: ${(props) => (props.headerstatus === "scroll" ? "#222" : "#fff")};
-  border-left: 2px solid
+  border-left: 3px solid
     ${(props) => (props.headerstatus === "scroll" ? "#666" : "#fff")};
   width: 150px;
   padding: 0px 20px;
@@ -34,27 +34,13 @@ const StyleLink = styled(NavLink)`
       props.headerstatus === "scroll" ? "#8e94f2" : "#fd8e87"};
     transition: all 0.2s;
   }
-
-  @media only screen and (max-width: 1020px) {
-    color: #fff;
-    border-left: 2px solid #fff;
-    height: 30px;
-    width: fit-content;
-    line-height: 30px;
-    margin: auto;
-
-    &:hover {
-      color: #ffbfaa;
-      transition: all 0.2s;
-    }
-  }
 `;
 
 const StyleSignLink = styled.a`
   font-size: 1.5rem;
   font-weight: 400;
   color: ${(props) => (props.headerstatus === "scroll" ? "#222" : "#fff")};
-  border-left: 2px solid
+  border-left: 3px solid
     ${(props) => (props.headerstatus === "scroll" ? "#666" : "#fff")};
   width: 150px;
   padding: 0px 20px;
@@ -65,26 +51,13 @@ const StyleSignLink = styled.a`
       props.headerstatus === "scroll" ? "#8e94f2" : "#fd8e87"};
     transition: all 0.2s;
   }
-
-  @media only screen and (max-width: 1020px) {
-    color: #fff;
-    height: 30px;
-    width: fit-content;
-    line-height: 30px;
-    margin: auto;
-
-    &:hover {
-      color: #ffbfaa;
-      transition: all 0.2s;
-    }
-  }
 `;
 
 const StyleInvitationArea = styled.div`
   display: inline;
   font-size: 1.5rem;
   font-weight: 400;
-  border-left: 2px solid
+  border-left: 3px solid
     ${(props) => (props.headerstatus === "scroll" ? "#666" : "#fff")};
   padding: 0px 40px;
   position: relative;
@@ -170,7 +143,7 @@ const Nav = ({ layer, headerStatus, currentUser }) => {
       <StyleSignLink
         headerstatus={headerStatus}
         onClick={() => dispatch(changeSignPage(true))}>
-        Sign
+        Signin
       </StyleSignLink>
     </StyleNav>
   ) : (

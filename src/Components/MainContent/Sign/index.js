@@ -220,7 +220,7 @@ const Sign = () => {
   return (
     <>
       <StyleStateWrap signLoading={signLoading}>
-        <StyleLoading src={loading} alt={"Loading"} />
+        <StyleLoading src={loading} alt="Loading" />
       </StyleStateWrap>
 
       <StyleSignLayer

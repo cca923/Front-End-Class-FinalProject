@@ -49,7 +49,7 @@ const MobileNav = ({ currentUser }) => {
         Home
       </StyleLink>
       <StyleSignLink onClick={() => dispatch(changeSignPage(true))}>
-        Sign
+        Signin
       </StyleSignLink>
     </StyleNav>
   ) : (

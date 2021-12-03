@@ -15,7 +15,7 @@ import {
 
 import loading from "./images/loading.gif";
 
-import Sign from "./Components/MainContent/Sign/Sign";
+import Sign from "./Components/MainContent/Sign/index";
 import Home from "./Components/MainContent/Home";
 import Live from "./Components/MainContent/Live/index";
 import Header from "./Components/Header/index";

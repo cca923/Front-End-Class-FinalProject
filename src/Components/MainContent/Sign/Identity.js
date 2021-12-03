@@ -27,17 +27,19 @@ const StyleIdentity = styled.div`
 `;
 
 const StyleTitle = styled.div`
-  font-size: 1.2rem;
+  font-size: 2rem;
   font-weight: 700;
   border-bottom: 2px solid #7367f0;
-  margin: 20px auto 0 auto;
-  padding-bottom: 10px;
+  margin: 25px auto 0;
+  padding-bottom: 15px;
   width: 70%;
   text-align: center;
   line-height: 1.5rem;
 
   @media only screen and (max-width: 1000px) {
-    font-size: 1rem;
+    font-size: 1.5rem;
+    margin: 15px auto 0;
+    padding-bottom: 10px;
   }
 `;
 
@@ -105,7 +107,7 @@ const Identity = () => {
 
   return (
     <StyleIdentity>
-      <StyleTitle>請選擇您的身份</StyleTitle>
+      <StyleTitle>Choose your role</StyleTitle>
       <StyleStudentSelect
         identity={identity}
         onClick={() => {
