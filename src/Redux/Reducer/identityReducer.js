@@ -1,7 +1,7 @@
 const identityReducer = (state = "", action) => {
   switch (action.type) {
     case "IDENTITY":
-      return (state = action.payload);
+      return action.payload;
 
     default:
       return state;

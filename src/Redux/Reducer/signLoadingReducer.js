@@ -1,7 +1,7 @@
 const signLoadingReducer = (state = false, action) => {
   switch (action.type) {
     case "SING_LOADING":
-      return (state = action.payload);
+      return action.payload;
 
     default:
       return state;

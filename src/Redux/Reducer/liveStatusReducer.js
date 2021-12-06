@@ -1,7 +1,7 @@
 const liveStatusReducer = (state = false, action) => {
   switch (action.type) {
     case "LIVE_STATUS":
-      return (state = action.payload);
+      return action.payload;
 
     default:
       return state;
