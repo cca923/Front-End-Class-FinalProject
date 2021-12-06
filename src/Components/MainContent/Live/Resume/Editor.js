@@ -12,6 +12,7 @@ import {
   updateStudentData,
 } from "../../../../utils/firebase";
 import { formats, modules } from "../../../../utils/quillEditor";
+import { successAlert } from "../../../../utils/swal";
 import { StylePurpleButton } from "../../../Common/button";
 
 const StyleEditorArea = styled.div`
@@ -102,7 +103,10 @@ const Editor = () => {
     <>
       <StyleEditButtonArea>
         <StyleEditButton
-          onClick={() => {
+          onClick={async () => {
+            if (edit) {
+              await successAlert("儲存成功！");
+            }
             edit ? setEdit(false) : setEdit(true);
           }}>
           {edit ? (

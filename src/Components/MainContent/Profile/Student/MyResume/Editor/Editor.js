@@ -9,6 +9,7 @@ import { faEdit, faSave } from "@fortawesome/free-solid-svg-icons";
 
 import { updateStudentData } from "../../../../../../utils/firebase";
 import { formats, modules } from "../../../../../../utils/quillEditor";
+import { successAlert } from "../../../../../../utils/swal";
 import { StylePurpleButton } from "../../../../../Common/button";
 
 const StyleEditorArea = styled.div`
@@ -118,11 +119,12 @@ const Editor = () => {
       <StyleEditButtonArea>
         <StyleEditButton
           edit={edit}
-          onClick={() => {
+          onClick={async () => {
             if (edit) {
-              updateStudentData(identityData.email, {
+              await updateStudentData(identityData.email, {
                 resume: { ...identityData.resume, detail: value },
               });
+              await successAlert("儲存成功！");
             }
             edit ? setEdit(false) : setEdit(true);
           }}>

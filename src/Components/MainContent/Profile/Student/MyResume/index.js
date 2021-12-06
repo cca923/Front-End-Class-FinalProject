@@ -8,7 +8,7 @@ import { StyleWhiteButton } from "../../../../Common/button";
 
 import noPhoto from "../../../../../images/no-photo-square.png";
 
-import EditArea from "./Editor/EditArea";
+import EditArea from "./Editor/About";
 import Editor from "./Editor/Editor";
 
 const StyleMyResume = styled.div`
