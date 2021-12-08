@@ -245,6 +245,8 @@ const Video = () => {
 
     if (identity === "teacher") {
       createOffer(pc, roomIdRef);
+    } else if (identity === "student") {
+      answerCall(pc, joinRoomRef);
     }
   };
 
@@ -386,7 +388,9 @@ const Video = () => {
 
             <StyleToggleArea>
               <StyleToggle className="open_webcam">
-                <StyleLabel>開啟視訊</StyleLabel>
+                <StyleLabel>
+                  {identity === "teacher" ? "開啟視訊" : "加入視訊"}
+                </StyleLabel>
                 <StyleOpenWebCam src={videoOn} onClick={openWebCam} />
               </StyleToggle>
               <StyleToggle className="exit_live">
@@ -413,13 +417,6 @@ const Video = () => {
             </StyleCalloutArea>
           ) : (
             <StyleInvitationArea>
-              <StyleConfirmButton
-                className="join_invitation"
-                onClick={() => {
-                  answerCall(pc, joinRoomRef);
-                }}>
-                加入房間
-              </StyleConfirmButton>
               <StyleRoomId ref={joinRoomRef}>
                 {identityData.invitation
                   ? identityData.invitation.roomId

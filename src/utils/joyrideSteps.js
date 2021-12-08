@@ -126,10 +126,10 @@ const studentSteps = [
         style={{
           letterSpacing: "2px",
         }}>
-        第一步：開啟視訊
+        加入視訊：啟動視訊功能
       </h2>
     ),
-    content: "確認鏡頭及麥克風是否異常",
+    content: "開啟鏡頭、麥克風並進行視訊連線",
     floaterProps: {
       disableAnimation: true,
     },
@@ -142,21 +142,7 @@ const studentSteps = [
         style={{
           letterSpacing: "2px",
         }}>
-        第二步：加入房間
-      </h2>
-    ),
-    content: "加入房間立即開始視訊諮詢",
-    placement: "bottom",
-    spotlightPadding: 15,
-    target: ".join_invitation",
-  },
-  {
-    title: (
-      <h2
-        style={{
-          letterSpacing: "2px",
-        }}>
-        結束視訊：離開房間
+        離開房間：結束視訊
       </h2>
     ),
     content: "關閉鏡頭、麥克風並進行評論",
