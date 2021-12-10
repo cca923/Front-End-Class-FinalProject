@@ -67,15 +67,6 @@ const Calendar = ({
 }) => {
   const identityData = useSelector((state) => state.identityData);
 
-  const removeSelectableTime = () => {
-    const timeList = document.querySelectorAll(
-      ".react-datepicker__time-list-item"
-    );
-    Array.from(timeList).forEach((alldate) => {
-      alldate.classList.remove("react-datepicker__time-list-item--selected");
-    });
-  };
-
   const addTimeToSchedule = async () => {
     const selectedTargetValue = selectedDate.toLocaleString(
       navigator.language,
@@ -109,7 +100,7 @@ const Calendar = ({
           `新增時段｜${selectedTargetValue}`
         );
 
-        removeSelectableTime();
+        setSelectedDate(setHours(setMinutes(new Date(selectedDate), 0), 0));
       }
     }
   };
