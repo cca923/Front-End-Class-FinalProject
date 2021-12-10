@@ -17,10 +17,11 @@ import {
   updateStudentData,
 } from "../../../utils/firebase";
 import {
-  deleteInvitationWarningAlert,
-  commentWithPopup,
-  successAlert,
   sendInvitationSucceedAlert,
+  deleteInvitationWarningAlert,
+  successAlert,
+  warningAlert,
+  commentWithPopup,
 } from "../../../utils/swal";
 import { studentSteps, teacherSteps } from "../../../utils/joyrideSteps";
 import { StyleWhiteButton } from "../../Common/button";
@@ -219,7 +220,6 @@ const Video = () => {
   const roomIdRef = useRef();
   const joinRoomRef = useRef();
 
-  // 開啟視訊，若是老師將同時產生房間代碼
   const openWebCam = async () => {
     localStream = await navigator.mediaDevices.getUserMedia({
       video: true,
@@ -324,13 +324,18 @@ const Video = () => {
   };
 
   const handleInvitation = async () => {
-    const invitation = {
-      email: identityData.email,
-      name: identityData.name,
-      roomId: roomIdRef.current.textContent,
-    };
-    await updateStudentData(liveData.email, { invitation });
-    await sendInvitationSucceedAlert(liveData.name);
+    if (!localVideo.current.srcObject?.active) {
+      // 沒開鏡頭時...
+      await warningAlert("請先開啟視訊鏡頭");
+    } else {
+      const invitation = {
+        email: identityData.email,
+        name: identityData.name,
+        roomId: roomIdRef.current.textContent,
+      };
+      await updateStudentData(liveData.email, { invitation });
+      await sendInvitationSucceedAlert(liveData.name);
+    }
   };
 
   const handleJoyrideCallback = (data) => {
