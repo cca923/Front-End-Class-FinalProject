@@ -209,9 +209,8 @@ const Header = ({ currentUser }) => {
   };
 
   useEffect(() => {
-    changeBackground();
-    const unsuscribe = window.addEventListener("scroll", changeBackground);
-    return () => unsuscribe();
+    window.addEventListener("scroll", changeBackground);
+    return () => window.removeEventListener("scroll", changeBackground);
   }, []);
 
   return (

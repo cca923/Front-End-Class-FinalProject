@@ -1,6 +1,5 @@
 import { createStore } from "redux";
 import allReducers from "../Reducer";
-// console.log(allReducers);
 
 export const store = createStore(
   allReducers,

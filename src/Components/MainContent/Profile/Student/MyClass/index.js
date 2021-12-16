@@ -157,9 +157,6 @@ const StudentMyClass = () => {
 
               <StyleStudentReservation>
                 {reservation
-                  .filter((eachReservation) => {
-                    return new Date(eachReservation.time) > new Date();
-                  })
                   .sort((a, b) => {
                     if (selectUpcomingTimeOrder.value === "新到舊") {
                       return a.time < b.time ? 1 : -1;
@@ -169,14 +166,17 @@ const StudentMyClass = () => {
                       return a.time > b.time ? 1 : -1; // 預設：舊到新
                     }
                   })
-                  .map((eachReservation) => {
-                    return (
-                      <EachReservation
-                        key={nanoid()}
-                        eachReservation={eachReservation}
-                      />
-                    );
-                  })}
+                  .reduce((acc, cur) => {
+                    return new Date(cur.time) > new Date()
+                      ? [
+                          ...acc,
+                          <EachReservation
+                            key={nanoid()}
+                            eachReservation={cur}
+                          />,
+                        ]
+                      : acc;
+                  }, [])}
               </StyleStudentReservation>
             </>
           ) : (
@@ -220,9 +220,6 @@ const StudentMyClass = () => {
               </StyleOderArea>
               <StyleStudentReservation>
                 {reservation
-                  .filter((eachReservation) => {
-                    return new Date(eachReservation.time) < new Date();
-                  })
                   .sort((a, b) => {
                     if (selectPreviousTimeOrder.value === "新到舊") {
                       return a.time < b.time ? 1 : -1;
@@ -232,14 +229,17 @@ const StudentMyClass = () => {
                       return a.time < b.time ? 1 : -1; // 預設：新到舊
                     }
                   })
-                  .map((eachReservation) => {
-                    return (
-                      <EachReservation
-                        key={nanoid()}
-                        eachReservation={eachReservation}
-                      />
-                    );
-                  })}
+                  .reduce((acc, cur) => {
+                    return new Date(cur.time) < new Date()
+                      ? [
+                          ...acc,
+                          <EachReservation
+                            key={nanoid()}
+                            eachReservation={cur}
+                          />,
+                        ]
+                      : acc;
+                  }, [])}
               </StyleStudentReservation>
             </>
           ) : (

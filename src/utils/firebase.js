@@ -41,7 +41,6 @@ const teacherSnapshot = (
   if (teacherDoc.data().email === currentUserEmail) {
     teachersRef.onSnapshot((doc) => {
       callback(doc.data());
-      console.log("老師資料", doc.data());
     });
   }
 };
@@ -55,7 +54,6 @@ const studentSnapshot = (
   if (studentDoc.data().email === currentUserEmail) {
     return studentsRef.onSnapshot((doc) => {
       callback(doc.data());
-      console.log("學生資料", doc.data());
     });
   }
 };
@@ -252,7 +250,6 @@ const answerCall = async (pc, joinRoomRef) => {
 
   offerCandidates.onSnapshot((snapshot) => {
     snapshot.docChanges().forEach((change) => {
-      console.log(change);
       if (change.type === "added") {
         let data = change.doc.data();
         pc.addIceCandidate(new RTCIceCandidate(data));
