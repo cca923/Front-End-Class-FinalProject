@@ -15,15 +15,10 @@ const StyleHeader = styled.header`
   position: fixed;
   height: 100px;
   width: 100vw;
-  padding: 0 10px;
   background-color: ${(props) =>
     props.headerstatus === "scroll" ? "rgb(255,255,255,0.8)" : "none"};
   z-index: 1000;
   transition: all 0.2s;
-
-  @media only screen and (max-width: 1020px) {
-    padding: 0;
-  }
 
   @media print {
     display: none;
