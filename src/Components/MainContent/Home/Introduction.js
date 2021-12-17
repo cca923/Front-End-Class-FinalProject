@@ -7,6 +7,8 @@ import edit from "../../../images/edit-hover.png";
 import select from "../../../images/home-choose.png";
 import video from "../../../images/home-video.png";
 
+import Content from "./Content";
+
 const StyleIntroduction = styled.div`
   background: #ecedfd;
   position: relative;
@@ -236,90 +238,44 @@ const StyleContainer = styled.div`
   padding: 30px 20px;
 `;
 
-const StyleStepContentText = styled.div`
-  font-size: 1.4rem;
-  line-height: 2.2rem;
-  margin-top: 20px;
-  padding: 0 20px;
-
-  @media only screen and (max-width: 1350px) {
-    font-size: 1rem;
-    line-height: 1.8rem;
-  }
-
-  @media only screen and (max-width: 600px) {
-    padding: 0 0 0 10px;
-  }
-`;
-
-const StyleEmphasize = styled.span`
-  color: #7367f0;
-  font-weight: 600;
-`;
-
-const Introduction = (props) => {
+const Introduction = ({ target }) => {
   const [stepDisplay, setStepDisplay] = useState("one");
 
-  const handleTitle = () => {
-    if (stepDisplay === "one") {
-      return <StyleStepContentTitle>線上即時編輯履歷</StyleStepContentTitle>;
-    } else if (stepDisplay === "two") {
-      return <StyleStepContentTitle>篩選條件｜預約前輩</StyleStepContentTitle>;
-    } else if (stepDisplay === "three") {
-      return <StyleStepContentTitle>視訊討論｜在線修改</StyleStepContentTitle>;
-    }
-  };
+  const stepInfoMapping = [
+    {
+      key: "one",
+      tag: "1",
+      label: "Profile 頁面｜編輯履歷",
+      content: "線上即時編輯履歷",
+      src: edit,
+      alt: "edit",
+    },
+    {
+      key: "two",
+      tag: "2",
+      label: "Teacher 頁面｜選擇前輩",
+      content: "篩選條件｜預約前輩",
+      src: select,
+      alt: "select",
+    },
+    {
+      key: "three",
+      tag: "3",
+      label: "Live 頁面｜視訊諮詢",
+      content: "視訊討論｜在線修改",
+      src: video,
+      alt: "video",
+    },
+  ];
 
-  const handleContent = () => {
-    if (stepDisplay === "one") {
-      return (
-        <StyleStepContentText>
-          已經知道自己需要哪些幫助了嗎？
-          <br />
-          在確認目標開始搜尋相關前輩前，先在線上即時編輯履歷，在預約時讓前輩了解狀況，做足功課再來回答你！
-          <br />
-          <br />
-          Re-Live 提供的<StyleEmphasize>即時履歷編輯</StyleEmphasize>
-          ，完成滿意的履歷後還能點選
-          <StyleEmphasize>列印</StyleEmphasize>將履歷儲存或印出。
-        </StyleStepContentText>
-      );
-    } else if (stepDisplay === "two") {
-      return (
-        <StyleStepContentText>
-          選擇前輩時，可以用
-          <StyleEmphasize>產業、職位、履歷批改語言</StyleEmphasize>
-          來搜尋，快速找到最適合的人選。
-          <br />
-          瀏覽完前輩個人介紹後，可以立即選擇中意前輩的
-          <StyleEmphasize>可預約時段</StyleEmphasize>。
-          <br />
-          <br />
-          預約完成後會自動導至
-          <StyleEmphasize>Profile｜My Class 頁面</StyleEmphasize>
-          ，輕鬆查看預約的時段。
-        </StyleStepContentText>
-      );
-    } else if (stepDisplay === "three") {
-      return (
-        <StyleStepContentText>
-          預約當日請特別留意畫面<StyleEmphasize>右上角小鈴鐺</StyleEmphasize>
-          ，查看是否有前輩的視訊即時通知。
-          <br />
-          前往 Live 頁面後，請先<StyleEmphasize>開啟鏡頭</StyleEmphasize>
-          ，再進入<StyleEmphasize>專屬隱私視訊房間</StyleEmphasize>
-          ，就能和專業的前輩們在線討論並即時批改。
-          <br />
-          <br />
-          結束諮詢後，按下<StyleEmphasize>離開房間</StyleEmphasize>
-          可以立即替諮詢體驗留下評論，讓前輩和其他使用者暸解你的收穫與回饋！
-        </StyleStepContentText>
-      );
-    }
+  const titleMapping = {
+    one: "線上即時編輯履歷",
+    two: "篩選條件｜預約前輩",
+    three: "視訊討論｜在線修改",
   };
 
   return (
-    <StyleIntroduction ref={props.target}>
+    <StyleIntroduction ref={target}>
       <StyleTitleWrap>
         <StyleTitle>職涯大哉問，一對一視訊，讓前輩來 Carry !</StyleTitle>
         <StyleCaption>簡單的預約流程，約到不簡單的人</StyleCaption>
@@ -328,45 +284,29 @@ const Introduction = (props) => {
         <StyleLine />
 
         <StyleStepMenu>
-          <StyleEachStep onClick={() => setStepDisplay("one")}>
-            <StyleStepOrder>1.</StyleStepOrder>
-            <StyleText stepDisplay={stepDisplay}>
-              Profile 頁面｜編輯履歷
-            </StyleText>
-            <StyleIconWrap>
-              <StyleIcon
-                src={edit}
-                alt={"edit"}
-                stepDisplay={stepDisplay}></StyleIcon>
-            </StyleIconWrap>
-          </StyleEachStep>
-          <StyleEachStep onClick={() => setStepDisplay("two")}>
-            <StyleStepOrder>2.</StyleStepOrder>
-            <StyleText stepDisplay={stepDisplay}>
-              Teacher 頁面｜選擇前輩
-            </StyleText>
-            <StyleIconWrap>
-              <StyleIcon
-                src={select}
-                alt={"edit"}
-                stepDisplay={stepDisplay}></StyleIcon>
-            </StyleIconWrap>
-          </StyleEachStep>
-          <StyleEachStep onClick={() => setStepDisplay("three")}>
-            <StyleStepOrder>3.</StyleStepOrder>
-            <StyleText stepDisplay={stepDisplay}>Live 頁面｜視訊諮詢</StyleText>
-            <StyleIconWrap>
-              <StyleIcon
-                src={video}
-                alt={"video"}
-                stepDisplay={stepDisplay}></StyleIcon>
-            </StyleIconWrap>
-          </StyleEachStep>
+          {stepInfoMapping.map(({ key, tag, label, src, alt }) => {
+            return (
+              <StyleEachStep onClick={() => setStepDisplay(key)}>
+                <StyleStepOrder>{`${tag}.`}</StyleStepOrder>
+                <StyleText stepDisplay={stepDisplay}>{label}</StyleText>
+                <StyleIconWrap>
+                  <StyleIcon
+                    src={src}
+                    alt={alt}
+                    stepDisplay={stepDisplay}></StyleIcon>
+                </StyleIconWrap>
+              </StyleEachStep>
+            );
+          })}
         </StyleStepMenu>
 
         <StyleStepContent>
-          {handleTitle()}
-          <StyleContainer>{handleContent()}</StyleContainer>
+          <StyleStepContentTitle>
+            {titleMapping[stepDisplay]}
+          </StyleStepContentTitle>
+          <StyleContainer>
+            <Content stepDisplay={stepDisplay} />
+          </StyleContainer>
         </StyleStepContent>
       </StyleStepWrap>
     </StyleIntroduction>

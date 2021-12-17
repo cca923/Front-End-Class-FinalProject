@@ -5,8 +5,6 @@ import video from "../../../images/home-video.mp4";
 
 import Introduction from "./Introduction";
 
-const StyleHome = styled.div``;
-
 const StyleVideoArea = styled.video`
   object-fit: cover;
   width: 100vw;
@@ -101,7 +99,7 @@ const Home = () => {
   const target = useRef();
 
   return (
-    <StyleHome>
+    <>
       <StyleVideoArea src={video} autoPlay loop muted />
       <StyleTextArea>
         <StyleTextTitle>Re-Live</StyleTextTitle>
@@ -114,7 +112,7 @@ const Home = () => {
         Scroll
       </StyleScrollIcon>
       <Introduction target={target} />
-    </StyleHome>
+    </>
   );
 };
 
