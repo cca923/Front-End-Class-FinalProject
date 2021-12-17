@@ -14,13 +14,9 @@ const StyleIntroduction = styled.div`
   background: #ecedfd;
   position: relative;
   padding: 2rem;
-  height: calc(100vh - 100px);
   height: fit-content;
   margin-top: 100vh;
-
-  @media only screen and (max-width: 1000px) {
-    height: fit-content;
-  }
+  scroll-margin-top: 100px;
 `;
 
 const StyleTitleWrap = styled.div`

@@ -106,9 +106,7 @@ const Home = () => {
         <StyleTextSlogan>Resume Your Life</StyleTextSlogan>
       </StyleTextArea>
       <StyleScrollIcon
-        onClick={() => {
-          target.current.scrollIntoView({ behavior: "smooth" });
-        }}>
+        onClick={() => target.current.scrollIntoView({ behavior: "smooth" })}>
         Scroll
       </StyleScrollIcon>
       <Introduction target={target} />

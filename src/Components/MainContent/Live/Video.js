@@ -349,39 +349,21 @@ const Video = () => {
 
   return (
     <>
-      {identity === "teacher" ? (
-        <Joyride
-          callback={handleJoyrideCallback}
-          continuous={true}
-          run={runGuide}
-          scrollToFirstStep={true}
-          showProgress={true}
-          showSkipButton={true}
-          steps={teacherSteps}
-          styles={{
-            options: {
-              zIndex: 10000,
-            },
-          }}
-          tooltipComponent={Tooltip}
-        />
-      ) : (
-        <Joyride
-          callback={handleJoyrideCallback}
-          continuous={true}
-          run={runGuide}
-          scrollToFirstStep={true}
-          showProgress={true}
-          showSkipButton={true}
-          steps={studentSteps}
-          styles={{
-            options: {
-              zIndex: 10000,
-            },
-          }}
-          tooltipComponent={Tooltip}
-        />
-      )}
+      <Joyride
+        callback={handleJoyrideCallback}
+        continuous={true}
+        run={runGuide}
+        scrollToFirstStep={true}
+        showProgress={true}
+        showSkipButton={true}
+        steps={identity === "teacher" ? teacherSteps : studentSteps}
+        styles={{
+          options: {
+            zIndex: 10000,
+          },
+        }}
+        tooltipComponent={Tooltip}
+      />
 
       <StyleVideo>
         <StyleLocalArea>
