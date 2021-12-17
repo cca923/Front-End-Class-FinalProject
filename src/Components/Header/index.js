@@ -15,10 +15,15 @@ const StyleHeader = styled.header`
   position: fixed;
   height: 100px;
   width: 100vw;
+  padding: 0 10px;
   background-color: ${(props) =>
     props.headerstatus === "scroll" ? "rgb(255,255,255,0.8)" : "none"};
   z-index: 1000;
   transition: all 0.2s;
+
+  @media only screen and (max-width: 1020px) {
+    padding: 0;
+  }
 
   @media print {
     display: none;
@@ -31,13 +36,6 @@ const StyleLink = styled(Link)`
   padding: 0px 20px;
   font-size: 60px;
   font-weight: 600;
-
-  /* -webkit-text-fill-color: ${(props) =>
-    props.headerstatus ? "none" : "#7367f0"};
-  -webkit-text-stroke-width: ${(props) =>
-    props.headerstatus ? "none" : "2px"};
-  -webkit-text-stroke-color: ${(props) =>
-    props.headerstatus ? "none" : "#fff"}; */
 `;
 
 const StyleLogo = styled.div`

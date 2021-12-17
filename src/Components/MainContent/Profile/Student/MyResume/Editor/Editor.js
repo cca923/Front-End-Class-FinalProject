@@ -92,7 +92,7 @@ const Editor = () => {
   const [edit, setEdit] = useState(false);
   const [displayDetail, setDisplayDetail] = useState(false);
 
-  const detail = `
+  const defaultDetail = `
     <h1>Work Experience</h1>
     <h1>Education</h1>
     <h1>Skill</h1>
@@ -100,18 +100,14 @@ const Editor = () => {
 
   useEffect(() => {
     if (!resumeData) {
-      setValue(detail);
-    } else if (resumeData && !resumeData.detail) {
-      updateStudentData(identityData.email, {
-        resume: { ...identityData.resume, detail },
-      }).then(() => {
-        setValue(detail);
-        setDisplayDetail(true);
-      });
-    } else if (resumeData && resumeData.detail) {
+      setValue(defaultDetail);
+    } else if (!resumeData.detail) {
+      setValue(defaultDetail);
+    } else if (resumeData.detail) {
       setValue(resumeData.detail);
       setDisplayDetail(true);
     }
+    return null;
   }, [resumeData]);
 
   return (
@@ -155,7 +151,7 @@ const Editor = () => {
           ) : (
             <StyleReactQuill
               placeholder="開始編輯履歷吧！"
-              value={value} // value = detail
+              value={value} // value = defaultDetail
               onChange={(value) => setValue(value)}
               modules={modules}
               formats={formats}
@@ -163,7 +159,7 @@ const Editor = () => {
           )
         ) : displayDetail ? (
           <StyleReactQuillDisplay>
-            {ReactHtmlParser(resumeData.detail)}
+            {ReactHtmlParser(value)}
           </StyleReactQuillDisplay>
         ) : (
           <StyleReactQuillDisplay>

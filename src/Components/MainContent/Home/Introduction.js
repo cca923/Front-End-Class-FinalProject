@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { nanoid } from "nanoid";
 
 import { StyleSubtitle } from "../../Common/title";
 
@@ -286,7 +287,7 @@ const Introduction = ({ target }) => {
         <StyleStepMenu>
           {stepInfoMapping.map(({ key, tag, label, src, alt }) => {
             return (
-              <StyleEachStep onClick={() => setStepDisplay(key)}>
+              <StyleEachStep key={nanoid()} onClick={() => setStepDisplay(key)}>
                 <StyleStepOrder>{`${tag}.`}</StyleStepOrder>
                 <StyleText stepDisplay={stepDisplay}>{label}</StyleText>
                 <StyleIconWrap>

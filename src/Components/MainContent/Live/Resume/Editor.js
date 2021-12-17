@@ -90,7 +90,7 @@ const Editor = () => {
   const [edit, setEdit] = useState(false);
 
   useEffect(() => {
-    if (resumeData && resumeData?.detail) {
+    if (resumeData?.detail) {
       fetchStudentData(liveData.email).then((doc) => {
         setValue(doc.data().resume.detail);
       });
