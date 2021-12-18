@@ -84,46 +84,45 @@ function App() {
       <Header currentUser={currentUser} />
       {signPage ? <Sign /> : null}
 
-      <ScrollToTop>
-        <Switch>
-          <Route path="/" exact>
-            <Home />
-          </Route>
+      <ScrollToTop />
+      <Switch>
+        <Route path="/" exact>
+          <Home />
+        </Route>
 
-          {currentUser !== null ? (
-            <>
-              {currentUser !== undefined ? (
-                <Switch>
-                  <Route path="/teachers" exact>
-                    <Teachers />
-                  </Route>
-                  <Route path="/teachers/:teacherUid" exact>
-                    <EachTeacher />
-                  </Route>
-                  <Route path="/live" exact>
-                    <Live />
-                  </Route>
-                  <Route path="/profile">
-                    <Profile />
-                  </Route>
-                  <Route path="/404" exact>
-                    <NoMatch />
-                  </Route>
-                  <Route path="">
-                    <Redirect to="/404" />
-                  </Route>
-                </Switch>
-              ) : (
-                <StyleStateWrap>
-                  <StyleLoading src={loading} alt={"Loading"} />
-                </StyleStateWrap>
-              )}
-            </>
-          ) : (
-            <Redirect to="/" />
-          )}
-        </Switch>
-      </ScrollToTop>
+        {currentUser !== null ? (
+          <>
+            {currentUser !== undefined ? (
+              <Switch>
+                <Route path="/teachers" exact>
+                  <Teachers />
+                </Route>
+                <Route path="/teachers/:teacherUid" exact>
+                  <EachTeacher />
+                </Route>
+                <Route path="/live" exact>
+                  <Live />
+                </Route>
+                <Route path="/profile">
+                  <Profile />
+                </Route>
+                <Route path="/404" exact>
+                  <NoMatch />
+                </Route>
+                <Route path="">
+                  <Redirect to="/404" />
+                </Route>
+              </Switch>
+            ) : (
+              <StyleStateWrap>
+                <StyleLoading src={loading} alt={"Loading"} />
+              </StyleStateWrap>
+            )}
+          </>
+        ) : (
+          <Redirect to="/" />
+        )}
+      </Switch>
     </>
   );
 }

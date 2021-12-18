@@ -23,14 +23,12 @@ const StyleEditorArea = styled.div`
 
 const StyleReactQuill = styled(ReactQuill)`
   width: 100%;
-  z-index: 1000;
 `;
 
 const StyleReactQuillDisplay = styled.div`
   max-width: 100%;
   width: 100%;
   height: fit-content;
-  z-index: 1000;
   line-height: 1.6rem;
   padding: 0 30px 30px;
   word-wrap: break-word;
